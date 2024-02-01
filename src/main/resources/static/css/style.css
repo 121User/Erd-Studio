@@ -1,0 +1,368 @@
+
+.logo-image {
+    width: 150px;
+    padding: 10px;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    padding: 10px;
+    border-radius: 50%;
+}
+
+.div-vertical img {
+    width: 150px;
+    height: 150px;
+    padding: 10px;
+}
+
+.div-main {
+    width: max-content;
+    margin: 120px auto;
+    text-align: center;
+}
+
+.div-horizontal {
+    display: table;
+    width: 100%;
+}
+
+.div-horizontal1 {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.div-vertical {
+    display: table-cell;
+    vertical-align: top;
+    horiz-align: center;
+}
+
+.main_page_menu a {
+    font-family: 'PT Sans', serif;
+    font-size: 20px;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: center;
+    text-decoration: none;
+    color: #9702A7;
+    margin: auto 10px;
+}
+
+.form div {
+    margin: 20px;
+}
+
+header {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page_title {
+    font-family: 'PT Sans', serif;
+    font-size: 23px;
+    font-weight: normal;
+    color: #311F46;
+    margin: 20px;
+}
+
+.input-submit {
+    font-family: 'PT Sans', serif;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 25px 0 5px;
+    color: #ffffff;
+    background: #9702A7;
+    border: none;
+    border-radius: 5px;
+    width: 280px;
+    text-decoration: none;
+    padding: 10px
+}
+
+.input-text {
+    font-family: 'PT Sans', serif;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0 10px;
+    padding: 10px 15px;
+    outline: #74217D;
+    color: #311F46;
+    border: 2px solid #74217D;
+    border-radius: 5px;
+    width: 250px;
+}
+
+.input-number {
+    font-family: 'PT Sans', serif;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: center;
+    margin: 10px;
+    padding: 10px 15px;
+    border: 2px solid #74217D;
+    outline: #74217D;
+    color: #311F46;
+    border-radius: 5px;
+    width: 250px;
+}
+
+/*поле ввода чисел без стрелочек ввех и вниз*/
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type=file]::file-selector-button {
+    font-family: 'PT Sans', serif;
+    font-size: 15px;
+    font-weight: normal;
+    margin: 10px 10px 20px;
+    padding: 10px;
+    color: #ffffff;
+    background: #9702A7;
+    border: none;
+    border-radius: 5px;
+    horiz-align: left;
+}
+
+.button1 {
+    font-family: 'PT Sans', serif;
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    color: #9702A7;
+}
+
+.text1 {
+    font-family: 'PT Sans', serif;
+    font-size: 15px;
+    font-weight: normal;
+    text-align: center;
+    color: #311F46;
+}
+
+.text2 {
+    font-family: 'PT Sans', serif;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: center;
+    color: #311F46;
+}
+
+.text3 {
+    width: 250px;
+    font-family: 'PT Sans', serif;
+    font-size: 20px;
+    font-weight: normal;
+    horiz-align: center;
+    text-align: center;
+    color: #311F46;
+}
+
+.table_header {
+    font-family: 'PT Sans', serif;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: left;
+    color: #311F46;
+}
+
+.table_value {
+    font-family: 'PT Sans', serif;
+    font-size: 15px;
+    font-weight: normal;
+    text-align: left;
+    color: #311F46;
+}
+
+.error-text {
+    font-family: 'PT Sans', serif;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center;
+    color: #ff0000;
+}
+
+.email {
+    font-family: 'PT Sans', serif;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    color: #311F46;
+}
+
+
+/*diagram working page*/
+body {
+    margin: 0;
+}
+
+#sidebar, #content {
+    position: absolute;
+}
+
+#sidebar, #content {
+    overflow: auto;
+    padding: 10px;
+}
+
+.header1 {
+    height: 50px;
+    background: #311F46;
+}
+
+#sidebar {
+    width: max-content;
+    background: #482D65;
+    border-right: 1px solid #74217D;
+    padding-left: 10px;
+    top: 50px;
+    bottom: 0;
+}
+
+#content {
+    top: 50px;
+    left: 350px;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+}
+
+#content pre {
+    width: 100%;
+    height: 90%
+}
+
+#diagram_name {
+    width: 300px;
+    horiz-align: left;
+    background-size: 20px;
+    font-size: 15px;
+    background: #482D65;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 0 15px;
+    padding: 8px;
+}
+
+#diagram_name::placeholder {
+    color: #B4B4B4;
+}
+
+/*Выпадающий список для выбора формата экспорта*/
+select {
+    width: 80px;
+    height: 30px;
+    background: #482D65;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.div-horizontal2 {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    width: 120px;
+    height: 30px;
+    background: #482D65;
+    border-radius: 5px;
+    margin-right: 15px;
+    padding: 0 5px;
+}
+
+/* Переключатель темы страницы*/
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+/* Скрытие переключателя по умолчанию */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #B4B4B4;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #482D65;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #9702A7;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #9702A7;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
+}
+
+.menu_button {
+    padding: 10px;
+    background: transparent;
+    border: none;
+}
+
+.menu_list {
+    top: 50px;
+    right: 5px;
+    position: absolute;
+    display: none;
+    vertical-align: top;
+    horiz-align: center;
+    width: max-content;
+    background: #482D65;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 15px;
+    padding: 10px 25px 10px 10px;
+    text-align: left;
+}
+
+.menu_list a {
+    font-family: 'PT Sans', serif;
+    font-size: 18px;
+    margin: 0 5px;
+    height: 100px;
+    color: white;
+    text-decoration: none;
+}

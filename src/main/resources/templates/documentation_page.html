@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
+        <link rel="stylesheet" type="text/css" media="all"
+              href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+        <script type="text/javascript" th:src="@{js/script.js}" src="/static/js/script.js"></script>
+        <title>Документация</title>
+
+        <style type="text/css">
+            /*documentation style*/
+            #sidebar, #content {
+                position: absolute;
+            }
+            #sidebar, #content {
+                overflow: auto;
+                padding: 10px;
+            }
+            #sidebar {
+                width: 250px;
+                background: #482D65;
+                border-right: 1px solid #311F46;
+                padding-left: 10px;
+                top: 82px;
+                bottom: 0;
+            }
+            #sidebar a {
+                font-family: 'PT Sans', serif;
+                font-size: 15px;
+                font-weight: normal;
+                text-decoration: none;
+                text-align: center;
+                vertical-align: center;
+                color: white;
+                margin: 10px;
+                word-wrap: break-word
+            }
+            #content {
+                top: 82px;
+                left: 380px;
+                padding-right: 120px;
+                bottom: 0;
+                text-align: left;
+            }
+            #content h1, h2, p, ul, ol {
+                font-family: 'PT Sans', serif;
+                font-size: 30px;
+                color: #311F46;
+            }
+            #content p, ul, ol {
+                font-size: 18px;
+                text-align: justify;
+            }
+            #content li {
+                margin: 5px;
+            }
+            #content mark {
+                background: rgba(49, 31, 70, 0.16);
+                white-space: pre-wrap;
+            }
+        </style>
+
+    </head>
+    <body>
+        <header style="border-bottom: 1px solid #311F46;">
+            <div style="flex-grow: 1;">
+                <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
+                     onclick="location.href='/'"
+                     alt="logo" class="logo-image"/>
+            </div>
+            <div>
+                <input id="searchInput" placeholder="Поиск" required type="text" aria-label="Search"
+                       oninput="searchText()" th:oninput="searchText()"
+                       class="input-text" maxlength="100" style="width: 300px; horiz-align: left; float: left;
+                                         padding-left: 25px;
+                                         background: url(/images/Search_Icon.png) no-repeat left;
+                                         background-size: 20px;"
+                />
+            </div>
+        </header>
+
+        <div id="sidebar" class="doc_menu" onclick="hideMenu()" th:onclick="hideMenu()">
+            <p class="text2" style="color: white; font-weight: bold">Документация</p>
+            <a href="#Description">Описание</a><br/><br/>
+            <a href="#Syntax">Синтаксис описания диаграмм</a><br/><br/>
+            <a href="#Import">Импорт диаграммы</a><br/><br/>
+            <a href="#Export">Экспорт диаграммы</a><br/><br/>
+        </div>
+        <div id="content" onclick="hideMenu()" th:onclick="hideMenu()">
+            <div id="searchResults"></div>
+            <h1 id="Title" style="font-size: 50px">ER-diagram Studio</h1>
+            <h2 id="Description">Описание</h2>
+            <p>Er-diagram Studio - это средство для работы с Entity-Relationship диаграммами.
+                Его целью является упрощение работы с ER-диаграммами на этапе планирования и
+                разработки баз данных.</p>
+            <p>ER-diagram Studio позволяет:</p>
+            <ul>
+                <li>создавать и редактировать ER-диаграммы при помощи кода описания диаграмм;</li>
+                <li>хранить все необходимые ER-диаграммы в одном месте с возможностью удаления;</li>
+                <li>загружать скрипты восстановления баз данных для создания диаграммы;</li>
+                <li>скачивать ER-диаграммы в удобном формате представления изображения;</li>
+                <li>выгружать скрипты восстановления баз данных для продолжения работы в выбранной СУБД.</li>
+            </ul>
+            <h2 id="Syntax">Синтаксис описания диаграмм</h2>
+            <p>ER-диаграмма - это схематическое представление структуры базы данных, которое
+                отображает сущности, их атрибуты и связи между ними.
+                ER-диаграмма помогает визуализировать и описать структуру информации,
+                которая будет храниться в базе данных.</p>
+            <p><b>Таблицы</b> диаграммы представляют сущности базы данных. Для того, чтобы
+                создзать таблицу на диаграмме, необходимо указать ее название.</p>
+            <p><b>Атрибуты</b> сущности, описывающие ее характеристики должны быть
+                заключены в фигурные скобки: <mark> { </mark> <mark> } </mark>.
+                Для определения атрибутов необходимо указать их имя, тип и возможность
+                значения атрибута быть незаполненным: <mark> "not null" </mark>.
+                Также при описании атрибута можно указать, что он является первичным ключом
+                сущности: <mark> "PK" </mark>.
+            <p><b>Связи</b> между сущностями на диаграмме представлены линиями между таблицами.
+            Связи могут быть 3 типов:</p>
+            <ol>
+                <li>"Один ко многим" - <mark> < </mark>;</li>
+                <li>"Один к одному" - <mark> - </mark>;</li>
+                <li>"Многие ко многим" - на диаграмме реализуется при помощи вспомагательной таблицы.
+            </ol>
+            <p>Для создания связи необходимо указать:
+                <br><mark> ref: </mark>название таблицы с внешним ключом <mark>  </mark>
+                тип связи (<mark> < </mark> или <mark> - </mark>) <mark>  </mark>
+                название таблицы с первичным ключом.</p>
+            <p>Сама связь должна находиться в строке с внешним ключом. После типа атрибута
+                по порядку указываются <mark> [PK, ref:..., not null] </mark>.</p>
+            <p><b>Пример описания диаграммы в коде:</b></p>
+            <p style="white-space: pre;">               CAR {
+                    registrationNumber string [PK, not null]
+                    make string [not null]
+                    model string [not null]
+                    parts string
+                }
+                PERSON {
+                    driversLicense string [PK, not null]
+                    firstName string(99) [not null]
+                    lastName string [not null]
+                    phone string
+                    age int
+                }
+                NAMED-DRIVER {
+                    carRegistrationNumber string [PK, ref: NAMED-DRIVER < CAR, not null]
+                    driverLicence string [PK, ref: NAMED-DRIVER < PERSON, not null]
+                }</p>
+            <h2 id="Import">Импорт диаграммы</h2>
+            <p>ER-diagram Studio предоставляет возможность создать диаграмму путем загрузки
+                файла со скриптом восстановления базы данных. Для импорта доступны скрипты
+                восстановления из СУБД Microsoft SQL Server и PostgreSQL.</p>
+            <p>После загрузки файла система представит ER-диаграмму, построенную
+                на основе структуры из скрипта.</p>
+            <h2 id="Export">Экспорт диаграммы</h2>
+            <p>Созданную диаграмму пользователь может сохранить локально на своем устройстве.</p>
+            <p>Для скачивания диаграммы в виде изображения доступны форматы:</p>
+            <ul>
+                <li>PDF;</li>
+                <li>PNG;</li>
+                <li>SVG.</li>
+            </ul>
+            <p>Также есть возможность выгрузить структуру диаграммы в виде файла со
+                скриптом восстановления базы данных для дальнейшей работы.</p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+
+      lang="ru">
+
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}">
+        <link rel="stylesheet" type="text/css" media="all"
+              href="/static/css/style.css" data-th-href="@{/css/style.css}" />
+        <script type="text/javascript" th:src="@{js/script.js}" src="/static/js/script.js"></script>
+        <title>Главная</title>
+    </head>
+
+    <body>
+        <header style="width: 100%;">
+            <div style="flex-grow: 1;">
+                <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
+                     onclick="location.href='/'"
+                     alt="logo" class="logo-image"/>
+            </div>
+            <div class="main_page_menu">
+                <a href="/documentation">Документация</a>
+                <a href="/authorization">Войти</a>
+                <a href="/registration">Зарегистрироваться</a>
+            </div>
+        </header>
+
+        <div class="div-main" style="margin: 30px auto;">
+            <h1 class="page_title" style="font-size: 28px;">
+                Средство для работы с Entity-Relationship диаграммами
+            </h1>
+
+            <table class="div-vertical" style="border-spacing: 90px 50px;">
+                <td style="vertical-align: top">
+                    <div>
+                        <img src="/static/images/Programming.png" th:src="@{/images/Programming.png}" alt="Programming"/>
+                    </div>
+                    <div>
+                        <p class="text3">Создавайте и редактируйте ER-диаграммы при помощи простого кода</p>
+                    </div>
+                </td>
+                <td style="vertical-align: top">
+                    <div>
+                        <img src="/static/images/Table.png" th:src="@{/images/Table.png}" alt="Table"/>
+                    </div>
+                    <div>
+                        <p class="text3">Загружайте скрипты восстановления баз данных из различных СУБД для создания ER-диаграммы</p>
+                    </div>
+                </td>
+                <td style="vertical-align: top">
+                    <div>
+                        <img src="/static/images/Database.png" th:src="@{/images/Database.png}" alt="Database"/>
+                    </div>
+                    <div>
+                        <p class="text3">Скачивайте скрипт для продолжения работы с ER-диаграммой при создании базы данных</p>
+                    </div>
+                </td>
+                <td style="vertical-align: top">
+                    <div>
+                        <img src="/static/images/Documents.png" th:src="@{/images/Documents.png}" alt="Documents"/>
+                    </div>
+                    <div>
+                        <p class="text3">Скачивайте ER-диаграмму, преобразованную в различные форматы <br> (PDF, PNG, SVG)</p>
+                    </div>
+                </td>
+            </table>
+            <div>
+                <a href="/authorization" class="input-submit" style="padding: 10px 100px; text-decoration: none;">Начать</a>
+            </div>
+        </div>
+    </body>
+</html>

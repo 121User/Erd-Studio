@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+    <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
+    <title>Мои диаграммы</title>
+</head>
+
+<body>
+<header>
+    <div style="flex-grow: 1;">
+        <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
+             onclick="location.href='/'"
+             alt="logo" class="logo-image"/>
+    </div>
+    <!--Кнопка меню-->
+    <div>
+        <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
+            <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
+                 style="padding: 10px; width: 25px; margin-right: 10px"/>
+        </button>
+    </div>
+</header>
+
+<div class="div-main" style="margin: 60px auto;" onclick="hideMenu()" th:onclick="hideMenu()">
+    <h1 class="page_title">Мои диаграммы</h1>
+
+    <div class="div-horizontal1">
+        <div style="flex-grow: 1;">
+            <input id="searchInput" placeholder="Поиск" required type="text" aria-label="Search"
+                   th:onblur="searchDiagram()" onkeyup="searchDiagramByKeyup(event)" th:value="${searchText}"
+                   class="input-text" maxlength="100" style="width: 400px; horiz-align: left; float: left;
+                   padding-left: 25px; background: url(/images/Search_Icon.png) no-repeat left;
+                   background-size: 20px;"
+            />
+        </div>
+        <div>
+            <a href="/user/diagram/list/import" class="input-submit"
+               style="margin: 0 10px; width: auto; vertical-align: center">
+                <img src="/static/images/Upload_Icon.png" th:src="@{/images/Upload_Icon.png}" alt="upload"
+                     style="width: 15px; margin: 0 5px"/>
+                Импорт
+            </a>
+            <a href="/user/diagram/list/create" class="input-submit"
+               style="margin: 0; width: auto; vertical-align: center">
+                <img src="/static/images/Create_Icon.png" th:src="@{/images/Create_Icon.png}" alt="create"
+                     style="width: 15px; margin: 0 5px;"/>
+                Создать диаграмму
+            </a>
+        </div>
+    </div>
+
+    <table style="border-spacing: 20px; horiz-align: center; width: 100%; text-align: left">
+        <thead>
+        <tr>
+            <th class="table_header" style="width: 50%">Название</th>
+            <th class="table_header" style="width: 20%">Дата изменения</th>
+            <th class="table_header" style="width: 20%">Дата создания</th>
+            <th class="table_header" style="width: 10%"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="diagram: ${diagramList}">
+            <td class="table_value">
+                <a style="font-size: 15px; margin: 0; text-decoration: none; color: #9702A7;"
+                   th:href="@{'/user/diagram/' + ${diagram.id}}" th:text="${diagram.name}">
+                </a>
+            </td>
+            <td class="table_value" th:text="${diagram.modifiedDate}"></td>
+            <td class="table_value" th:text="${diagram.creationDate}"></td>
+            <td class="main_page_menu">
+                <a style="color: red; font-size: 15px; margin: 0"
+                   th:href="@{'/user/diagram/list/delete/' + ${diagram.id}}">
+                    Удалить
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin: 10px">
+        <a class="text2" th:text="${listInfo}" style="color: #9702A7"></a>
+    </div>
+</div>
+
+<div id="menu_list" class="menu_list" style="top: 60px; background: #74217D;">
+    <div style="border-bottom: 2px solid #311F46;">
+        <a th:text="${email}"></a>
+    </div>
+    <div>
+        <a href="/user/account">
+            <img src="/static/images/User_icon.png" th:src="@{/images/User_icon.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Учетная запись
+        </a>
+    </div>
+    <div>
+        <a href="/user/diagram/list">
+            <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Мои диаграммы
+        </a>
+    </div>
+    <div>
+        <a href="/logout">
+            <img src="/static/images/Logout_icon.png" th:src="@{/images/Logout_icon.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Выход
+        </a>
+    </div>
+</div>
+</body>
+</html>

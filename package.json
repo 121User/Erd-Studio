@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "lz-string": "^1.5.0",
+    "pako": "^2.1.0",
+    "pdfkit": "^0.14.0",
+    "pdfmake": "^0.2.9",
+    "save-svg-as-png": "^1.4.17",
+    "svg-to-pdfkit": "^0.1.8"
+  }
+}
