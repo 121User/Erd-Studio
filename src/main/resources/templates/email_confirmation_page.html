@@ -1,48 +1,46 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-
       lang="ru">
 
-    <head>
-        <meta charset="utf-8"/>
-        <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
-        <link rel="stylesheet" type="text/css" media="all"
-              href="/static/css/style.css" data-th-href="@{/css/style.css}" />
-        <script type="text/javascript" th:src="@{js/script.js}" src="/static/js/script.js"></script>
-        <title>Подтверждение электронной почты</title>
-    </head>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+    <script type="text/javascript" th:src="@{js/script.js}" src="/static/js/script.js"></script>
+    <title>Подтверждение электронной почты</title>
+</head>
 
 
+<body>
+<header style="width: 100%;">
+    <div style="flex-grow: 1;">
+        <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
+             onclick="location.href='/main'"
+             alt="logo" class="logo-image"/>
+    </div>
+</header>
 
-    <body>
-        <header>
-            <div style="flex-grow: 1;">
-                <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
-                     onclick="location.href='/'"
-                     alt="logo" class="logo-image"/>
-            </div>
-        </header>
+<div class="div-main">
+    <h1 class="page_title">Подтверждение электронной почты</h1>
 
-        <div class="div-main">
-            <h1 class="page_title">Подтверждение электронной почты</h1>
+    <p>
+        <a class="text1">Код подтверждения был отправлен на почту</a>
+        <a class="email" th:text="${userEmail}"></a>
+    </p>
 
-            <p>
-                <a class="text1">Код подтверждения был отправлен на почту</a>
-                <a class="email" th:text="${email}"></a>
-            </p>
-
-            <form action="/email-confirmation/confirm" method="post" class="form">
-                <div>
-                    <input name="code" placeholder="Код подтверждения" required type="number"
-                           min="10000" max="99999" aria-label="Confirmation code" class="input-number"/>
-                </div>
-                <a class="error-text" th:text="${result}"></a>
-
-                <div>
-                    <input type="submit" value="Подтвердить" class="input-submit"/>
-                </div>
-            </form>
+    <form action="/email-confirmation/confirm" method="post" class="form">
+        <div>
+            <input name="code" placeholder="Код подтверждения" required type="number"
+                   min="10000" max="99999" aria-label="Confirmation code" class="input-number"/>
         </div>
-    </body>
+        <a class="error-text" th:text="${result}"></a>
+
+        <div>
+            <input type="submit" value="Подтвердить" class="input-submit"/>
+        </div>
+    </form>
+</div>
+</body>
 </html>

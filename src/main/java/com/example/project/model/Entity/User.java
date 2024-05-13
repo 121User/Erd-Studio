@@ -16,11 +16,12 @@ public class User {
 
     @Column(name = "user_email")
     private String email;
+
     @Column(name = "user_password")
     private String password;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_design_theme")
     private DesignTheme designTheme;
 

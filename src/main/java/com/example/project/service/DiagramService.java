@@ -26,7 +26,11 @@ public class DiagramService {
         this.diagramRepository = diagramRepository;
     }
 
-    public Diagram createByName(DiagramDto diagramDto, User user) {
+    public Diagram getByID(Long id) {
+        return diagramRepository.findById(id).get();
+    }
+
+    public Diagram createByName(User user, DiagramDto diagramDto) {
         diagramDto.setName(getDiagramName(user, diagramDto.getName()));
 
         Diagram diagram = new Diagram();
@@ -36,14 +40,6 @@ public class DiagramService {
         diagram.setCode(diagramDto.getCode());
         diagram.setUserId(user.getId());
         return diagramRepository.save(diagram);
-    }
-
-    public Diagram getByID(Long id) {
-        return diagramRepository.findById(id).get();
-    }
-
-    public void deleteDiagram(Long diagramId){
-        diagramRepository.delete(getByID(diagramId));
     }
 
     public void changeName(Diagram diagram, String name, User user){
@@ -80,5 +76,9 @@ public class DiagramService {
             } while (!close);
         }
         return diagramName;
+    }
+
+    public void deleteDiagram(Long diagramId){
+        diagramRepository.delete(getByID(diagramId));
     }
 }

@@ -2,24 +2,27 @@
 //Отображение меню по кнопке
 function showMenu() {
     const menuList = document.getElementById('menu_list');
-    if(menuList.style.display === 'none'){
+    if (menuList.style.display === 'none') {
         menuList.style.display = 'block';
-    }else{
+    } else {
         menuList.style.display = 'none';
     }
 }
+
 //Скрытие меню (при нажатии на основную часть экрана)
-function hideMenu(){
+function hideMenu() {
     document.getElementById('menu_list').style.display = 'none';
 }
+
 //Активация меню
-window.onload = function() {
+window.onload = function () {
     document.getElementById('menu_button').click();
 }
 
+
 //Страница документации
 //Поиск (по документации)
-function searchText(){
+function searchText() {
     let searchText = document.getElementById('searchInput').value;
     let content = document.getElementById('content');
     let items = content.querySelectorAll('p, h1, h2');
@@ -35,17 +38,21 @@ function searchText(){
     });
 }
 
+
 //Страница со списком диаграмм
 //Поиск (по списку)
-function searchDiagram(){
+function searchDiagram() {
     let searchText = document.getElementById('searchInput').value;
-    location.href = '/user/diagram/list?searchText=' + searchText;
+    location.href = '/diagram/list?searchText=' + searchText;
 }
-function searchDiagramByKeyup(e){
-    if(e.keyCode === 13){
+
+//Активация поиска при нажатии на Enter
+function searchDiagramByKeyup(e) {
+    if (e.keyCode === 13) {
         searchDiagram();
     }
 }
+
 
 //Страница работы с диаграммой
 //Сохранение темы страницы
@@ -53,11 +60,12 @@ function saveTheme() {
     changeTheme();
     const checkbox = document.getElementById('checkbox_theme');
     let designTheme = "light";
-    if(checkbox.checked){
+    if (checkbox.checked) {
         designTheme = "dark";
     }
     location.href += '/save?designTheme=' + designTheme;
 }
+
 //Изменение темы страницы
 function changeTheme() {
     const checkbox = document.getElementById('checkbox_theme');
@@ -95,30 +103,39 @@ function saveCode() {
 
     location.href += '/save?diagramCode=' + diagramCode;
 }
-function getFormattedCodeForDB(code){
+
+//Активация поиска при нажатии на Enter
+function saveCodeByKeyup(e) {
+    if (e.keyCode === 13) {
+        saveCode();
+    }
+}
+
+function getFormattedCodeForDB(code) {
     let strings = code.split(/\n/g);
-    for(let i = 0; i< strings.length; i++){
+    for (let i = 0; i < strings.length; i++) {
         strings[i] = strings[i].trim();
-        if(!strings[i].includes('{') && !strings[i].includes('}')){
+        if (!strings[i].includes('{') && !strings[i].includes('}')) {
             strings[i] = '    ' + strings[i];
         }
     }
     return strings.join('\n');
 }
 
-function getFormattedCodeForDiagram(code){
+function getFormattedCodeForDiagram(code) {
     let refs = getRefs(code)
-    let result = 'erDiagram\n'+ code.replace(/pk/g, 'PK').replace(/\[/g, '').replace(/not null/g, '"NN"')
+    let result = 'erDiagram\n' + code.replace(/pk/g, 'PK').replace(/\[/g, '').replace(/not null/g, '"NN"')
         .replace(/ ref:/g, ', ref:').replace(/ref:(.*?)[,\]]/g, 'FK').replace(/, /g, ' ').replace(/]/g, '');
 
     return result + refs;
 }
-function getRefs(code){
+
+function getRefs(code) {
     let refs = '';
     let strings = code.split(/\n/g);
-    for(let i = 0; i< strings.length; i++){
+    for (let i = 0; i < strings.length; i++) {
         strings[i] = strings[i].trim();
-        if(strings[i].includes('ref:')){
+        if (strings[i].includes('ref:')) {
             refs += strings[i].match(/ref:(.*?)[,\]]/g) + strings[i].split(/ +/g)[0];
         }
     }
@@ -135,12 +152,12 @@ function updateWindow() {
 
 
 //Экспорт
-function exportDiagram(){
+function exportDiagram() {
     const select = document.getElementById("export");
     const selectedOption = select.options[select.selectedIndex].value;
 
     //Выбор функции экспорта
-    switch(selectedOption){
+    switch (selectedOption) {
         case "pdf":
             exportPdf();
             break
@@ -159,11 +176,12 @@ function exportDiagram(){
     }
     select.selectedIndex = 0;
 }
-function exportSvg(){
+
+function exportSvg() {
     const diagramName = document.getElementById('diagram_name');
     const diagram = document.getElementById('diagram');
     const svgContent = diagram.outerHTML; //Получение кода SVG элемента
-    const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+    const svgBlob = new Blob([svgContent], {type: 'image/svg+xml'});
     const svgURL = URL.createObjectURL(svgBlob);//Создание URL-адреса для объекта Blob
 
     const link = document.createElement('a');
@@ -173,7 +191,8 @@ function exportSvg(){
     link.click();
     URL.revokeObjectURL(svgURL); //Очистка созданного URL
 }
-function exportPng(){
+
+function exportPng() {
     const diagramName = document.getElementById('diagram_name');
     const diagram = document.getElementById('diagram');
     const canvas = document.createElement('canvas'); //Создание временного элемента canvas
@@ -181,7 +200,7 @@ function exportPng(){
     canvas.height = diagram.offsetHeight;
 
     // Преобразование SVG в изображение PNG
-    html2canvas(diagram, { canvas })
+    html2canvas(diagram, {canvas})
         .then(function (canvas) {
             const pngURL = canvas.toDataURL('image/png');//Получение URL-адреса изображения PNG
 
@@ -192,7 +211,8 @@ function exportPng(){
             link.click();
         });
 }
-function exportPdf(){
+
+function exportPdf() {
     const diagramName = document.getElementById('diagram_name');
     const diagram = document.getElementById('diagram');
     const canvas = document.createElement('canvas'); //Создание временного элемента canvas
@@ -200,7 +220,7 @@ function exportPdf(){
     canvas.height = diagram.offsetHeight;
 
     // Преобразование SVG в изображение PNG
-    html2canvas(diagram, { canvas })
+    html2canvas(diagram, {canvas})
         .then(function (canvas) {
             //Создание документа PDF
             const pdf = new jspdf.jsPDF();
@@ -216,6 +236,6 @@ function exportPdf(){
         });
 }
 
-function exportSql(type){
+function exportSql(type) {
     location.href += '/export?type=' + type;
 }

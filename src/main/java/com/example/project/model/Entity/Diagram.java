@@ -27,7 +27,7 @@ public class Diagram {
     private Long userId;
 
 
-    //Форматирование дат (используется при выводе на страницу)
+    //Форматирование дат (используется при выводе на страницу в th)
     public String getCreationDate() {
         String result = creationDate.toString();
         result = result.replace('T', ' ');

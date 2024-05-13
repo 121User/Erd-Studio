@@ -31,22 +31,22 @@
             const diagramCode = document.getElementById('diagram_code');
             const graphDefinition = getFormattedCodeForDiagram(diagramCode.value);
 
-            const { svg } = await mermaid.render('graphDiv', graphDefinition);
+            const {svg} = await mermaid.render('graphDiv', graphDefinition);
             diagram.innerHTML = svg;
         };
 
         let theme = 'default'
-        if(document.getElementById('checkbox_theme').checked){
+        if (document.getElementById('checkbox_theme').checked) {
             theme = 'dark';
         }
 
         document.getElementById('diagram').style.display = 'block';
         document.getElementById('error_text').style.display = 'none';
         try {
-            mermaid.initialize({ startOnLoad: true, theme: theme});
+            mermaid.initialize({startOnLoad: true, theme: theme});
             await drawDiagram();
-        } catch  (err) {
-            if(document.getElementById('diagram_code').value !== "") {
+        } catch (err) {
+            if (document.getElementById('diagram_code').value !== "") {
                 document.getElementById('diagram').style.display = 'none';
                 document.getElementById('error_text').style.display = 'block';
             } else {
@@ -61,9 +61,9 @@
 
 <body>
 <header class="header1">
-    <div class="div-horizontal1">
+    <div class="div-horizontal">
         <img src="/static/images/Icon_dark.png" th:src="@{/images/Icon_dark.png}"
-             onclick="location.href='/'"
+             onclick="location.href='/main'"
              alt="logo" style="width: 40px; margin-left: 15px"/>
         <!-- Название диаграммы -->
         <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы" required
@@ -91,7 +91,7 @@
             </label>
         </div>
         <!-- Переулючатель для выбора темы страницы -->
-        <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px;">
+        <div class="div-horizontal" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px;">
             <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme" style="width: 30px"/>
             <form action="" method="get" class="form" style="margin: 0 5px"
                   th:onclick="saveTheme()" onclick="saveTheme()">
@@ -108,7 +108,7 @@
         </div>
     </div>
     <!--Кнопка меню-->
-    <div>
+    <div th:if="${userEmail} != null">
         <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
             <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
                  style="padding: 10px; width: 25px; margin-right: 10px"/>
@@ -124,7 +124,7 @@
 
 <!--Код диаграммы-->
 <div id="sidebar" onclick="hideMenu()" th:onclick="hideMenu()">
-    <div class="div-horizontal1">
+    <div class="div-horizontal">
         <div style="flex-grow: 1;">
             <p class="text2" style="color: white; font-weight: bold; margin: 10px; text-align: left">Код диаграммы</p>
         </div>
@@ -133,7 +133,8 @@
         <label for="diagram_code" class="text2" style="color: white;"></label>
     </div>
     <div>
-        <textarea id="diagram_code" class="input-text" th:text="${diagramCode}" th:onblur="saveCode()"
+        <textarea id="diagram_code" class="input-text"
+                  th:text="${diagramCode}" th:onchange="saveCode()" onkeyup="saveCodeByKeyup(event)"
                   style="width: 287px; min-width: 287px; max-width: 1200px; min-height: 600px; background: #311F46;
                   color: white; font-size: 16px; margin: 0 5px; white-space: pre-wrap"></textarea>
     </div>
@@ -145,21 +146,21 @@
         <a th:text="${userEmail}"></a>
     </div>
     <div>
-        <a href="/user/account">
+        <a href="/account/">
             <img src="/static/images/User_icon.png" th:src="@{/images/User_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Учетная запись
         </a>
     </div>
     <div>
-        <a href="/user/diagram/list">
+        <a href="/diagram/list">
             <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Мои диаграммы
         </a>
     </div>
     <div>
-        <a href="/logout">
+        <a href="/account/logout">
             <img src="/static/images/Logout_icon.png" th:src="@{/images/Logout_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Выход
@@ -167,4 +168,61 @@
     </div>
 </div>
 </body>
+
+<style>
+    /*diagram working page*/
+
+    #sidebar, #content {
+        position: absolute;
+    }
+
+    #sidebar, #content {
+        overflow: auto;
+        padding: 10px;
+    }
+
+    .header1 {
+        height: 50px;
+        background: #311F46;
+    }
+
+    #sidebar {
+        width: max-content;
+        background: #482D65;
+        border-right: 1px solid #74217D;
+        padding-left: 10px;
+        top: 50px;
+        bottom: 0;
+    }
+
+    #content {
+        top: 50px;
+        left: 350px;
+        bottom: 0;
+        right: 0;
+        text-align: center;
+    }
+
+    #content pre {
+        width: 100%;
+        height: 90%
+    }
+
+    #diagram_name {
+        width: 300px;
+        horiz-align: left;
+        background-size: 20px;
+        font-size: 15px;
+        background: #482D65;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        margin: 0 15px;
+        padding: 8px;
+    }
+
+    #diagram_name::placeholder {
+        color: #B4B4B4;
+    }
+</style>
 </html>

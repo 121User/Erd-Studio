@@ -17,7 +17,7 @@ public class EmailService {
         message.setFrom("er.diagram.studio@gmail.com");
         message.setTo(toAddress);
         message.setSubject("Код подтверждения электронной почты");
-        message.setText("Добро пожаловать в Erd-Studio!\nВаш код для подтверждения Email: " + code);
+        message.setText("Добро пожаловать в ER-diagram Studio!\nВаш код для подтверждения Email: " + code);
         javaMailSender.send(message);
     }
 

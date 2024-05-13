@@ -13,14 +13,14 @@
 </head>
 
 <body>
-<header>
+<header style="width: 100%;">
     <div style="flex-grow: 1;">
         <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
-             onclick="location.href='/'"
+             onclick="location.href='/main'"
              alt="logo" class="logo-image"/>
     </div>
     <!--Кнопка меню-->
-    <div>
+    <div th:if="${userEmail} != null">
         <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
             <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
                  style="padding: 10px; width: 25px; margin-right: 10px"/>
@@ -31,7 +31,7 @@
 <div class="div-main" style="margin: 60px auto;" onclick="hideMenu()" th:onclick="hideMenu()">
     <h1 class="page_title">Мои диаграммы</h1>
 
-    <div class="div-horizontal1">
+    <div class="div-horizontal">
         <div style="flex-grow: 1;">
             <input id="searchInput" placeholder="Поиск" required type="text" aria-label="Search"
                    th:onblur="searchDiagram()" onkeyup="searchDiagramByKeyup(event)" th:value="${searchText}"
@@ -41,13 +41,13 @@
             />
         </div>
         <div>
-            <a href="/user/diagram/list/import" class="input-submit"
+            <a href="/diagram/list/import" class="input-submit"
                style="margin: 0 10px; width: auto; vertical-align: center">
                 <img src="/static/images/Upload_Icon.png" th:src="@{/images/Upload_Icon.png}" alt="upload"
                      style="width: 15px; margin: 0 5px"/>
                 Импорт
             </a>
-            <a href="/user/diagram/list/create" class="input-submit"
+            <a href="/diagram/list/create" class="input-submit"
                style="margin: 0; width: auto; vertical-align: center">
                 <img src="/static/images/Create_Icon.png" th:src="@{/images/Create_Icon.png}" alt="create"
                      style="width: 15px; margin: 0 5px;"/>
@@ -69,14 +69,14 @@
         <tr th:each="diagram: ${diagramList}">
             <td class="table_value">
                 <a style="font-size: 15px; margin: 0; text-decoration: none; color: #9702A7;"
-                   th:href="@{'/user/diagram/' + ${diagram.id}}" th:text="${diagram.name}">
+                   th:href="@{'/diagram/' + ${diagram.id}}" th:text="${diagram.name}">
                 </a>
             </td>
             <td class="table_value" th:text="${diagram.modifiedDate}"></td>
             <td class="table_value" th:text="${diagram.creationDate}"></td>
-            <td class="main_page_menu">
+            <td class="ref_menu">
                 <a style="color: red; font-size: 15px; margin: 0"
-                   th:href="@{'/user/diagram/list/delete/' + ${diagram.id}}">
+                   th:href="@{'/diagram/list/delete/' + ${diagram.id}}">
                     Удалить
                 </a>
             </td>
@@ -89,26 +89,27 @@
     </div>
 </div>
 
+<!--Меню-->
 <div id="menu_list" class="menu_list" style="top: 60px; background: #74217D;">
     <div style="border-bottom: 2px solid #311F46;">
-        <a th:text="${email}"></a>
+        <a th:text="${userEmail}"></a>
     </div>
     <div>
-        <a href="/user/account">
+        <a href="/account/">
             <img src="/static/images/User_icon.png" th:src="@{/images/User_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Учетная запись
         </a>
     </div>
     <div>
-        <a href="/user/diagram/list">
+        <a href="/diagram/list">
             <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Мои диаграммы
         </a>
     </div>
     <div>
-        <a href="/logout">
+        <a href="/account/logout">
             <img src="/static/images/Logout_icon.png" th:src="@{/images/Logout_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Выход

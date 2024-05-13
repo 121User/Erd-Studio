@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 public class ExportImportUtil {
 
     //Экспорт
-
     //Преобразование кода диаграммы для Ms Sql Server
     public static String convertToMsSqlServer(String code){
         String refs = getMsSqlServerRefs(code);
@@ -106,7 +105,7 @@ public class ExportImportUtil {
         return refs.toString();
     }
 
-    //Получение названия первичного ключа второй сущности
+    //Получение названия первичного ключа второй сущности для связи
     private static String getPkRef(String code, String entity){
         String[] strings = code.split("\n");
         for(int i = 0; i < strings.length; i++){
@@ -118,7 +117,6 @@ public class ExportImportUtil {
     }
 
     //Импорт
-
     //Получение кода диаграммы для иморта
     public static String getDiagramCodeForImport(String sqlCode){
         if(sqlCode.contains("[")){
@@ -130,7 +128,7 @@ public class ExportImportUtil {
         }
     }
 
-    //Получение кода диаграммы для Ms Sql Server
+    //Получение кода диаграммы из Ms Sql Server скрипта
     private static String getCodeFromMsSqlServer(String sqlCode){
         String result = sqlCode.replace("PRIMARY KEY", "PK")
                 .replaceAll("CREATE TABLE ", "").replace("NOT NULL", "not null")
@@ -164,7 +162,7 @@ public class ExportImportUtil {
         return result;
     }
 
-    //Получение кода диаграммы для PostgreSQL
+    //Получение кода диаграммы из PostgreSQL скрипта
     private static String getCodeFromPostgresql(String sqlCode){
         String result = sqlCode.replace("PRIMARY KEY", "PK")
                 .replaceAll("CREATE TABLE ", "").replace("NOT NULL", "not null")
