@@ -47,8 +47,8 @@ function searchDiagram() {
 }
 
 //Активация поиска при нажатии на Enter
-function searchDiagramByKeyup(e) {
-    if (e.keyCode === 13) {
+function searchDiagramByKeyup(event) {
+    if (event.keyCode === 13) {
         searchDiagram();
     }
 }
@@ -104,13 +104,37 @@ function saveCode() {
     location.href += '/save?diagramCode=' + diagramCode;
 }
 
-//Активация поиска при нажатии на Enter
-function saveCodeByKeyup(e) {
-    if (e.keyCode === 13) {
+//Активация сохранения при нажатии на Enter
+function saveCodeByKeyup(event) {
+    if (event.keyCode === 13) {
         saveCode();
     }
 }
 
+//Изменение размеров диаграммы при движении колеса мыши
+function resizeDiagramByMouseWheel(event) {
+    const diagram = document.getElementById('diagram');
+
+    //Поддержка разных браузеров для определения направления прокрутки
+    var delta = 0;
+    if (event.deltaY) {
+        delta = event.deltaY;
+    } else if (event.wheelDelta) {
+        delta = event.wheelDelta;
+    } else if (event.detail) {
+        delta = -event.detail;
+    }
+
+    if (delta < 0) {
+        diagram.style.width = parseInt(diagram.style.width) + 10 + 'px';
+        diagram.style.height = parseInt(diagram.style.height) + 10 + 'px';
+    } else if (delta > 0){
+        diagram.style.width = parseInt(diagram.style.width) - 10 + 'px';
+        diagram.style.height = parseInt(diagram.style.height) - 10 + 'px';
+    }
+}
+
+//Обработка кода диаграммы
 function getFormattedCodeForDB(code) {
     let strings = code.split(/\n/g);
     for (let i = 0; i < strings.length; i++) {
@@ -182,57 +206,61 @@ function exportSvg() {
     const diagram = document.getElementById('diagram');
     const svgContent = diagram.outerHTML; //Получение кода SVG элемента
     const svgBlob = new Blob([svgContent], {type: 'image/svg+xml'});
-    const svgURL = URL.createObjectURL(svgBlob);//Создание URL-адреса для объекта Blob
+    const svgURL = URL.createObjectURL(svgBlob);//Создание URL-адреса
 
-    const link = document.createElement('a');
+    const link = document.createElement('a'); //Ссылка для отправки файла
     link.href = svgURL;
-    link.download = diagramName.value + '.svg'; //Имя файла
-
+    link.download = diagramName.value + '.svg'; //Отправка файла
     link.click();
     URL.revokeObjectURL(svgURL); //Очистка созданного URL
 }
 
 function exportPng() {
-    const diagramName = document.getElementById('diagram_name');
-    const diagram = document.getElementById('diagram');
-    const canvas = document.createElement('canvas'); //Создание временного элемента canvas
-    canvas.width = diagram.offsetWidth;
-    canvas.height = diagram.offsetHeight;
+    const preElement = document.querySelector('.mermaid')
+    //Создание временной копии и удаление лишних границ
+    const clonedElement = preElement.cloneNode(true);
+    document.body.appendChild(clonedElement);
+    clonedElement.style.margin = 0;
+    clonedElement.style.width = 'max-content';
 
-    // Преобразование SVG в изображение PNG
-    html2canvas(diagram, {canvas})
-        .then(function (canvas) {
-            const pngURL = canvas.toDataURL('image/png');//Получение URL-адреса изображения PNG
-
-            const link = document.createElement('a');
-            link.href = pngURL;
-            link.download = diagramName.value + '.png'; //Имя файла
-
-            link.click();
+    domtoimage.toPng(clonedElement, {})
+        .then(function (dataUrl) {
+            const diagramName = document.getElementById('diagram_name');
+            window.saveAs(dataUrl, diagramName.value + '.png'); //Отправка файла
+        })
+        .catch(function (error) {
+            console.error('Произошла ошибка:', error);
+        })
+        .finally(function () {
+            document.body.removeChild(clonedElement); //Удаление копии
         });
 }
 
 function exportPdf() {
-    const diagramName = document.getElementById('diagram_name');
-    const diagram = document.getElementById('diagram');
-    const canvas = document.createElement('canvas'); //Создание временного элемента canvas
-    canvas.width = diagram.offsetWidth;
-    canvas.height = diagram.offsetHeight;
+    const preElement = document.querySelector('.mermaid')
+    //Создание временной копии и удаление лишних границ
+    const clonedElement = preElement.cloneNode(true);
+    document.body.appendChild(clonedElement);
+    clonedElement.style.margin = 0;
+    clonedElement.style.width = 'max-content';
 
-    // Преобразование SVG в изображение PNG
-    html2canvas(diagram, {canvas})
-        .then(function (canvas) {
+    domtoimage.toPng(clonedElement, {})
+        .then(function (dataUrl) {
+            const diagramName = document.getElementById('diagram_name');
             //Создание документа PDF
             const pdf = new jspdf.jsPDF();
-            pdf.addImage(canvas, 'PNG', -100, 0);
-            const pdfBlob = pdf.output('blob');
-            const pdfURL = URL.createObjectURL(pdfBlob);
-
-            const link = document.createElement('a');
-            link.href = pdfURL;
-            link.download = diagramName.value + '.pdf'; //Имя файла
-            link.click();
-            URL.revokeObjectURL(pdfURL);
+            const pageSize = pdf.internal.pageSize; // Получение размера страницы
+            //Размеры и положение изображения на листе
+            pageSize.setWidth(clonedElement.offsetWidth);
+            pageSize.setHeight(clonedElement.offsetHeight);
+            pdf.addImage(dataUrl, 'PNG', 0, 0, clonedElement.offsetWidth, clonedElement.offsetHeight);
+            pdf.save(diagramName.value + '.pdf'); //Отправка файла
+        })
+        .catch(function (error) {
+            console.error('Произошла ошибка:', error);
+        })
+        .finally(function () {
+            document.body.removeChild(clonedElement); //Удаление копии
         });
 }
 

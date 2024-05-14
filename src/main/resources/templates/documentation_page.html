@@ -10,71 +10,10 @@
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <script type="text/javascript" src="/static/js/script.js" th:src="@{/js/script.js}"></script>
     <title>Документация</title>
-
-    <style>
-        /*documentation style*/
-        #sidebar, #content {
-            position: absolute;
-        }
-
-        #sidebar, #content {
-            overflow: auto;
-            padding: 10px;
-        }
-
-        #sidebar {
-            width: 250px;
-            background: #482D65;
-            border-right: 1px solid #311F46;
-            padding-left: 10px;
-            top: 82px;
-            bottom: 0;
-        }
-
-        #sidebar a {
-            font-family: 'PT Sans', serif;
-            font-size: 15px;
-            font-weight: normal;
-            text-decoration: none;
-            text-align: center;
-            vertical-align: center;
-            color: white;
-            margin: 10px;
-            word-wrap: break-word
-        }
-
-        #content {
-            top: 82px;
-            left: 380px;
-            padding-right: 120px;
-            bottom: 0;
-            text-align: left;
-        }
-
-        #content h1, h2, p, ul, ol {
-            font-family: 'PT Sans', serif;
-            font-size: 30px;
-            color: #311F46;
-        }
-
-        #content p, ul, ol {
-            font-size: 18px;
-            text-align: justify;
-        }
-
-        #content li {
-            margin: 5px;
-        }
-
-        #content mark {
-            background: rgba(49, 31, 70, 0.16);
-            white-space: pre-wrap;
-        }
-    </style>
-
 </head>
+
 <body>
-<header style="border-bottom: 1px solid #311F46;">
+<header style="border-bottom: 1px solid #311F46; min-width: 1000px;" >
     <div style="flex-grow: 1;">
         <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
              onclick="location.href='/main'"
@@ -235,4 +174,76 @@ NAMED-DRIVER {
     </div>
 </div>
 </body>
+
+<style>
+    /*documentation style*/
+    #sidebar, #content {
+        position: absolute;
+    }
+
+    #sidebar, #content {
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    #sidebar {
+        width: 250px;
+        background: #482D65;
+        border-right: 1px solid #311F46;
+        padding-left: 10px;
+        top: 82px;
+        bottom: 0;
+    }
+
+    #sidebar a {
+        font-family: 'PT Sans', serif;
+        font-size: 15px;
+        font-weight: normal;
+        text-decoration: none;
+        text-align: center;
+        vertical-align: center;
+        color: white;
+        margin: 10px;
+        word-wrap: break-word
+    }
+
+    #content {
+        top: 85px;
+        left: 380px;
+        padding-right: 130px;
+        bottom: 0;
+        text-align: left;
+    }
+
+    #content h1, h2, p, ul, ol {
+        font-family: 'PT Sans', serif;
+        font-size: 30px;
+        color: #311F46;
+    }
+
+    #content p, ul, ol {
+        font-size: 18px;
+        text-align: justify;
+    }
+
+    #content li {
+        margin: 5px;
+    }
+
+    #content mark {
+        background: rgba(49, 31, 70, 0.16);
+        white-space: pre-wrap;
+    }
+
+    /* Медиа-запрос для скрытия sidebar при малом размере экрана */
+    @media screen and (max-width: 1000px) {
+        #sidebar {
+            display: none; /*Скрытие sidebar*/
+        }
+        #content {
+            height: max-content;
+            left: 130px; /*Перемещение content при скрытом sidebar*/
+        }
+    }
+</style>
 </html>

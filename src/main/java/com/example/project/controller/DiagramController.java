@@ -178,6 +178,29 @@ public class DiagramController {
         }
     }
 
+//    @RequestMapping("/test/{diagramId}")
+//    public ModelAndView viewDiagramWorkingPage1(@PathVariable(name = "diagramId") Long diagramId,
+//                                        HttpServletRequest request) {
+//        SessionUtil.setAttrToSession(request, "userId", 30);
+//        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+//        Optional<User> userOpt = userService.getById(userId);
+//        //Проверка существования пользователя в системе
+//        if (userOpt.isPresent()) {
+//            User user = userOpt.get();
+//            Diagram diagram = diagramService.getByID(diagramId);
+//
+//            boolean theme = user.getDesignTheme().getName().equals("dark");
+//            ModelAndView modelAndView = new ModelAndView("diagram_working_page");
+//            modelAndView.addObject("userEmail", user.getEmail());
+//            modelAndView.addObject("diagramName", diagram.getName());
+//            modelAndView.addObject("diagramCode", diagram.getCode());
+//            modelAndView.addObject("designTheme", theme);
+//            return modelAndView;
+//        } else {
+//            return new ModelAndView("redirect:/main");
+//        }
+//    }
+
     @RequestMapping("/{diagramId}/save")
     public ModelAndView saveChanges(@PathVariable(name = "diagramId") Long diagramId,
                                     @RequestParam(name = "designTheme", required = false) String designTheme,
@@ -206,13 +229,12 @@ public class DiagramController {
         response.setContentType("text/plain; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         Diagram diagram = diagramService.getByID(diagramId);
-        String headerKey = "Content-Disposition";
 
         String encodedFileName = URLEncoder.encode(diagram.getName() + ".sql", StandardCharsets.UTF_8.toString());
+        String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=" + encodedFileName;
         response.setHeader(headerKey, headerValue);
 
-        ServletOutputStream outputStream = response.getOutputStream();
         String text = "";
         if (type.equals("mssql")) {
             text = ExportImportUtil.convertToMsSqlServer(diagram.getCode());
@@ -220,6 +242,7 @@ public class DiagramController {
             text = ExportImportUtil.convertToPostgresql(diagram.getCode());
         }
 
+        ServletOutputStream outputStream = response.getOutputStream();
         outputStream.write(text.getBytes(StandardCharsets.UTF_8));
         outputStream.close();
         return new ModelAndView("redirect:/diagram/" + diagramId);

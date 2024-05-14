@@ -47,9 +47,9 @@ public class StartController {
         ModelAndView modelAndView;
         //TODO Исправить начать
         if(SessionUtil.checkUserAuthorization(request)){
-            modelAndView = new ModelAndView("redirect:/diagram/0");
-        } else {
             modelAndView = new ModelAndView("redirect:/diagram/list");
+        } else {
+            modelAndView = new ModelAndView("redirect:/diagram/0");
         }
         return modelAndView;
     }

@@ -218,26 +218,13 @@ input[type=file]::file-selector-button {
 
 /*Выпадающий список для выбора формата экспорта*/
 select {
-    width: 80px;
+    width: 85px;
     height: 30px;
     background: #482D65;
     color: white;
     border: none;
     border-radius: 5px;
     padding: 5px;
-}
-
-.div-horizontal2 {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-end;
-    align-items: center;
-    width: 120px;
-    height: 30px;
-    background: #482D65;
-    border-radius: 5px;
-    margin-right: 15px;
-    padding: 0 5px;
 }
 
 /* Переключатель темы страницы*/
