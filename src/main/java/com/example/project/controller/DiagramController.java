@@ -182,9 +182,9 @@ public class DiagramController {
 
     @RequestMapping( "/{diagramId}/save")
     public ModelAndView saveChanges(@PathVariable(name = "diagramId") Long diagramId,
-                                    @RequestParam(name = "designTheme", required = false) String designTheme,
-                                    @RequestParam(name = "diagramName", required = false) String diagramName,
-                                    @RequestParam(name = "diagramCode", required = false) String diagramCode,
+                                    @RequestParam(name = "designTheme") String designTheme,
+                                    @RequestParam(name = "diagramName") String diagramName,
+                                    @RequestParam(name = "diagramCode") String diagramCode,
                                     HttpServletRequest request) {
         Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);

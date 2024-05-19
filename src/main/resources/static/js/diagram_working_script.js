@@ -1,14 +1,13 @@
 //Редактор кода
-import { createCodeMirror } from "/js/codemirror_script.js"
+import {createCodeMirror} from "/js/codemirror_script.js"
 //Создание диаграммы
-import { drawDiagram } from "/js/create_diagram_script.js"
+import {drawDiagram} from "/js/create_diagram_script.js"
 
 // //Для отладки без запуска приложения
 // //Редактор кода
 // import { createCodeMirror } from "/static/js/codemirror_script.js"
 // //Создание диаграммы
 // import { drawDiagram } from "/static/js/create_diagram_script.js"
-
 
 
 //Обработчики событий
@@ -27,7 +26,7 @@ window.onload = async function () {
 window.onbeforeunload = function (e) {
     //Проверка несохранения
     const saveButton = document.getElementById('save-button');
-    if(saveButton.style.background === 'rgb(151, 2, 167)'){
+    if (saveButton.style.background === 'rgb(151, 2, 167)') {
         //Вывод сообщения о несохранении изменений
         const confirmationMessage = 'Вы уверены, что хотите покинуть страницу?'; //Сообщение (необходимо для некоторых браузеров)
         e.returnValue = confirmationMessage;
@@ -37,44 +36,40 @@ window.onbeforeunload = function (e) {
 
 //Отслеживание нажатия клавиш Ctrl+S и сохранение кода описания диаграммы
 document.onkeydown = function (e) {
-    saveCodeByKeyup(e);
+    saveChangesByKey(e);
 }
 
 
-
 //Обновление диаграммы
-function updateDiagram(){
+function updateDiagram() {
     window.addEventListener('resize', drawDiagram); //Отслеживание изменения размеров страницы
     // Отслеживание изменения кода описания диаграммы
     const editor = window.myGlobalObject.editorObj;
     editor.on("change", async function () {
         await drawDiagram();
-        //Изменение статуса сохранения
-        const saveStatusIcon = document.getElementById('save-status-icon');
-        const saveButton = document.getElementById('save-button');
-        saveStatusIcon.src = '/images/Save_required.png';
-        saveButton.style.background = '#9702A7';
+        changeSaveStatus();
     });
     // Отслеживание изменения темы
     const switchTheme = document.getElementById('switch_theme');
     switchTheme.onclick = async function () {
-        await saveTheme();
+        await changeTheme();
+        changeSaveStatus();
     }
     // Отслеживание изменения названия
     const diagramName = document.getElementById('diagram_name');
-    diagramName.onblur = function () {
-        saveName();
+    diagramName.onchange = function () {
+        changeSaveStatus();
     }
     diagramName.onkeyup = function () {
         //Активация сохранения при нажатии на Enter
         if (event.keyCode === 13) {
-            saveName();
+            diagramName.blur();
         }
     }
     // Отслеживание нажатие кнопкки сохранить
     const saveButton = document.getElementById('save-button');
     saveButton.onclick = function () {
-        saveCode();
+        saveChanges();
     }
     // Отслеживание изменения названия
     const exportSelector = document.getElementById('export_selector');
@@ -84,19 +79,12 @@ function updateDiagram(){
 }
 
 
-
-//Сохранение темы страницы
-async function saveTheme() {
-    if(checkUserAuthorization()) {
-        let checkbox = document.getElementById('checkbox_theme');
-        let designTheme = "light";
-        if (checkbox.checked) {
-            designTheme = "dark";
-        }
-        window.onbeforeunload = null;
-        location.href += '/save?designTheme=' + designTheme;
-    }
-    await changeTheme();
+//Изменение статуса сохранения
+function changeSaveStatus(){
+    const saveStatusIcon = document.getElementById('save-status-icon');
+    const saveButton = document.getElementById('save-button');
+    saveStatusIcon.src = '/images/Save_required.png';
+    saveButton.style.background = '#9702A7';
 }
 
 //Изменение темы страницы
@@ -116,34 +104,19 @@ async function changeTheme() {
     await drawDiagram();
 }
 
-//Сохранение названия диаграммы
-function saveName() {
-    if(checkUserAuthorization()) {
-        let diagramName = document.getElementById('diagram_name').value;
-        if(diagramName !== ''){
-            window.onbeforeunload = null;
-            location.href += '/save?diagramName=' + diagramName;
-        } else {
-            window.location.reload(); // Перезагрузка страницы
-        }
-    }
-}
-
-//Сохранение кода диаграммы (используется th)
-function saveCode() {
-    if(checkUserAuthorization()) {
+//Сохранение изменений
+function saveChanges() {
+    if (checkUserAuthorization()) {
+        const designTheme = getDesignThemeForSave();
+        const diagramName = document.getElementById('diagram_name').value;
+        const diagramCode = getCodeForSave();
         //Проверка несохранения
         const saveButton = document.getElementById('save-button');
         if (saveButton.style.background === 'rgb(151, 2, 167)') {
-            //Получение кода диаграммы и обработка запрещенных в url символов
-            const editor = window.myGlobalObject.editorObj;
-            let diagramCode = editor.doc.getValue();
-            diagramCode = getFormattedCodeForDB(diagramCode)
-            diagramCode = diagramCode.replace(/\n/g, '*n').replace(/\\/g, "").replace(/\//g, "").replace(/\{/g, "*'")
-                .replace(/}/g, "'*").replace(/\[/g, "*,").replace(/]/g, ",*");
 
             window.onbeforeunload = null;
-            location.href += '/save?diagramCode=' + diagramCode;
+            location.href += '/save?designTheme='
+                + designTheme + '&diagramName=' + diagramName + '&diagramCode=' + diagramCode;
         }
     } else {
         messageOutput('error', 'Невозможно сохранить изменения без авторизации')
@@ -151,11 +124,31 @@ function saveCode() {
 }
 
 //Активация сохранения при нажатии клавиш Ctrl+S
-function saveCodeByKeyup(event) {
+function saveChangesByKey(event) {
     if (event.ctrlKey && event.keyCode === 83) { // 83 - код клавиши "S"
-        saveCode();
+        saveChanges();
         event.preventDefault(); //Предотвращение стандартного действия браузера при нажатии Ctrl + S
     }
+}
+
+//Получение кода диаграммы и обработка запрещенных в url символов
+function getCodeForSave() {
+    const editor = window.myGlobalObject.editorObj;
+    let diagramCode = editor.doc.getValue();
+    diagramCode = getFormattedCodeForDB(diagramCode)
+    diagramCode = diagramCode.replace(/\n/g, '*n').replace(/\\/g, "").replace(/\//g, "").replace(/\{/g, "*'")
+        .replace(/}/g, "'*").replace(/\[/g, "*,").replace(/]/g, ",*");
+    return diagramCode;
+}
+
+//Получение темы дизайна
+function getDesignThemeForSave() {
+    let checkbox = document.getElementById('checkbox_theme');
+    let designTheme = "light";
+    if (checkbox.checked) {
+        designTheme = "dark";
+    }
+    return designTheme;
 }
 
 
@@ -218,7 +211,7 @@ function exportPng() {
         .catch(function (error) {
             console.error('Произошла ошибка:', error);
         })
-        .finally(function (){
+        .finally(function () {
             svgElement.appendChild(svgPanZoomControls); //Возврат элементов управления масштабом
         });
 }
@@ -247,7 +240,7 @@ function exportPdf() {
         .catch(function (error) {
             console.error('Произошла ошибка:', error);
         })
-        .finally(function (){
+        .finally(function () {
             svgElement.appendChild(svgPanZoomControls); //Возврат элементов управления масштабом
         });
 }
