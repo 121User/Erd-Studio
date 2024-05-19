@@ -6,9 +6,12 @@
 <head>
     <meta charset="utf-8"/>
     <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
-    <link rel="stylesheet" type="text/css" media="all"
-          href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
-    <script type="text/javascript" src="/static/js/script.js" th:src="@{/js/script.js}"></script>
+
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/documentation_style.css"
+          data-th-href="@{/css/documentation_style.css}"/>
+
+    <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
     <title>Документация</title>
 </head>
 
@@ -127,7 +130,27 @@ PERSON {
 NAMED-DRIVER {
         carRegistrationNumber string [PK, ref: NAMED-DRIVER < CAR, not null]
         driverLicence string [PK, ref: NAMED-DRIVER < PERSON, not null]
+}
+
+table1 {
+  t1_field1 bigserial [PK, not null]
+  t1_field2 bigint
+  t1_field3 varchar(250) [not null]
+  t1_field4 bigint
+}
+table2 {
+  t2_field1 bigserial [PK, not null]
+  t2_field2 bigint
+  t2_field3 timestamp
+  t2_field4 bigint
+  t2_field5 varchar(10)
+}
+table3 {
+  t1_field1 bigint [PK, ref: table3 < table1]
+  t2_field1 bigint [PK, ref: table3 < table2]
 }</p>
+    <p>В коде описана реализация связи "многие ко многим" между таблицами table1 и table2
+        при помощи вспомогательной таблицы table3.</p>
     <h2 id="Import">Импорт диаграммы</h2>
     <p>ER-diagram Studio предоставляет возможность создать диаграмму путем загрузки
         файла со скриптом восстановления базы данных. Для импорта доступны скрипты
@@ -147,7 +170,7 @@ NAMED-DRIVER {
 </div>
 
 <!--Меню-->
-<div id="menu_list" class="menu_list" style="top: 60px; background: #74217D">
+<div id="menu_list" class="menu_list" style="top: 85px; right: 15px; background: #74217D">
     <div style="border-bottom: 2px solid #311F46;">
         <a th:text="${userEmail}"></a>
     </div>
@@ -174,76 +197,4 @@ NAMED-DRIVER {
     </div>
 </div>
 </body>
-
-<style>
-    /*documentation style*/
-    #sidebar, #content {
-        position: absolute;
-    }
-
-    #sidebar, #content {
-        overflow-x: auto;
-        padding: 10px;
-    }
-
-    #sidebar {
-        width: 250px;
-        background: #482D65;
-        border-right: 1px solid #311F46;
-        padding-left: 10px;
-        top: 82px;
-        bottom: 0;
-    }
-
-    #sidebar a {
-        font-family: 'PT Sans', serif;
-        font-size: 15px;
-        font-weight: normal;
-        text-decoration: none;
-        text-align: center;
-        vertical-align: center;
-        color: white;
-        margin: 10px;
-        word-wrap: break-word
-    }
-
-    #content {
-        top: 85px;
-        left: 380px;
-        padding-right: 130px;
-        bottom: 0;
-        text-align: left;
-    }
-
-    #content h1, h2, p, ul, ol {
-        font-family: 'PT Sans', serif;
-        font-size: 30px;
-        color: #311F46;
-    }
-
-    #content p, ul, ol {
-        font-size: 18px;
-        text-align: justify;
-    }
-
-    #content li {
-        margin: 5px;
-    }
-
-    #content mark {
-        background: rgba(49, 31, 70, 0.16);
-        white-space: pre-wrap;
-    }
-
-    /* Медиа-запрос для скрытия sidebar при малом размере экрана */
-    @media screen and (max-width: 1000px) {
-        #sidebar {
-            display: none; /*Скрытие sidebar*/
-        }
-        #content {
-            height: max-content;
-            left: 130px; /*Перемещение content при скрытом sidebar*/
-        }
-    }
-</style>
 </html>

@@ -41,7 +41,7 @@ public class ExportImportUtil {
         return result + refs;
     }
 
-    //Получение строк создания связей для PostgreSQL
+    //Получение строк создания связей для Ms Sql Server
     private static String getMsSqlServerRefs(String code) {
         StringBuilder refs = new StringBuilder();
         String[] strings = code.split("\n");

@@ -2,24 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       lang="ru">
-
 <head>
     <meta charset="utf-8"/>
+    <title th:text="${diagramName}"></title>
     <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
-    <link rel="stylesheet" type="text/css" media="all"
-          href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/diagram_working_style.css"
+          data-th-href="@{/css/diagram_working_style.css}"/>
+        <!--Стили для редактора кода-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/codemirror_style.css"
+          data-th-href="@{/css/codemirror_style.css}"/>
+
 
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
-    <script type="text/javascript">
-        window.onload = function () {
-            updateWindow();
-            document.getElementById('menu_button').click();
-        }
-    </script>
+
     <!--Экспорт диаграммы-->
-<!--    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>-->
-
-
     <!--Библиотека для конвертации в png-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <!--Библиотека для конвертации в pdf-->
@@ -27,42 +26,21 @@
     <!--Библиотека для сохранение файла-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
+    <!--Библиотека для масштабирование диаграммы-->
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+
+    <!--Редактор кода-->
+<!--    <script type="module" th:src="@{/js/codemirror_script.js}"></script>-->
+<!--    <script type="module" src="/static/js/codemirror_script.js"></script>-->
+    <script type="module" th:src="@{/js/codemirror_script.js}" src="/static/js/codemirror_script.js"></script>
     <!--Создание диаграммы-->
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-
-        const drawDiagram = async function () {
-            const diagram = document.getElementById('diagram');
-            const diagramCode = document.getElementById('diagram_code');
-            const graphDefinition = getFormattedCodeForDiagram(diagramCode.value);
-
-            const {svg} = await mermaid.render('graphDiv', graphDefinition);
-            diagram.innerHTML = svg;
-        };
-
-        let theme = 'default'
-        if (document.getElementById('checkbox_theme').checked) {
-            theme = 'dark';
-        }
-
-        document.getElementById('diagram').style.display = 'block';
-        document.getElementById('error_text').style.display = 'none';
-        try {
-            mermaid.initialize({startOnLoad: true, theme: theme});
-            // mermaid.useMaxWigth = true;
-            await drawDiagram();
-        } catch (err) {
-            if (document.getElementById('diagram_code').value !== "") {
-                document.getElementById('diagram').style.display = 'none';
-                document.getElementById('error_text').style.display = 'block';
-            } else {
-                document.getElementById('diagram').style.display = 'none';
-                document.getElementById('error_text').style.display = 'none';
-            }
-        }
-    </script>
-
-    <title th:text="${diagramName}"></title>
+<!--    <script type="module" th:src="@{/js/create_diagram_script.js}"></script>-->
+<!--    <script type="module" src="/static/js/create_diagram_script.js"></script>-->
+    <script type="module" th:src="@{/js/create_diagram_script.js}" src="/static/js/create_diagram_script.js"></script>
+    <!--Обработчики событий-->
+<!--    <script type="module" th:src="@{/js/diagram_working_script.js}"></script>-->
+<!--    <script type="module" src="/static/js/diagram_working_script.js"></script>-->
+    <script type="module" th:src="@{/js/diagram_working_script.js}" src="/static/js/diagram_working_script.js"></script>
 </head>
 
 <body>
@@ -72,16 +50,14 @@
              onclick="location.href='/main'"
              alt="logo" style="width: 40px; margin-left: 15px"/>
         <!-- Название диаграммы -->
-        <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы" required
-               type="text" aria-label="Search" maxlength="100"
-               th:value="${diagramName}" th:onblur="saveName()"
-        />
+        <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы"
+               type="text" aria-label="Search" maxlength="100" th:value="${diagramName}"/>
         <!--Выпадающий список для выбора формата экспорта -->
         <div id="export_list" class="div-horizontal1">
             <img src="/static/images/Download_icon.png" th:src="@{/images/Download_icon.png}" alt="download"
                  style="width: 20px; margin-right: 10px"/>
             <label>
-                <select id="export" onchange="exportDiagram()"
+                <select id="export_selector" onchange="exportDiagram()"
                         style="horiz-align: center">
                     <option value="default" hidden disabled selected>Экспорт</option>
                     <optgroup label="Как изображение">
@@ -96,11 +72,10 @@
                 </select>
             </label>
         </div>
-        <!-- Переулючатель для выбора темы страницы -->
+        <!-- Переключатель для выбора темы страницы -->
         <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px;">
             <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme" style="width: 30px"/>
-            <form action="" method="get" class="form" style="margin: 0 5px"
-                  th:onclick="saveTheme()" onclick="saveTheme()">
+            <form id="switch_theme" action="" method="get" class="form" style="margin: 0 5px">
                 <label class="switch">
                     <input id="checkbox_theme" type="checkbox" th:checked="${designTheme}">
                     <span class="slider round"></span>
@@ -108,7 +83,7 @@
             </form>
         </div>
         <!--Ссылка на документацию-->
-        <div class="div-horizontal1" >
+        <div class="div-horizontal1">
             <a href="/documentation" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 10px; padding: 5px 20px;
         vertical-align: middle; font-size: 15px">Документация</a>
         </div>
@@ -123,11 +98,9 @@
 </header>
 
 <!--Диаграмма-->
-<div id="content" onclick="hideMenu()" th:onclick="hideMenu()" th:onmousewheel="resizeDiagramByMouseWheel()">
-    <div style="width: 100%; height: 100%; overflow: auto; text-align: center">
-        <pre id="diagram" class="mermaid"></pre>
-        <a id="error_text" class="error-text" style="font-size: 30px; display: none;">Ошибка в коде</a>
-    </div>
+<div id="content" onclick="hideMenu()" th:onclick="hideMenu()">
+    <pre id="diagram" class="mermaid"></pre>
+    <a id="error_text" class="error-text" style="font-size: 30px; display: none;">Ошибка в коде</a>
 </div>
 
 <!--Код диаграммы-->
@@ -136,20 +109,33 @@
         <div style="flex-grow: 1;">
             <p class="text2" style="color: white; font-weight: bold; margin: 10px; text-align: left">Код диаграммы</p>
         </div>
+        <div>
+            <img id="save-status-icon" src="/static/images/Save_success.png" th:src="@{/images/Save_success.png}" alt="save-status"
+                 style="width: 18px; color: white;"/>
+            <a id="save-button" class="input-submit" onclick="saveCode()" th:onclick="saveCode()"
+               style="padding: 5px; margin-left: 5px; margin-right: 10px; cursor: pointer; background: #757575;">
+                Сохранить
+            </a>
+        </div>
     </div>
     <div style="horiz-align: center">
         <label for="diagram_code" class="text2" style="color: white;"></label>
     </div>
     <div>
-        <textarea id="diagram_code" class="input-text"
-                  th:text="${diagramCode}" th:onchange="saveCode()" onkeyup="saveCodeByKeyup(event)"></textarea>
+        <textarea id="diagram_code" class="input-text" th:text="${diagramCode}"></textarea>
+        <div id="editor"></div>
     </div>
+</div>
+
+<!--Сообщение-->
+<div id="message_box" style="top: 50px; right: 5px; position: absolute; padding: 5px 0">
+    <a class="message"></a>
 </div>
 
 <!--Меню-->
 <div id="menu_list" class="menu_list">
     <div style="border-bottom: 2px solid #74217D;">
-        <a th:text="${userEmail}"></a>
+        <a id="user-name" th:text="${userEmail}"></a>
     </div>
     <div>
         <a href="/account/">
@@ -174,118 +160,4 @@
     </div>
 </div>
 </body>
-
-<style>
-    .header1 {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        background: #311F46;
-        height: 50px;
-        display: flex;
-        align-items: center;
-    }
-
-    #diagram_name {
-        width: 300px;
-        horiz-align: left;
-        background-size: 20px;
-        font-size: 15px;
-        background: #482D65;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        margin: 0 15px;
-        padding: 8px;
-    }
-
-    #diagram_name::placeholder {
-        color: #B4B4B4;
-    }
-
-    #export_list {
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: flex-end;
-        align-items: center;
-        width: 120px;
-        height: 30px;
-        background: #482D65;
-        border-radius: 5px;
-        margin-right: 15px;
-        padding: 0 5px;
-    }
-
-    .div-horizontal1 {
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: flex-end;
-        align-items: center;
-    }
-
-    #sidebar, #content {
-        position: fixed;
-        display: flex;
-        flex-direction: column;
-        margin-top: 50px;
-    }
-
-    #sidebar {
-        height: calc(100% - 70px);
-        padding: 10px;
-        background: #482D65;
-        border-right: 1px solid #74217D;
-    }
-
-    #sidebar textarea {
-        width: 287px;
-        min-width: 287px;
-        max-width: 1200px;
-        min-height: calc(100vh - 150px);
-        background: #311F46;
-        color: white;
-        font-size: 16px;
-        margin: 0 5px 10px;
-        white-space: pre-wrap;
-    }
-
-    #content {
-        height: calc(100% - 50px);
-        width: calc(100% - 350px);
-        margin-left: 350px;
-    }
-
-    #content pre {
-        width: max-content;
-        height: max-content;
-        text-align: center;
-        margin: 0 auto;
-        /*overflow: hidden;*/
-    }
-
-    /*Медиа-запрос для скрытия sidebar при малом размере экрана*/
-    @media screen and (max-width: 1000px) {
-        /*Скрытие sidebar*/
-        #sidebar {
-            display: none;
-            padding: 0;
-        }
-        /*Перемещение content при скрытом sidebar*/
-        #content {
-            margin-left: 0;
-            width: 100%;
-        }
-    }
-
-    /*Медиа-запрос для скрытия кнопок верзней панели при малом размере экрана*/
-    @media screen and (max-width: 800px) {
-        #export_list {
-            display: none;
-        }
-
-        .div-horizontal1 {
-            display: none;
-        }
-    }
-</style>
 </html>

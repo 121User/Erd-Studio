@@ -1,0 +1,111 @@
+.header1 {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #311F46;
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+#diagram_name {
+    width: 300px;
+    horiz-align: left;
+    background-size: 20px;
+    font-size: 15px;
+    background: #482D65;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 0 15px;
+    padding: 8px;
+}
+
+#diagram_name::placeholder {
+    color: #B4B4B4;
+}
+
+#export_list {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    width: 120px;
+    height: 30px;
+    background: #482D65;
+    border-radius: 5px;
+    margin-right: 15px;
+    padding: 0 5px;
+}
+
+.div-horizontal1 {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#sidebar, #content {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    top: 0;
+}
+
+#sidebar {
+    height: calc(100% - 70px);
+    padding: 10px;
+    background: #482D65;
+    border-right: 1px solid #74217D;
+}
+
+#sidebar textarea {
+    width: 287px;
+    min-width: 287px;
+    /*max-width: 1200px;*/
+    min-height: calc(100vh - 150px);
+    background: #311F46;
+    color: white;
+    font-size: 16px;
+    margin: 0 5px 10px;
+    white-space: pre-wrap;
+}
+
+#content {
+    height: calc(100% - 50px);
+    width: calc(100% - 387px);
+    margin-left: 387px;
+}
+
+#content pre {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+/*Медиа-запрос для скрытия sidebar при малом размере экрана*/
+@media screen and (max-width: 950px) {
+    /*Скрытие sidebar*/
+    #sidebar {
+        display: none;
+        padding: 0;
+    }
+
+    /*Перемещение content при скрытом sidebar*/
+    #content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/*Медиа-запрос для скрытия кнопок верхней панели при малом размере экрана*/
+@media screen and (max-width: 800px) {
+    #export_list {
+        display: none;
+    }
+
+    .div-horizontal1 {
+        display: none;
+    }
+}

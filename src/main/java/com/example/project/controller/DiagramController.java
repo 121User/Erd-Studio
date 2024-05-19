@@ -95,6 +95,7 @@ public class DiagramController {
                                       HttpServletRequest request) throws IOException {
         if (!fileDiagram.isEmpty() || !codeDiagram.equals("")) {
             String code;
+            String name = "Новая диаграмма";
             //Импорт из файла
             if (!fileDiagram.isEmpty()) {
                 StringBuilder contentFile = new StringBuilder();
@@ -105,6 +106,7 @@ public class DiagramController {
                     }
                 }
                 code = ExportImportUtil.getDiagramCodeForImport(contentFile.toString());
+                name = fileDiagram.getOriginalFilename();
             }
             //Импорт из введенного текста
             else {
@@ -116,7 +118,7 @@ public class DiagramController {
             //Проверка существования пользователя в системе
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
-                DiagramDto diagramDto = new DiagramDto("Новая диаграмма", LocalDateTime.now(),
+                DiagramDto diagramDto = new DiagramDto(name, LocalDateTime.now(),
                         LocalDateTime.now(), code);
                 Long diagramId = userService.addDiagram(user, diagramDto);
                 return new ModelAndView("redirect:/diagram/" + diagramId);
@@ -178,30 +180,7 @@ public class DiagramController {
         }
     }
 
-//    @RequestMapping("/test/{diagramId}")
-//    public ModelAndView viewDiagramWorkingPage1(@PathVariable(name = "diagramId") Long diagramId,
-//                                        HttpServletRequest request) {
-//        SessionUtil.setAttrToSession(request, "userId", 30);
-//        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-//        Optional<User> userOpt = userService.getById(userId);
-//        //Проверка существования пользователя в системе
-//        if (userOpt.isPresent()) {
-//            User user = userOpt.get();
-//            Diagram diagram = diagramService.getByID(diagramId);
-//
-//            boolean theme = user.getDesignTheme().getName().equals("dark");
-//            ModelAndView modelAndView = new ModelAndView("diagram_working_page");
-//            modelAndView.addObject("userEmail", user.getEmail());
-//            modelAndView.addObject("diagramName", diagram.getName());
-//            modelAndView.addObject("diagramCode", diagram.getCode());
-//            modelAndView.addObject("designTheme", theme);
-//            return modelAndView;
-//        } else {
-//            return new ModelAndView("redirect:/main");
-//        }
-//    }
-
-    @RequestMapping("/{diagramId}/save")
+    @RequestMapping( "/{diagramId}/save")
     public ModelAndView saveChanges(@PathVariable(name = "diagramId") Long diagramId,
                                     @RequestParam(name = "designTheme", required = false) String designTheme,
                                     @RequestParam(name = "diagramName", required = false) String diagramName,
