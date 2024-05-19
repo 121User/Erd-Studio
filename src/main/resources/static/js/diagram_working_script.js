@@ -13,6 +13,7 @@ import {drawDiagram} from "/js/create_diagram_script.js"
 //Обработчики событий
 //Отслеживание загрузки страницы
 window.onload = async function () {
+    document.getElementById('menu_button').click();
     let editor = createCodeMirror(); //Настройка текстового редактора
     window.myGlobalObject = {
         editorObj: editor
@@ -108,7 +109,7 @@ async function changeTheme() {
 function saveChanges() {
     if (checkUserAuthorization()) {
         const designTheme = getDesignThemeForSave();
-        const diagramName = document.getElementById('diagram_name').value;
+        const diagramName = getNameForSave();
         const diagramCode = getCodeForSave();
         //Проверка несохранения
         const saveButton = document.getElementById('save-button');
@@ -131,16 +132,6 @@ function saveChangesByKey(event) {
     }
 }
 
-//Получение кода диаграммы и обработка запрещенных в url символов
-function getCodeForSave() {
-    const editor = window.myGlobalObject.editorObj;
-    let diagramCode = editor.doc.getValue();
-    diagramCode = getFormattedCodeForDB(diagramCode)
-    diagramCode = diagramCode.replace(/\n/g, '*n').replace(/\\/g, "").replace(/\//g, "").replace(/\{/g, "*'")
-        .replace(/}/g, "'*").replace(/\[/g, "*,").replace(/]/g, ",*");
-    return diagramCode;
-}
-
 //Получение темы дизайна
 function getDesignThemeForSave() {
     let checkbox = document.getElementById('checkbox_theme');
@@ -149,6 +140,40 @@ function getDesignThemeForSave() {
         designTheme = "dark";
     }
     return designTheme;
+}
+
+//Получение кода диаграммы и обработка запрещенных в url символов
+function getNameForSave() {
+    let diagramName = document.getElementById('diagram_name').value;
+    //Замена запрещенных символов для URL
+    diagramName = diagramName.replace(/\n/g, '').replace(/\\/g, '').replace(/\//g, '').replace(/\{/g, '')
+        .replace(/}/g, '').replace(/\[/g, '').replace(/]/g, '').replace(/</g, '').replace(/>/g, '')
+        .replace(/"/g, '').replace(/\|/g, '').replace(/\^/g, '').replace(/`/g, '');
+    return diagramName;
+}
+
+//Получение кода диаграммы и обработка запрещенных в url символов
+function getCodeForSave() {
+    const editor = window.myGlobalObject.editorObj;
+    let diagramCode = editor.doc.getValue();
+    diagramCode = getFormattedCodeForDB(diagramCode)
+    //Замена запрещенных символов для URL
+    diagramCode = diagramCode.replace(/\n/g, '*n').replace(/\//g, '%2F').replace(/\{/g, '%7B').replace(/}/g, '%7D')
+        .replace(/\[/g, '%5B').replace(/]/g, '%5D').replace(/\\/g, '').replace(/</g, '').replace(/>/g, '')
+        .replace(/"/g, '').replace(/\|/g, '').replace(/\^/g, '').replace(/`/g, '')
+    return diagramCode;
+}
+
+//Обработка кода диаграммы
+function getFormattedCodeForDB(code) {
+    let strings = code.split(/\n/g);
+    for (let i = 0; i < strings.length; i++) {
+        strings[i] = strings[i].trim();
+        if (!strings[i].includes('{') && !strings[i].includes('}')) {
+            strings[i] = '  ' + strings[i];
+        }
+    }
+    return strings.join('\n');
 }
 
 

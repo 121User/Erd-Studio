@@ -56,13 +56,13 @@
         </div>
     </div>
 
-    <table style="border-spacing: 20px; horiz-align: center; width: 100%; text-align: left">
+    <table style="border-spacing: 15px; horiz-align: center; width: 100%; text-align: left;">
         <thead>
         <tr>
-            <th class="table_header" style="width: 50%">Название</th>
-            <th class="table_header" style="width: 20%">Дата изменения</th>
-            <th class="table_header" style="width: 20%">Дата создания</th>
-            <th class="table_header" style="width: 10%"></th>
+            <th class="table_header" style="width: 50%;">Название</th>
+            <th class="table_header" style="width: 20%;">Дата изменения</th>
+            <th class="table_header" style="width: 20%;">Дата создания</th>
+            <th class="table_header" style="width: 30%;"></th>
         </tr>
         </thead>
         <tbody>
@@ -75,7 +75,7 @@
             <td class="table_value" th:text="${diagram.modifiedDate}"></td>
             <td class="table_value" th:text="${diagram.creationDate}"></td>
             <td class="ref_menu">
-                <a style="color: red; font-size: 15px; margin: 0"
+                <a style="color: red; font-size: 15px; margin: 0;"
                    th:href="@{'/diagram/list/delete/' + ${diagram.id}}">
                     Удалить
                 </a>

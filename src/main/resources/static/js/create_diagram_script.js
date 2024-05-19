@@ -53,3 +53,32 @@ function configPanZoomDiagram() {
         console.warn('Ошибка в коде диаграммы')
     }
 }
+
+
+//Обработка кода для построения диаграммы
+function getFormattedCodeForDiagram(code) {
+    let refs = getRefs(code)
+    let result = 'erDiagram\n' + code
+        .replace(/\/\/.*/g, '').replace(/pk/g, 'PK').replace(/\[/g, '')
+        .replace(/not null/g, '"NN"').replace(/ ref:/g, ', ref:').replace(/ref:(.*?)[,\]]/g, 'FK').replace(/, /g, ' ')
+        .replace(/]/g, '');
+
+    return result + refs;
+}
+
+//Получение ссылок для полтроения диаграммы
+function getRefs(code) {
+    let refs = '';
+    let strings = code.split(/\n/g);
+    for (let i = 0; i < strings.length; i++) {
+        strings[i] = strings[i].trim();
+        if (strings[i].includes('ref:')) {
+            refs += strings[i].match(/ref:(.*?)[,\]]/g) + strings[i].split(/ +/g)[0];
+        }
+    }
+    refs = refs.replace(/ref: /g, '\n').replace(/ < /g, ' ||--o{ ')
+        .replace(/ > /g, ' }o--|| ').replace(/ - /g, ' ||--|| ')
+        .replace(/[,\]]/g, ' : ')
+
+    return refs
+}
