@@ -69,7 +69,7 @@ export function createCodeMirror() {
 //Создание режима для выделения слов в CodeMirror
 function createMode() {
     const keywords = {
-        "ref:": true, "not null": true, "PK": true, "<": true, "-": true,
+        "ref:": true, "not null": true, "PK": true, "pk": true, "<": true, "-": true,
     };
     const keychars = {
         "{": true, "}": true,

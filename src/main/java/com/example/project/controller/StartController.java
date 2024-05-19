@@ -45,7 +45,6 @@ public class StartController {
     @RequestMapping("/start")
     public ModelAndView startWork(HttpServletRequest request) {
         ModelAndView modelAndView;
-        //TODO Исправить начать
         if(SessionUtil.checkUserAuthorization(request)){
             modelAndView = new ModelAndView("redirect:/diagram/list");
         } else {

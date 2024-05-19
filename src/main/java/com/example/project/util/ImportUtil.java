@@ -1,127 +1,12 @@
 package com.example.project.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 
-import java.io.*;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class ExportImportUtil {
-
-    //Экспорт
-    //Преобразование кода диаграммы для Ms Sql Server
-    public static String convertToMsSqlServer(String code){
-        String refs = getMsSqlServerRefs(code);
-        String result1 = code.replace("pk", "PRIMARY KEY")
-                .replace("PK", "PRIMARY KEY").replaceAll("\\[", "")
-                .replace("not null", "NOT NULL").replace("}", ")\nGO\n")
-                .replaceAll("ref:(.*?)[,\\]]", "").replaceAll(", ", " ")
-                .replaceAll("]", "").replaceAll("( *)\\{", "] (");
-
-        StringBuilder result = new StringBuilder();
-        for(String string: result1.split("\n")){
-            if(string.endsWith("(")){
-                result.append("CREATE TABLE [").append(string).append("\n");
-            } else if(!string.endsWith(")") && !string.contains("GO") && !string.equals("")){
-                String attr = string.trim().split("\\s")[0];
-                String str = string.replace(attr, "["+attr+"]").replaceFirst("\\s++$", "");
-                result.append(str).append(",").append("\n");
-            }
-            else {
-                result.append(string).append("\n");
-            }
-        }
-        return result + refs;
-    }
-
-    //Получение строк создания связей для Ms Sql Server
-    private static String getMsSqlServerRefs(String code) {
-        StringBuilder refs = new StringBuilder();
-        String[] strings = code.split("\n");
-        for (String string : strings) {
-            string = string.trim();
-            Matcher matcher = Pattern.compile("ref: (.*?)[,\\]]").matcher(string);
-            if (matcher.find()) {
-                String[] matchers = matcher.group().split("\\s");
-                matchers[3] = matchers[3].replace(",","").replace("]", "");
-                refs.append("\nALTER TABLE [").append(matchers[1]).append("] ADD FOREIGN KEY ([")
-                        .append(string.split("\\s+")[0]).append("]) REFERENCES [")
-                        .append(matchers[3]).append("] ([").append(getPkRef(code, matchers[3]))
-                        .append("])\nGO\n");
-            }
-        }
-        refs = new StringBuilder(refs.toString()
-                .replaceAll(",", ""));
-
-        return refs.toString();
-    }
-
-    //Преобразование кода диаграммы для PostgreSQL
-    public static String convertToPostgresql(String code){
-        String refs = getPostgresqlRefs(code);
-        String result1 = code.replace("pk", "PRIMARY KEY")
-                .replace("PK", "PRIMARY KEY").replaceAll("\\[", "")
-                .replace("not null", "NOT NULL").replace("}", ");\n")
-                .replaceAll("ref:(.*?)[,\\]]", "").replaceAll(", ", " ")
-                .replaceAll("]", "").replaceAll("( *)\\{", "\" (");
-
-        StringBuilder result = new StringBuilder();
-        for(String string: result1.split("\n")){
-            if(string.endsWith("(")){
-                result.append("CREATE TABLE \"").append(string).append("\n");
-            } else if(!string.contains(")") && !string.equals("")){
-                String attr = string.trim().split("\\s")[0];
-                String str = string.replace(attr, "\""+attr+"\"").replaceFirst("\\s++$", "");
-                result.append(str).append(",").append("\n");
-            }
-            else {
-                result.append(string).append("\n");
-            }
-        }
-        return result + refs;
-    }
-
-    //Получение строк создания связей для PostgreSQL
-    private static String getPostgresqlRefs(String code) {
-        StringBuilder refs = new StringBuilder();
-        String[] strings = code.split("\n");
-        for (String string : strings) {
-            string = string.trim();
-            Matcher matcher = Pattern.compile("ref: (.*?)[,\\]]").matcher(string);
-            if (matcher.find()) {
-                String[] matchers = matcher.group().split("\\s");
-                matchers[3] = matchers[3].replace(",","").replace("]", "");
-                refs.append("\nALTER TABLE \"").append(matchers[1]).append("\" ADD FOREIGN KEY (\"")
-                        .append(string.split("\\s+")[0]).append("\") REFERENCES \"")
-                        .append(matchers[3]).append("\" (\"").append(getPkRef(code, matchers[3]))
-                        .append("\");\n");
-            }
-        }
-        refs = new StringBuilder(refs.toString()
-                .replaceAll(",", ""));
-
-        return refs.toString();
-    }
-
-    //Получение названия первичного ключа второй сущности для связи
-    private static String getPkRef(String code, String entity){
-        String[] strings = code.split("\n");
-        for(int i = 0; i < strings.length; i++){
-            if(strings[i].startsWith(entity)){
-                return strings[i + 1].trim().split("\\s")[0];
-            }
-        }
-        return null;
-    }
-
-    //Импорт
+public class ImportUtil {
     //Получение кода диаграммы для иморта
     public static String getDiagramCodeForImport(String sqlCode){
         if(sqlCode.contains("[")){

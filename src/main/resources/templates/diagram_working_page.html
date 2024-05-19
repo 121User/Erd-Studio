@@ -4,7 +4,7 @@
       lang="ru">
 <head>
     <meta charset="utf-8"/>
-    <title th:text="${'Диаграмма ' + diagramName}"></title>
+    <title th:text="${'Диаграмма - ' + diagramName}"></title>
     <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
 
     <link rel="stylesheet" type="text/css" media="all" href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
     <link rel="stylesheet" type="text/css" media="all" href="/static/css/codemirror_style.css"
           data-th-href="@{/css/codemirror_style.css}"/>
-
 
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
 
@@ -30,16 +29,12 @@
     <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
 
     <!--Редактор кода-->
-<!--    <script type="module" th:src="@{/js/codemirror_script.js}"></script>-->
-<!--    <script type="module" src="/static/js/codemirror_script.js"></script>-->
     <script type="module" th:src="@{/js/codemirror_script.js}" src="/static/js/codemirror_script.js"></script>
     <!--Создание диаграммы-->
-<!--    <script type="module" th:src="@{/js/create_diagram_script.js}"></script>-->
-<!--    <script type="module" src="/static/js/create_diagram_script.js"></script>-->
     <script type="module" th:src="@{/js/create_diagram_script.js}" src="/static/js/create_diagram_script.js"></script>
-    <!--Обработчики событий-->
-<!--    <script type="module" th:src="@{/js/diagram_working_script.js}"></script>-->
-<!--    <script type="module" src="/static/js/diagram_working_script.js"></script>-->
+    <!--Экспорт диаграммы-->
+    <script type="module" th:src="@{/js/export_diagram_script.js}" src="/static/js/export_diagram_script.js"></script>
+    <!--Основной скрипт-->
     <script type="module" th:src="@{/js/diagram_working_script.js}" src="/static/js/diagram_working_script.js"></script>
 </head>
 
@@ -109,7 +104,7 @@
         <div style="flex-grow: 1;">
             <p class="text2" style="color: white; font-weight: bold; margin: 10px; text-align: left">Код диаграммы</p>
         </div>
-        <div>
+        <div id="save_button_box">
             <img id="save-status-icon" src="/static/images/Save_success.png" th:src="@{/images/Save_success.png}" alt="save-status"
                  style="width: 18px; color: white;"/>
             <a id="save-button" class="input-submit" style="padding: 5px; margin-left: 5px; margin-right: 10px; cursor: pointer; background: #757575;">

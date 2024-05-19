@@ -52,9 +52,10 @@ public class DiagramService {
     public void changeCode(Diagram diagram, String code){
         if(code != null && diagram != null){
             //Восстановление запрещенных в URL символов
-            code = code.replace("*n", "\n").replace("%7B", "{")
-                    .replace("%7D", "}").replace("%5B", "[")
-                    .replace("%5D", "]").replace("%2F", "/");
+            code = code.replace("*n", "\n")
+                    .replace("%7B", "{").replace("%7D", "}")
+                    .replace("%5B", "[").replace("%5D", "]")
+                    .replace("%2F", "/").replace("%3C", "<");
             diagram.setCode(code);
             diagram.setModifiedDate(LocalDateTime.now());
             diagramRepository.save(diagram);

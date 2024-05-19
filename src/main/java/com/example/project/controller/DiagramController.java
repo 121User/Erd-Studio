@@ -5,21 +5,17 @@ import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.User;
 import com.example.project.service.DiagramService;
 import com.example.project.service.UserService;
-import com.example.project.util.ExportImportUtil;
+import com.example.project.util.ImportUtil;
 import com.example.project.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +101,7 @@ public class DiagramController {
                         contentFile.append(line).append("\n");
                     }
                 }
-                code = ExportImportUtil.getDiagramCodeForImport(contentFile.toString());
+                code = ImportUtil.getDiagramCodeForImport(contentFile.toString());
                 name = fileDiagram.getOriginalFilename();
             }
             //Импорт из введенного текста
@@ -176,7 +172,10 @@ public class DiagramController {
             modelAndView.addObject("designTheme", theme);
             return modelAndView;
         } else {
-            return new ModelAndView("redirect:/main");
+            ModelAndView modelAndView = new ModelAndView("diagram_working_page");
+            modelAndView.addObject("diagramName", "Новая диаграмма");
+            modelAndView.addObject("designTheme", false);
+            return modelAndView;
         }
     }
 
@@ -199,31 +198,5 @@ public class DiagramController {
         } else {
             return new ModelAndView("redirect:/main");
         }
-    }
-
-    @RequestMapping("/{diagramId}/export")
-    public ModelAndView exportCode(@PathVariable(name = "diagramId") Long diagramId,
-                                   @RequestParam(name = "type") String type,
-                                   HttpServletResponse response) throws IOException {
-        response.setContentType("text/plain; charset=UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        Diagram diagram = diagramService.getByID(diagramId);
-
-        String encodedFileName = URLEncoder.encode(diagram.getName() + ".sql", StandardCharsets.UTF_8.toString());
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=" + encodedFileName;
-        response.setHeader(headerKey, headerValue);
-
-        String text = "";
-        if (type.equals("mssql")) {
-            text = ExportImportUtil.convertToMsSqlServer(diagram.getCode());
-        } else if (type.equals("postgresql")) {
-            text = ExportImportUtil.convertToPostgresql(diagram.getCode());
-        }
-
-        ServletOutputStream outputStream = response.getOutputStream();
-        outputStream.write(text.getBytes(StandardCharsets.UTF_8));
-        outputStream.close();
-        return new ModelAndView("redirect:/diagram/" + diagramId);
     }
 }

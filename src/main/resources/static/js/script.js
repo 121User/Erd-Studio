@@ -12,8 +12,13 @@ function showMenu() {
 //Скрытие меню (при нажатии на основную часть экрана)
 function hideMenu() {
     document.getElementById('menu_list').style.display = 'none';
-    document.getElementById('diagram_name').blur();
-    document.getElementById('diagram_code').blur();
+
+    const diagramName = document.getElementById('diagram_name');
+    const diagramCode = document.getElementById('diagram_code');
+    if(diagramName !==  null && diagramCode !== null){
+        diagramName.blur();
+        diagramCode.blur();
+    }
 }
 
 //Активация меню
