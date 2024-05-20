@@ -77,16 +77,29 @@ function searchText() {
 }
 
 
-//Страница со списком диаграмм
-//Поиск (по списку)
+//Поиск по списку диаграмм пользователя
 function searchDiagram() {
-    let searchText = document.getElementById('searchInput').value;
+    const searchText = document.getElementById('searchInput').value;
     location.href = '/diagram/list?searchText=' + searchText;
 }
-
 //Активация поиска при нажатии на Enter
 function searchDiagramByKeyup(event) {
     if (event.keyCode === 13) {
         searchDiagram();
+    }
+}
+
+
+//Поиск по списку групп
+function searchGroup() {
+    const searchText = document.getElementById('searchInput').value;
+    location.href = '/group/list?searchText=' + searchText;
+}
+//Активация поиска при нажатии на Enter
+function searchByKeyup(event) {
+    if (event.keyCode === 13) {
+        const searchText = document.getElementById('searchInput');
+        searchText.blur();
+        searchGroup();
     }
 }
