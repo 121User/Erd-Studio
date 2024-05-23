@@ -6,13 +6,13 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@Table(name = "design_themes")
-public class DesignTheme {
+@Table(name = "group_access_levels")
+public class GroupAccessLevel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "dt_id")
+    @Column(name = "gal_id")
     private Long id;
 
-    @Column(name = "dt_name")
+    @Column(name = "gal_name")
     private String name;
 }

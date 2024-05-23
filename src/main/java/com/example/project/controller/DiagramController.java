@@ -1,12 +1,10 @@
 package com.example.project.controller;
 
-import com.example.project.model.Dto.DiagramDto;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.User;
 import com.example.project.service.DiagramService;
 import com.example.project.service.UserService;
-import com.example.project.util.ImportUtil;
-import com.example.project.util.SessionUtil;
+import com.example.project.util.ImportDiagramUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,12 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.project.util.Helper.getFilteredDiagramList;
-import static com.example.project.util.Helper.getSortedDiagramList;
+import static com.example.project.util.ListProcessingUtil.filterDiagramListBySearch;
+import static com.example.project.util.ListProcessingUtil.sortDiagramListByModDate;
+import static com.example.project.util.SessionUtil.checkUserAuthorization;
+import static com.example.project.util.SessionUtil.getLongAttrFromSession;
 
 @RestController
 @RequestMapping("/diagram")
@@ -38,20 +37,20 @@ public class DiagramController {
     @RequestMapping("/list")
     public ModelAndView viewDiagramListPage(@RequestParam(name = "searchText", required = false) String searchText,
                                             HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+        Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         ModelAndView modelAndView;
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             modelAndView = new ModelAndView("diagram_list_page");
-            modelAndView.addObject("userEmail", user.getEmail());
+            modelAndView.addObject("userName", user.getName());
             modelAndView.addObject("searchText", searchText);
 
             //Поиск по названию диаграммы
-            List<Diagram> diagramList = getSortedDiagramList(user.getDiagrams());
+            List<Diagram> diagramList = sortDiagramListByModDate(user.getDiagrams());
             if (searchText != null) {
-                diagramList = getFilteredDiagramList(getSortedDiagramList(user.getDiagrams()), searchText);
+                diagramList = filterDiagramListBySearch(sortDiagramListByModDate(user.getDiagrams()), searchText);
             }
             //Вывод сообщения, если список диаграмм пуст
             if (user.getDiagrams().isEmpty()) {
@@ -68,32 +67,36 @@ public class DiagramController {
     @RequestMapping("/list/delete/{diagramId}")
     public ModelAndView deleteDiagram(@PathVariable(name = "diagramId") Long diagramId,
                                       HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-        userService.deleteDiagram(userId, diagramId);
+        Long userId = getLongAttrFromSession(request, "userId");
+        Optional<User> userOpt = userService.getById(userId);
+        //Проверка существования пользователя в системе
+        if (userOpt.isPresent()) {
+            userService.deleteDiagram(userId, diagramId);
+        }
         return new ModelAndView("redirect:/diagram/list");
     }
 
     @RequestMapping("/list/import")
-    public ModelAndView viewDiagramImportPage(HttpServletRequest request) {
-        if (SessionUtil.checkUserAuthorization(request)) {
-            Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-            String userEmail = userService.getEmailById(userId);
+    public ModelAndView viewDiagramImportPage(@RequestParam(name = "groupId", required = false) Long groupId,
+                                              HttpServletRequest request) {
+        if (checkUserAuthorization(request)) {
+            Long userId = getLongAttrFromSession(request, "userId");
+            String userName = userService.getNameById(userId);
             ModelAndView modelAndView = new ModelAndView("diagram_import_page");
-            modelAndView.addObject("userEmail", userEmail);
+            modelAndView.addObject("userName", userName);
+            modelAndView.addObject("groupId", groupId);
             return modelAndView;
         }
         return new ModelAndView("redirect:/main");
     }
 
-    @RequestMapping("/list/import/do")
-    public ModelAndView importDiagram(@ModelAttribute(name = "fileDiagram") MultipartFile fileDiagram,
-                                      @ModelAttribute(name = "codeDiagram") String codeDiagram,
-                                      HttpServletRequest request) throws IOException {
-        if (!fileDiagram.isEmpty() || !codeDiagram.equals("")) {
-            String code;
-            String name = "Новая диаграмма";
-            //Импорт из файла
-            if (!fileDiagram.isEmpty()) {
+    @PostMapping("/list/import/do")
+    public ModelAndView importDiagram(@RequestParam(name = "groupId") String groupIdOpt,
+                                      @ModelAttribute(name = "fileDiagram") MultipartFile fileDiagram,
+                                      HttpServletRequest request){
+        if (!fileDiagram.isEmpty()) {
+            try{
+                //Импорт из файла
                 StringBuilder contentFile = new StringBuilder();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileDiagram.getInputStream()))) {
                     String line;
@@ -101,53 +104,54 @@ public class DiagramController {
                         contentFile.append(line).append("\n");
                     }
                 }
-                code = ImportUtil.getDiagramCodeForImport(contentFile.toString());
-                name = fileDiagram.getOriginalFilename();
-            }
-            //Импорт из введенного текста
-            else {
-                code = codeDiagram.replace("\\n", "");
-//                code = ExportImportUtil.getDiagramCodeForImport(codeDiagram);
-            }
-            Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-            Optional<User> userOpt = userService.getById(userId);
-            //Проверка существования пользователя в системе
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                DiagramDto diagramDto = new DiagramDto(name, LocalDateTime.now(),
-                        LocalDateTime.now(), code);
-                Long diagramId = userService.addDiagram(user, diagramDto);
-                return new ModelAndView("redirect:/diagram/" + diagramId);
-            } else {
-                return new ModelAndView("redirect:/main");
+                String diagramName = "Новая диаграмма";
+                String diagramCode = ImportDiagramUtil.getDiagramCodeForImport(contentFile.toString());
+                if (fileDiagram.getOriginalFilename() != null) {
+                    diagramName = fileDiagram.getOriginalFilename().split("\\.")[0];
+                }
+                Long userId = getLongAttrFromSession(request, "userId");
+                Optional<User> userOpt = userService.getById(userId);
+
+                //Проверка существования пользователя в системе
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    Long diagramId = userService.addDiagram(user, groupIdOpt, diagramName, diagramCode);
+                    return new ModelAndView("redirect:/diagram/" + diagramId);
+                } else {
+                    return new ModelAndView("redirect:/main");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return new ModelAndView("redirect:/diagram/list/import");
     }
 
     @RequestMapping("/list/create")
-    public ModelAndView viewDiagramCreatePage(HttpServletRequest request) {
-        if (SessionUtil.checkUserAuthorization(request)) {
-            Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-            String userEmail = userService.getEmailById(userId);
+    public ModelAndView viewDiagramCreatePage(@RequestParam(name = "groupId", required = false) Long groupId,
+                                              HttpServletRequest request) {
+        if (checkUserAuthorization(request)) {
+            Long userId = getLongAttrFromSession(request, "userId");
+            String userName = userService.getNameById(userId);
             ModelAndView modelAndView = new ModelAndView("diagram_create_page");
-            modelAndView.addObject("userEmail", userEmail);
+            modelAndView.addObject("userName", userName);
+            modelAndView.addObject("groupId", groupId);
             return modelAndView;
         }
         return new ModelAndView("redirect:/main");
 
     }
 
-    @RequestMapping("/list/create/do")
-    public ModelAndView createDiagram(@ModelAttribute(name = "name") String diagramName,
+    @PostMapping("/list/create/do")
+    public ModelAndView createDiagram(@RequestParam(name = "groupId") String groupIdOpt,
+                                      @ModelAttribute(name = "name") String diagramName,
                                       HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+        Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            DiagramDto diagramDto = new DiagramDto(diagramName, LocalDateTime.now(), LocalDateTime.now(), null);
-            Long diagramId = userService.addDiagram(user, diagramDto);
+            Long diagramId = userService.addDiagram(user, groupIdOpt, diagramName, null);
             return new ModelAndView("redirect:/diagram/" + diagramId);
         } else {
             return new ModelAndView("redirect:/main");
@@ -156,8 +160,8 @@ public class DiagramController {
 
     @RequestMapping("/{diagramId}")
     public ModelAndView viewDiagramWorkingPage(@PathVariable(name = "diagramId") Long diagramId,
-                                        HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+                                               HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
@@ -166,7 +170,7 @@ public class DiagramController {
 
             boolean theme = user.getDesignTheme().getName().equals("dark");
             ModelAndView modelAndView = new ModelAndView("diagram_working_page");
-            modelAndView.addObject("userEmail", user.getEmail());
+            modelAndView.addObject("userName", user.getName());
             modelAndView.addObject("diagramName", diagram.getName());
             modelAndView.addObject("diagramCode", diagram.getCode());
             modelAndView.addObject("designTheme", theme);
@@ -179,13 +183,13 @@ public class DiagramController {
         }
     }
 
-    @RequestMapping( "/{diagramId}/save")
+    @RequestMapping("/{diagramId}/save")
     public ModelAndView saveChanges(@PathVariable(name = "diagramId") Long diagramId,
                                     @RequestParam(name = "designTheme") String designTheme,
                                     @RequestParam(name = "diagramName") String diagramName,
                                     @RequestParam(name = "diagramCode") String diagramCode,
                                     HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+        Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {

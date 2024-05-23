@@ -49,6 +49,8 @@ function messageOutput(type, messageText){
         case 'warning':
             newMessage.style.background = '#FFBB33';
             break;
+        case 'info':
+            newMessage.style.background = '#33b5e5';
     }
     newMessage.innerHTML = messageText;
     newMessage.style.display = 'block';
@@ -61,7 +63,7 @@ function messageOutput(type, messageText){
 //Страница документации
 //Поиск (по документации)
 function searchText() {
-    let searchText = document.getElementById('searchInput').value;
+    let searchText = document.getElementById('search_input').value;
     let content = document.getElementById('content');
     let items = content.querySelectorAll('p, h1, h2');
 
@@ -76,30 +78,15 @@ function searchText() {
     });
 }
 
-
-//Поиск по списку диаграмм пользователя
-function searchDiagram() {
-    const searchText = document.getElementById('searchInput').value;
-    location.href = '/diagram/list?searchText=' + searchText;
-}
-//Активация поиска при нажатии на Enter
-function searchDiagramByKeyup(event) {
-    if (event.keyCode === 13) {
-        searchDiagram();
-    }
-}
-
-
-//Поиск по списку групп
-function searchGroup() {
-    const searchText = document.getElementById('searchInput').value;
-    location.href = '/group/list?searchText=' + searchText;
+//Поиск по списку при потере фокуса
+function search() {
+    const searchText = document.getElementById('search_input').value;
+    location.href = location.href.split('?')[0] + '?searchText=' + searchText;
 }
 //Активация поиска при нажатии на Enter
 function searchByKeyup(event) {
     if (event.keyCode === 13) {
-        const searchText = document.getElementById('searchInput');
+        const searchText = document.getElementById('search_input');
         searchText.blur();
-        searchGroup();
     }
 }

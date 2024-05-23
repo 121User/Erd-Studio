@@ -40,11 +40,6 @@ public class SessionUtil {
         request.getSession().setAttribute(name, object);
     }
 
-    //Удаление атрибута из сессии
-    public static void removeAttrFromSession(HttpServletRequest request, String name) {
-        request.getSession().removeAttribute(name);
-    }
-
     //Удаление всех атрибутов из сессии
     public static void removeAllAttrFromSession(HttpServletRequest request) {
         request.getSession().invalidate();

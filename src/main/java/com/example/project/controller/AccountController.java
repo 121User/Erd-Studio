@@ -2,8 +2,6 @@ package com.example.project.controller;
 
 import com.example.project.model.Entity.User;
 import com.example.project.service.UserService;
-import com.example.project.util.Helper;
-import com.example.project.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +12,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.example.project.util.Helper.checkPasswordComplexity;
+import static com.example.project.util.Helper.getPasswordHash;
+import static com.example.project.util.SessionUtil.*;
 
 @RestController
 @RequestMapping("/account")
@@ -27,11 +29,11 @@ public class AccountController {
 
     @RequestMapping("/")
     public ModelAndView viewAccountPage(HttpServletRequest request) {
-        if(SessionUtil.checkUserAuthorization(request)){
-            Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-            String userEmail = userService.getEmailById(userId);
+        if(checkUserAuthorization(request)){
+            Long userId = getLongAttrFromSession(request, "userId");
+            String userName = userService.getNameById(userId);
             ModelAndView modelAndView = new ModelAndView("account_page");
-            modelAndView.addObject("userEmail", userEmail);
+            modelAndView.addObject("userName", userName);
             return modelAndView;
         }
         return new ModelAndView("redirect:/main");
@@ -39,36 +41,36 @@ public class AccountController {
 
     @RequestMapping("/password-change")
     public ModelAndView viewPasswordChangePage(HttpServletRequest request) {
-        if(SessionUtil.checkUserAuthorization(request)){
-            Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-            String userEmail = userService.getEmailById(userId);
+        if(checkUserAuthorization(request)){
+            Long userId = getLongAttrFromSession(request, "userId");
+            String userName = userService.getNameById(userId);
             ModelAndView modelAndView = new ModelAndView("password_change_page");
-            modelAndView.addObject("userEmail", userEmail);
+            modelAndView.addObject("userName", userName);
             return modelAndView;
         }
         return new ModelAndView("redirect:/main");
     }
 
     @PostMapping("/password-change/do")
-    public ModelAndView changeUserPasswordPage(@ModelAttribute(name = "old_password") String oldPassword,
-                                               @ModelAttribute(name = "new_password") String newPassword,
-                                               @ModelAttribute(name = "password_repetition") String password_repetition,
-                                               HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+    public ModelAndView changeUserPassword(@ModelAttribute(name = "old_password") String oldPassword,
+                                           @ModelAttribute(name = "new_password") String newPassword,
+                                           @ModelAttribute(name = "password_repetition") String password_repetition,
+                                           HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         ModelAndView modelAndView = new ModelAndView("redirect:/account/password-change");
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            oldPassword = Helper.getPasswordHash(oldPassword);
+            oldPassword = getPasswordHash(oldPassword);
             //Проверка старого пароля
             if (Objects.equals(oldPassword, user.getPassword())) {
                 //Проверка сложности нового пароля
-                if(Helper.checkPasswordComplexity(newPassword)) {
+                if(checkPasswordComplexity(newPassword)) {
                     //Проверка подтверждения пароля
                     if (newPassword.equals(password_repetition)) {
-                        newPassword = Helper.getPasswordHash(newPassword);
-                        userService.changePassword(user.getEmail(), newPassword);
+                        newPassword = getPasswordHash(newPassword);
+                        userService.changePassword(user.getId(), newPassword);
                         modelAndView = new ModelAndView("redirect:/account/");
                     } else {
                         modelAndView.addObject("result", "Введенные пароли не совпадают");
@@ -87,15 +89,15 @@ public class AccountController {
 
     @RequestMapping("/logout")
     public ModelAndView logout(HttpServletRequest request) {
-        SessionUtil.removeAllAttrFromSession(request);
+        removeAllAttrFromSession(request);
         return new ModelAndView("redirect:/main");
     }
 
     @RequestMapping("/delete")
     public ModelAndView deleteUser(HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
+        Long userId = getLongAttrFromSession(request, "userId");
         userService.deleteUser(userId);
-        SessionUtil.removeAllAttrFromSession(request);
+        removeAllAttrFromSession(request);
         return new ModelAndView("redirect:/main");
     }
 }

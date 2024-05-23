@@ -40,51 +40,56 @@
 
 <body>
 <header class="header1">
-    <div class="div-horizontal">
-        <img src="/static/images/Icon_dark.png" th:src="@{/images/Icon_dark.png}"
-             onclick="location.href='/main'"
-             alt="logo" style="width: 40px; margin-left: 15px"/>
-        <!-- Название диаграммы -->
-        <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы"
-               type="text" aria-label="Search" maxlength="100" th:value="${diagramName}"/>
-        <!--Выпадающий список для выбора формата экспорта -->
-        <div id="export_list" class="div-horizontal1">
-            <img src="/static/images/Download_icon.png" th:src="@{/images/Download_icon.png}" alt="download"
-                 style="width: 20px; margin-right: 10px"/>
-            <label>
-                <select id="export_selector" onchange="exportDiagram()"
-                        style="horiz-align: center">
-                    <option value="default" hidden disabled selected>Экспорт</option>
-                    <optgroup label="Как изображение">
-                        <option value="pdf">PDF</option>
-                        <option value="png">PNG</option>
-                        <option value="svg">SVG</option>
-                    </optgroup>
-                    <optgroup label="Для восстановления в СУБД">
-                        <option value="mssql">MS SQL Server</option>
-                        <option value="postgresql">PostgreSQL</option>
-                    </optgroup>
-                </select>
-            </label>
+    <div id="header2" class="div-horizontal" style="text-align: left">
+        <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px;">
+            <img src="/static/images/Icon_dark.png" th:src="@{/images/Icon_dark.png}"
+                 onclick="location.href='/main'"
+                 alt="logo" style="width: 40px; margin-left: 15px"/>
+            <!-- Название диаграммы -->
+            <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы"
+                   type="text" aria-label="Search" maxlength="100" th:value="${diagramName}"/>
         </div>
-        <!-- Переключатель для выбора темы страницы -->
-        <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px;">
-            <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme" style="width: 30px"/>
-            <form id="switch_theme" action="" method="get" class="form" style="margin: 0 5px">
-                <label class="switch">
-                    <input id="checkbox_theme" type="checkbox" th:checked="${designTheme}">
-                    <span class="slider round"></span>
+
+        <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px">
+            <!--Выпадающий список для выбора формата экспорта -->
+            <div id="export_list" class="div-horizontal1">
+                <img src="/static/images/Download_icon.png" th:src="@{/images/Download_icon.png}" alt="download"
+                     style="width: 20px; margin-right: 10px"/>
+                <label>
+                    <select id="export_selector" onchange="exportDiagram()"
+                            style="horiz-align: center">
+                        <option value="default" hidden disabled selected>Экспорт</option>
+                        <optgroup label="Как изображение">
+                            <option value="pdf">PDF</option>
+                            <option value="png">PNG</option>
+                            <option value="svg">SVG</option>
+                        </optgroup>
+                        <optgroup label="Для восстановления в СУБД">
+                            <option value="mssql">MS SQL Server</option>
+                            <option value="postgresql">PostgreSQL</option>
+                        </optgroup>
+                    </select>
                 </label>
-            </form>
-        </div>
-        <!--Ссылка на документацию-->
-        <div class="div-horizontal1">
-            <a href="/documentation" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 10px; padding: 5px 20px;
+            </div>
+            <!-- Переключатель для выбора темы страницы -->
+            <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px;">
+                <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme" style="width: 30px"/>
+                <form id="switch_theme" action="" method="get" class="form" style="margin: 0 5px">
+                    <label class="switch">
+                        <input id="checkbox_theme" type="checkbox" th:checked="${designTheme}">
+                        <span class="slider round"></span>
+                    </label>
+                </form>
+            </div>
+            <!--Ссылка на документацию-->
+            <div class="div-horizontal1">
+                <a href="/documentation" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 10px; padding: 5px 20px;
         vertical-align: middle; font-size: 15px">Документация</a>
+            </div>
         </div>
     </div>
     <!--Кнопка меню-->
-    <div th:if="${userEmail} != null">
+    <div th:if="${userName} != null">
         <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
             <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
                  style="padding: 10px; width: 25px; margin-right: 10px"/>
@@ -129,7 +134,7 @@
 <!--Меню-->
 <div id="menu_list" class="menu_list">
     <div style="border-bottom: 2px solid #74217D;">
-        <a id="user-name" th:text="${userEmail}"></a>
+        <a id="user-name" th:text="${userName}"></a>
     </div>
     <div>
         <a href="/account/">
@@ -143,6 +148,13 @@
             <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Мои диаграммы
+        </a>
+    </div>
+    <div>
+        <a href="/group/list">
+            <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Группы
         </a>
     </div>
     <div>

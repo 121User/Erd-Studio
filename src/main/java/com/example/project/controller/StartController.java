@@ -3,20 +3,16 @@ package com.example.project.controller;
 import com.example.project.model.Entity.User;
 import com.example.project.service.EmailService;
 import com.example.project.service.UserService;
-import com.example.project.util.Helper;
-import com.example.project.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.example.project.util.Helper.getCode;
+import static com.example.project.util.Helper.*;
+import static com.example.project.util.SessionUtil.*;
 
 @RestController
 public class StartController {
@@ -31,13 +27,24 @@ public class StartController {
 
     //Доступно без авторизации
     @RequestMapping("/main")
-    public ModelAndView viewMainPage(HttpServletRequest request) {
-        request.getSession().setMaxInactiveInterval(-1); //Указание параметра закрытия сессии: после закрытия браузера
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-        String userEmail = userService.getEmailById(userId);
+    public ModelAndView viewMainPage(@RequestParam(name = "message", required = false) String message,
+                                     HttpServletRequest request) {
+        request.getSession().setMaxInactiveInterval(-1); //Указание условия закрытия сессии (после закрытия браузера)
+        Long userId = getLongAttrFromSession(request, "userId");
+        String userName = userService.getNameById(userId);
+
+        if(message != null){
+            switch (message) {
+                case "Group access is closed" -> message = "Пользователь ограничил доступ к группе";
+                case "Group deleted" -> message = "Группа удалена";
+                case "Diagram access is closed" -> message = "Пользователь ограничил доступ к диаграмме";
+                case "Diagram deleted" -> message = "Диаграмма удалена";
+            }
+        }
 
         ModelAndView modelAndView = new ModelAndView("main_page");
-        modelAndView.addObject("userEmail", userEmail);
+        modelAndView.addObject("userName", userName);
+        modelAndView.addObject("message", message);
         return modelAndView;
     }
 
@@ -45,7 +52,7 @@ public class StartController {
     @RequestMapping("/start")
     public ModelAndView startWork(HttpServletRequest request) {
         ModelAndView modelAndView;
-        if(SessionUtil.checkUserAuthorization(request)){
+        if (checkUserAuthorization(request)) {
             modelAndView = new ModelAndView("redirect:/diagram/list");
         } else {
             modelAndView = new ModelAndView("redirect:/diagram/0");
@@ -56,10 +63,10 @@ public class StartController {
     //Доступно без авторизации
     @RequestMapping("/documentation")
     public ModelAndView viewDocumentationPage(HttpServletRequest request) {
-        Long userId = SessionUtil.getLongAttrFromSession(request, "userId");
-        String userEmail = userService.getEmailById(userId);
+        Long userId = getLongAttrFromSession(request, "userId");
+        String userName = userService.getNameById(userId);
         ModelAndView modelAndView = new ModelAndView("documentation_page");
-        modelAndView.addObject("userEmail", userEmail);
+        modelAndView.addObject("userName", userName);
         return modelAndView;
     }
 
@@ -78,11 +85,11 @@ public class StartController {
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            password = Helper.getPasswordHash(password);
+            password = getPasswordHash(password);
             //Проверка пароля
             if (user.getPassword().equals(password)) {
                 Long userId = user.getId();
-                SessionUtil.setAttrToSession(request, "userId", userId);
+                setAttrToSession(request, "userId", userId);
 
                 modelAndView = new ModelAndView("redirect:/diagram/list");
             } else {
@@ -109,14 +116,14 @@ public class StartController {
         //Проверка существования пользователя в системе
         if (userService.getByEmail(email).isEmpty()) {
             //Проверка сложности пароля
-            if(Helper.checkPasswordComplexity(password)) {
+            if (checkPasswordComplexity(password)) {
                 //Проверка подтверждения пароля
                 if (password.equals(password_repetition)) {
-                    int emailCode = getCode();
+                    int emailCode = getEmailCode();
                     emailService.sendEmailConfirmationCode(email, emailCode);
-                    SessionUtil.setAttrToSession(request, "emailCode", emailCode);
-                    SessionUtil.setAttrToSession(request, "userEmail", email);
-                    SessionUtil.setAttrToSession(request, "userPassword", password);
+                    setAttrToSession(request, "emailCode", emailCode);
+                    setAttrToSession(request, "userEmail", email);
+                    setAttrToSession(request, "userPassword", password);
 
                     modelAndView = new ModelAndView("email_confirmation_page");
                     modelAndView.addObject("userEmail", email);
@@ -141,18 +148,18 @@ public class StartController {
     @PostMapping("/email-confirmation/confirm")
     public ModelAndView emailConfirmation(@ModelAttribute(name = "code") Integer code,
                                           HttpServletRequest request) {
-        String userEmail = SessionUtil.getAttrFromSession(request, "userEmail");
-        String userPassword = SessionUtil.getAttrFromSession(request, "userPassword");
-        Integer emailCode = SessionUtil.getIntAttrFromSession(request, "emailCode");
+        String userEmail = getAttrFromSession(request, "userEmail");
+        String userPassword = getAttrFromSession(request, "userPassword");
+        Integer emailCode = getIntAttrFromSession(request, "emailCode");
         ModelAndView modelAndView;
         //Проверка соответвтвия кода подтверждения электронной почты
         if (emailCode.equals(code)) {
-            userPassword = Helper.getPasswordHash(Objects.requireNonNull(userPassword));
+            userPassword = getPasswordHash(Objects.requireNonNull(userPassword));
             userService.createUser(userEmail, userPassword, "light");
-            SessionUtil.removeAllAttrFromSession(request);
+            removeAllAttrFromSession(request);
 
             Long userId = userService.getByEmail(userEmail).get().getId();
-            SessionUtil.setAttrToSession(request, "userId", userId);
+            setAttrToSession(request, "userId", userId);
             modelAndView = new ModelAndView("redirect:/diagram/list");
         } else {
             modelAndView = new ModelAndView("email_confirmation_page");
@@ -174,10 +181,10 @@ public class StartController {
         Optional<User> userOpt = userService.getByEmail(email);
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
-            int emailCode = getCode();
+            int emailCode = getEmailCode();
             emailService.sendPasswordRecoveryCode(email, emailCode);
-            SessionUtil.setAttrToSession(request, "userEmail", email);
-            SessionUtil.setAttrToSession(request, "emailCode", emailCode);
+            setAttrToSession(request, "userEmail", email);
+            setAttrToSession(request, "emailCode", emailCode);
             modelAndView = new ModelAndView("password_recovery_code_page");
             modelAndView.addObject("userEmail", email);
         } else {
@@ -191,8 +198,8 @@ public class StartController {
     @PostMapping("/password-recovery/code/check")
     public ModelAndView checkCode(@ModelAttribute(name = "code") Integer code,
                                   HttpServletRequest request) {
-        String userEmail = SessionUtil.getAttrFromSession(request, "userEmail");
-        Integer emailCode = SessionUtil.getIntAttrFromSession(request, "emailCode");
+        String userEmail = getAttrFromSession(request, "userEmail");
+        Integer emailCode = getIntAttrFromSession(request, "emailCode");
         ModelAndView modelAndView;
         //Проверка соответвтвия кода подтверждения смены пароля
         if (emailCode.equals(code)) {
@@ -217,16 +224,16 @@ public class StartController {
         ModelAndView modelAndView = new ModelAndView("password_recovery_page");
         modelAndView.addObject("password", password);
         //Проверка сложности пароля
-        if(Helper.checkPasswordComplexity(password)) {
+        if (checkPasswordComplexity(password)) {
             //Проверка подтверждения пароля
             if (password.equals(password_repetition)) {
-                String userEmail = SessionUtil.getAttrFromSession(request, "userEmail");
-                password = Helper.getPasswordHash(password);
-                userService.changePassword(userEmail, password);
-                SessionUtil.removeAllAttrFromSession(request);
-
+                String userEmail = getAttrFromSession(request, "userEmail");
                 Long userId = userService.getByEmail(userEmail).get().getId();
-                SessionUtil.setAttrToSession(request, "userId", userId);
+                password = getPasswordHash(password);
+                userService.changePassword(userId, password);
+                removeAllAttrFromSession(request);
+
+                setAttrToSession(request, "userId", userId);
                 modelAndView = new ModelAndView("redirect:/diagram/list");
             } else {
                 modelAndView.addObject("result", "Введенные пароли не совпадают");
@@ -235,5 +242,19 @@ public class StartController {
             modelAndView.addObject("result", "Пароль недостаточно сложный");
         }
         return modelAndView;
+    }
+
+    //Обработка ссылки подключения
+    @RequestMapping("/connect")
+    public ModelAndView linkProcessing(@RequestParam(name = "link") String link,
+                                       HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
+        Optional<User> userOpt = userService.getById(userId);
+        //Проверка существования пользователя в системе
+        if (userOpt.isPresent()) {
+            String url = decryptUrl(link);
+            return new ModelAndView("redirect:" + url);
+        }
+        return new ModelAndView("redirect:/authorization");
     }
 }

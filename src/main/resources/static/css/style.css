@@ -65,7 +65,7 @@ body {
 }
 
 .div-main {
-    width: max-content;
+    width: 100%;
     text-align: center;
     display: block; /*Выравнивание по горизонтали */
     margin: 150px auto 60px;
@@ -74,15 +74,24 @@ body {
 .div-horizontal {
     display: flex;
     flex-flow: row nowrap;
+    flex-wrap: wrap;
     justify-content: flex-end;
     align-items: center;
 }
 
-.div-vertical {
-    display: table-cell;
-    vertical-align: top;
-    horiz-align: center;
+/*Адаптивный контейнер*/
+.main-flex-table {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /*Выравнивание элементов по горизонтали*/
 }
+
+.table-item {
+    flex: 1 1 300px; /*Адаптивное увеличение, сжатие и ширина ячейки таблицы*/
+    margin: 20px; /*Расстояние между ячейками*/
+    text-align: center;
+}
+
 
 .form div {
     margin: 20px;
@@ -295,7 +304,7 @@ input:checked + .slider:before {
     background: #33b5e5;
     border-radius: 5px;
     display: none;
-    animation: fadeMessage 2s 1s forwards;
+    animation: fadeMessage 2s 1.5s forwards; /*Продолжительность угасания, продолжительность простоя*/
 }
 
 /*Анимация плавного исчезновения сообщения*/

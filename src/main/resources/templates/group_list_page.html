@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" media="all"
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
-    <title>Мои диаграммы</title>
+    <title>Группы</title>
 </head>
 
 <body>
@@ -29,7 +29,7 @@
 </header>
 
 <div class="div-main" style="margin: 60px auto;" onclick="hideMenu()" th:onclick="hideMenu()">
-    <h1 class="page_title">Мои диаграммы</h1>
+    <h1 class="page_title">Группы</h1>
 
     <div style="width: max-content; max-width: 100%; display: inline-block;">
         <div class="div-horizontal" style="margin-top: 40px;">
@@ -42,44 +42,44 @@
                 />
             </div>
             <div style="margin-bottom: 15px">
-                <a href="/diagram/list/import" class="input-submit"
-                   style="margin: 0 10px; width: auto; vertical-align: center">
-                    <img src="/static/images/Upload_Icon.png" th:src="@{/images/Upload_Icon.png}" alt="upload"
-                         style="width: 15px; margin: 0 5px"/>
-                    Импорт
-                </a>
-                <a href="/diagram/list/create" class="input-submit"
+                <a href="/group/list/create" class="input-submit"
                    style="margin: 0; width: auto; vertical-align: center">
                     <img src="/static/images/Create_Icon.png" th:src="@{/images/Create_Icon.png}" alt="create"
                          style="width: 15px; margin: 0 5px;"/>
-                    Создать диаграмму
+                    Создать группу
                 </a>
             </div>
         </div>
 
         <div style="overflow: auto">
-            <table style="border-spacing: 15px; horiz-align: center; width: 100%; text-align: left;">
+            <table style="border-spacing: 20px; width: 100%; text-align: left;">
                 <thead>
                 <tr>
                     <th class="table_header">Название</th>
-                    <th class="table_header">Дата изменения</th>
+                    <th class="table_header">Владелец</th>
                     <th class="table_header">Дата создания</th>
                     <th class="table_header"></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="diagram: ${diagramList}">
+                <tr th:each="group: ${groupList}">
                     <td class="table_value" style="width: max-content; max-width: 350px;">
-                        <a style="font-size: 15px; margin: 0; text-decoration: none; color: #9702A7; word-wrap: anywhere"
-                           th:href="@{'/diagram/' + ${diagram.id}}" th:text="${diagram.name}">
+                        <a style="margin: 0; text-decoration: none; color: #9702A7; word-wrap: anywhere"
+                           th:href="@{'/group/' + ${group.id} + '/diagram/list'}" th:text="${group.name}">
                         </a>
                     </td>
-                    <td class="table_value" th:text="${diagram.modifiedDate}"></td>
-                    <td class="table_value" th:text="${diagram.creationDate}"></td>
+                    <td class="table_value" th:text="${group.userName}" style="width: max-content; max-width: 350px; word-wrap: anywhere"></td>
+                    <td class="table_value" th:text="${group.creationDate}"></td>
                     <td class="ref_menu" style="text-align: right">
-                        <a style="color: red; font-size: 15px; margin: 0;"
-                           th:href="@{'/diagram/list/delete/' + ${diagram.id}}">
+                        <a style="color: red; font-size: 15px; margin: 0"
+                           th:if="${userName} == ${group.userName}"
+                           th:href="@{'/group/list/delete/' + ${group.id}}">
                             Удалить
+                        </a>
+                        <a style="color: red; font-size: 15px; margin: 0"
+                           th:if="${userName} != ${group.userName}"
+                           th:href="@{'/group/list/delete/' + ${group.id}}">
+                            Покинуть
                         </a>
                     </td>
                 </tr>

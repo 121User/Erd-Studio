@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${'Группа ' + group.name + ' - участники'}"></title>
+
+    <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
+    <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
+    <script type="text/javascript" th:src="@{/js/group_script.js}" src="/static/js/group_script.js"></script>
+    <script>
+        window.onload = async function () {
+            // Отслеживание нажатие кнопкки копирования ссылки
+            const copyLinkButton = document.getElementById('copy_link_button');
+            if(copyLinkButton !== null){
+                copyLinkButton.onclick = function () {
+                    copyLink();
+                    messageOutput('info', "Ссылка скопирована")
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+<header style="width: 100%;">
+    <div style="flex-grow: 1;">
+        <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
+             onclick="location.href='/main'"
+             alt="logo" class="logo-image"/>
+    </div>
+    <!--Кнопка меню-->
+    <div th:if="${userName} != null">
+        <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
+            <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
+                 style="padding: 10px; width: 25px; margin-right: 10px"/>
+        </button>
+    </div>
+</header>
+
+<div class="div-main" style="margin: 60px auto;" onclick="hideMenu()" th:onclick="hideMenu()">
+    <div>
+        <label>
+            <input id="name_input" class="input-text" maxlength="100"
+                   style=" width: 400px; font-size: 23px; margin: 20px; text-align: center; border: 2px solid rgba(116,33,125,0.5);"
+                   onblur="renameGroup()" onkeyup="renameGroupByKeyup(event)" th:value="${group.name}"/>
+            <img src="/static/images/Edit.png" th:src="@{/images/Edit.png}" alt="upload"
+                 style="width: 15px;"/>
+        </label>
+    </div>
+    <div>
+        <a class="text2">Участники</a>
+    </div>
+    <div style="margin-top: 40px; margin-bottom: 20px">
+        <a class="text2" style="color: #74217D">Владелец группы:</a>
+        <a class="text2" th:text="${group.userName}"></a>
+    </div>
+
+    <div style="width: max-content; max-width: 100%; display: inline-block;">
+        <div class="div-horizontal">
+            <div style="flex-grow: 1; margin-bottom: 15px">
+                <input id="search_input" placeholder="Поиск" required type="text" aria-label="Search"
+                       th:onblur="search()" onkeyup="searchByKeyup(event)" th:value="${searchText}"
+                       class="input-text" maxlength="100" style="width: 400px; horiz-align: left; float: left;
+                   padding-left: 25px; background: url(/images/Search_Icon.png) no-repeat left;
+                   background-size: 20px;"
+                />
+            </div>
+            <div th:if="${userName} == ${group.userName}" style="margin-bottom: 15px">
+                <!--Выпадающий список для выбора уровня доступа к группе -->
+                <label>
+                    <img src="/static/images/Unlock.png" th:src="@{/images/Unlock.png}" alt="download"
+                         style="width: 15px; margin: 0 5px"/>
+                    <select id="access_level_selector" onchange="changeAccessLevel()" class="input-submit"
+                            style="margin: 0; width: 200px; height: auto; vertical-align: center">
+                        <optgroup label="Выбор режима">
+                            <option value="entry access" th:selected="${group.accessLevel == 'entry access'}"
+                                    th:data-role="${group.id}">Доступно для входа</option>
+                            <option value="access is closed" th:selected="${group.accessLevel == 'access is closed'}"
+                                    th:data-role="${group.id}">Доступ запрещен</option>
+                        </optgroup>
+                    </select>
+                </label>
+                <a id="copy_link_button" class="input-submit" style="margin-left: 10px; width: auto; vertical-align: center; cursor: pointer;"
+                   th:data-link="${group.connectionLink}">
+                    <img src="/static/images/Link.png" th:src="@{/images/Link.png}" alt="link"
+                         style="width: 15px; margin: 0 5px;"/>
+                    Копировать ссылку
+                </a>
+            </div>
+        </div>
+
+        <div style="overflow: auto">
+            <table style="border-spacing: 15px; width: 100%; text-align: left;">
+                <thead>
+                <tr>
+                    <th class="table_header">Имя</th>
+                    <th class="table_header">Роль</th>
+                    <th class="table_header">Дата вступления</th>
+                    <th class="table_header"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="groupUser: ${groupUserList}">
+                    <td class="table_value" style="width: max-content; max-width: 350px;">
+                        <a style="margin: 0; text-decoration: none; word-wrap: anywhere"
+                           th:text="${groupUser.name}">
+                        </a>
+                    </td>
+                    <td class="ref_menu">
+                        <!--Выпадающий список для выбора уровня доступа к группе -->
+                        <div id="role_list">
+                            <label>
+                                <select id="role_selector" onchange="changeRole()" class="input-submit"
+                                        style="color: #311F46; background: white; font-size: 15px; margin: 0;
+                                        width: 150px; height: 40px;">
+                                    <optgroup label="Выбор роли">
+                                        <option value="participant" th:selected="${groupUser.role == 'participant'}"
+                                                th:data-role="${groupUser.id}">Участник</option>
+                                        <option value="admin" th:selected="${groupUser.role == 'admin'}"
+                                                th:data-role="${groupUser.id}">Администратор</option>
+                                    </optgroup>
+                                </select>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="table_value" th:text="${groupUser.entryDate}"></td>
+                    <td class="ref_menu" style="text-align: right">
+                        <a style="color: red; font-size: 15px; margin: 0"
+                           th:if="${userName} == ${group.userName}"
+                           th:href="@{'/group/'+ ${group.id} + '/participant/list/delete/' + ${groupUser.id}}">
+                            Удалить
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="margin: 10px">
+        <a class="text2" th:text="${listInfo}" style="color: #9702A7"></a>
+    </div>
+</div>
+
+<!--Сообщение-->
+<div id="message_box" style="top: 50px; right: 5px; position: absolute; padding: 5px 0">
+    <a id="messageBlock" class="message" th:data-message="${message}" style="padding: 20px"></a>
+</div>
+
+<!--Меню-->
+<div id="menu_list" class="menu_list" style="top: 60px; background: #74217D">
+    <div style="border-bottom: 2px solid #311F46;">
+        <a th:text="${userName}"></a>
+    </div>
+    <div>
+        <a href="/account/">
+            <img src="/static/images/User_icon.png" th:src="@{/images/User_icon.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Учетная запись
+        </a>
+    </div>
+    <div>
+        <a href="/diagram/list">
+            <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Мои диаграммы
+        </a>
+    </div>
+    <div>
+        <a href="/group/list">
+            <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Группы
+        </a>
+    </div>
+    <div>
+        <a href="/account/logout">
+            <img src="/static/images/Logout_icon.png" th:src="@{/images/Logout_icon.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Выход
+        </a>
+    </div>
+</div>
+</body>
+</html>

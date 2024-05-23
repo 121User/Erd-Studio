@@ -5,11 +5,23 @@
 
 <head>
     <meta charset="utf-8"/>
+    <title>Главная</title>
     <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}">
     <link rel="stylesheet" type="text/css" media="all"
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
-    <title>Главная</title>
+    <script>
+        window.onload = async function () {
+            const message = document.getElementById("messageBlock").dataset.message;
+            if(message !== undefined){
+                if(message.includes("ограничил")) {
+                    messageOutput('warning', message)
+                } else if(message.includes("удалена")) {
+                    messageOutput('error', message)
+                }
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -21,11 +33,11 @@
     </div>
     <div class="ref_menu">
         <a href="/documentation">Документация</a>
-        <a th:if="${userEmail} == null" href="/authorization">Войти</a>
-        <a th:if="${userEmail} == null" href="/registration">Зарегистрироваться</a>
+        <a th:if="${userName} == null" href="/authorization">Войти</a>
+        <a th:if="${userName} == null" href="/registration">Зарегистрироваться</a>
     </div>
     <!--Кнопка меню-->
-    <div th:if="${userEmail} != null">
+    <div th:if="${userName} != null">
         <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
             <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
                  style="padding: 10px; width: 25px; margin-right: 10px"/>
@@ -60,10 +72,15 @@
     <a href="/start" class="input-submit" style="padding: 10px 100px; text-decoration: none;">Начать</a>
 </div>
 
+<!--Сообщение-->
+<div id="message_box" style="top: calc((100% - 150px)/2); left: calc((100% - 340px)/2); position: absolute; padding: 5px 0">
+    <a id="messageBlock" class="message" th:data-message="${message}" style="padding: 20px"></a>
+</div>
+
 <!--Меню-->
 <div id="menu_list" class="menu_list" style="top: 60px; background: #74217D">
     <div style="border-bottom: 2px solid #311F46;">
-        <a th:text="${userEmail}"></a>
+        <a th:text="${userName}"></a>
     </div>
     <div>
         <a href="/account/">
@@ -80,6 +97,13 @@
         </a>
     </div>
     <div>
+        <a href="/group/list">
+            <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Группы
+        </a>
+    </div>
+    <div>
         <a href="/account/logout">
             <img src="/static/images/Logout_icon.png" th:src="@{/images/Logout_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
@@ -90,18 +114,6 @@
 </body>
 
 <style>
-    .main-flex-table {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center; /*Выравнивание элементов по горизонтали*/
-    }
-
-    .table-item {
-        flex: 0 1 300px; /*Адаптивное увеличение, сжатие и ширина ячейки таблицы*/
-        margin: 20px; /*Расстояние между ячейками*/
-        text-align: center;
-    }
-
     .table-item img {
         width: 180px;
         height: 180px;

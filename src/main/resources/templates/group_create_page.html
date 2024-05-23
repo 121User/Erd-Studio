@@ -4,12 +4,12 @@
       lang="ru">
 
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}">
     <link rel="stylesheet" type="text/css" media="all"
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
-    <title>Импорт диаграммы</title>
+    <title>Создание группы</title>
 </head>
 
 <body>
@@ -28,19 +28,20 @@
     </div>
 </header>
 
-<div class="div-main" style="margin: 60px auto;" onclick="hideMenu()" th:onclick="hideMenu()">
-    <h1 class="page_title">Импорт диаграммы</h1>
+<div class="div-main" onclick="hideMenu()" th:onclick="hideMenu()">
+    <h1 class="page_title">Создание группы</h1>
 
-    <div style="text-align: center;">
-        <a class="text2" style="text-align: left; margin-top: 10px">Импорт скрипта базы данных (.sql)</a>
-        <form th:action="@{'/diagram/list/import/do?groupId=' + ${groupId}}" method="post" enctype="multipart/form-data">
-            <input type="file" name="fileDiagram" accept=".sql" style="width: 300px"/>
-            <div>
-                <input type="submit" class="input-submit" style="vertical-align: center; margin: 20px 0 5px;"
-                       value="Загрузить"/>
-            </div>
-        </form>
-    </div>
+    <form action="/group/list/create/do" method="post" class="form">
+        <div>
+            <a class="text2">Название</a>
+            <input name="name" placeholder="Название" required type="text" aria-label="Name" class="input-text"
+                   maxlength="100"/>
+        </div>
+
+        <div>
+            <input type="submit" value="Продолжить" class="input-submit"/>
+        </div>
+    </form>
 </div>
 
 <!--Меню-->

@@ -14,7 +14,7 @@
 
 <body>
 <header style="width: 100%;">
-    <div style="flex-grow: 1;">
+    <div>
         <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
              onclick="location.href='/main'"
              alt="logo" class="logo-image"/>
@@ -30,33 +30,34 @@
 
 <div class="div-main" onclick="hideMenu()" th:onclick="hideMenu()">
     <h1 class="page_title">Учетная запись</h1>
-
-    <div class="div-vertical">
-        <div style="margin-bottom: 40px">
+    <div style="display: inline-block; text-align: right;">
+        <div style="margin-bottom: 20px;">
             <a class="text2">Email</a>
-            <input name="email" th:value="${userEmail}" placeholder="Email" readonly type="text"
+            <input name="email" th:value="${userName}" placeholder="Email" readonly type="text"
                    aria-label="Email" class="input-text">
         </div>
-
-        <div>
-            <a href="/account/password-change" class="input-submit" style="font-size: 15px; padding: 10px 80px">Изменить
-                пароль</a>
+        <div style="margin-bottom: 40px">
+            <a class="text2">Имя</a>
+            <input name="email" th:value="${userName}" placeholder="Email" readonly type="text"
+                   aria-label="Email" class="input-text">
         </div>
     </div>
     <div>
-        <button class="input-submit" onclick="location.href='/account/delete'"
-                style="margin-top: 80px; background: red; vertical-align: center">
-            <img src="/static/images/Delete.png" th:src="@{/images/Delete.png}" alt="profile picture"
-                 style="width: 15px; margin-right: 10px;"/>
-            Удалить учетную запись
-        </button>
+        <a href="/account/password-change" class="input-submit" style="font-size: 15px; padding: 10px 80px">Изменить
+            пароль</a>
     </div>
+    <button class="input-submit" onclick="location.href='/account/delete'"
+            style="margin-top: 80px; background: red; vertical-align: center">
+        <img src="/static/images/Delete.png" th:src="@{/images/Delete.png}" alt="profile picture"
+             style="width: 15px; margin-right: 10px;"/>
+        Удалить учетную запись
+    </button>
 </div>
 
 <!--Меню-->
 <div id="menu_list" class="menu_list" style="top: 60px; background: #74217D">
     <div style="border-bottom: 2px solid #311F46;">
-        <a th:text="${userEmail}"></a>
+        <a th:text="${userName}"></a>
     </div>
     <div>
         <a href="/account/">
@@ -70,6 +71,13 @@
             <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Мои диаграммы
+        </a>
+    </div>
+    <div>
+        <a href="/group/list">
+            <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Группы
         </a>
     </div>
     <div>

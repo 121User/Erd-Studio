@@ -16,14 +16,14 @@
 </head>
 
 <body>
-<header style="border-bottom: 1px solid #311F46; min-width: 1000px;" >
+<header style="border-bottom: 1px solid #311F46; ">
     <div style="flex-grow: 1;">
         <img src="/static/images/logo_light.png" th:src="@{/images/logo_light.png}"
              onclick="location.href='/main'"
              alt="logo" class="logo-image"/>
     </div>
     <div>
-        <input id="searchInput" placeholder="Поиск" required type="text" aria-label="Search"
+        <input id="search_input" placeholder="Поиск" required type="text" aria-label="Search"
                oninput="searchText()" th:oninput="searchText()"
                class="input-text" maxlength="100" style="width: 300px; horiz-align: left; float: left;
                                          padding-left: 25px;
@@ -32,7 +32,7 @@
         />
     </div>
     <!--Кнопка меню-->
-    <div th:if="${userEmail} != null">
+    <div th:if="${userName} != null">
         <button type="button" id="menu_button" class="menu_button" onclick="showMenu()" th:onclick="showMenu()">
             <img src="/static/images/Menu_icon.png" th:src="@{/images/Menu_icon.png}" alt="menu"
                  style="padding: 10px; width: 25px; margin-right: 10px"/>
@@ -47,6 +47,7 @@
     <a href="#Import">Импорт диаграммы</a><br/><br/>
     <a href="#Export">Экспорт диаграммы</a><br/><br/>
 </div>
+
 <div id="content" onclick="hideMenu()" th:onclick="hideMenu()">
     <div id="searchResults"></div>
     <h1 id="Title" style="font-size: 50px">ER-diagram Studio</h1>
@@ -71,46 +72,46 @@
         создать таблицу на диаграмме, необходимо указать ее название.</p>
     <p><b>Атрибуты</b> сущности, описывающие ее характеристики должны быть
         заключены в фигурные скобки:
-        <mark> { </mark>
-        <mark> } </mark>
+        <mark> {</mark>
+        <mark> }</mark>
         .
         Для определения атрибутов необходимо указать их имя, тип и возможность
         значения атрибута быть незаполненным:
-        <mark> "not null" </mark>
+        <mark> "not null"</mark>
         .
         Также при описании атрибута можно указать, что он является первичным ключом
         сущности:
-        <mark> "PK" </mark>
+        <mark> "PK"</mark>
         .
     </p>
     <p><b>Связи</b> между сущностями на диаграмме представлены линиями между таблицами.
         Связи могут быть 3 типов:</p>
     <ol>
         <li>"Один ко многим" -
-            <mark> < </mark>
+            <mark> <</mark>
             ;
         </li>
         <li>"Один к одному" -
-            <mark> - </mark>
+            <mark> -</mark>
             ;
         </li>
         <li>"Многие ко многим" - на диаграмме реализуется при помощи вспомогательной таблицы.
     </ol>
     <p>Для создания связи необходимо указать:
         <br>
-        <mark> ref: </mark>
+        <mark> ref:</mark>
         название таблицы с внешним ключом
         <mark></mark>
         тип связи (
-        <mark> < </mark>
+        <mark> <</mark>
         или
-        <mark> - </mark>
+        <mark> -</mark>
         )
         название таблицы с первичным ключом.
     </p>
     <p>Сама связь должна находиться в строке с внешним ключом. После типа атрибута
         по порядку указываются
-        <mark> [PK, ref:..., not null] </mark>
+        <mark> [PK, ref:..., not null]</mark>
         .
     </p>
     <p><b>Пример описания диаграммы в коде:</b></p>
@@ -119,36 +120,36 @@
         make string [not null]
         model string [not null]
         parts string
-}
-PERSON {
+        }
+        PERSON {
         driversLicense string [PK, not null]
         firstName string(99) [not null]
         lastName string [not null]
         phone string
         age int
-}
-NAMED-DRIVER {
+        }
+        NAMED-DRIVER {
         carRegistrationNumber string [PK, ref: NAMED-DRIVER < CAR, not null]
         driverLicence string [PK, ref: NAMED-DRIVER < PERSON, not null]
-}
+        }
 
-table1 {
-  t1_field1 bigserial [PK, not null]
-  t1_field2 bigint
-  t1_field3 varchar(250) [not null]
-  t1_field4 bigint
-}
-table2 {
-  t2_field1 bigserial [PK, not null]
-  t2_field2 bigint
-  t2_field3 timestamp
-  t2_field4 bigint
-  t2_field5 varchar(10)
-}
-table3 {
-  t1_field1 bigint [PK, ref: table3 < table1]
-  t2_field1 bigint [PK, ref: table3 < table2]
-}</p>
+        table1 {
+        t1_field1 bigserial [PK, not null]
+        t1_field2 bigint
+        t1_field3 varchar(250) [not null]
+        t1_field4 bigint
+        }
+        table2 {
+        t2_field1 bigserial [PK, not null]
+        t2_field2 bigint
+        t2_field3 timestamp
+        t2_field4 bigint
+        t2_field5 varchar(10)
+        }
+        table3 {
+        t1_field1 bigint [PK, ref: table3 < table1]
+        t2_field1 bigint [PK, ref: table3 < table2]
+        }</p>
     <p>В коде описана реализация связи "многие ко многим" между таблицами table1 и table2
         при помощи вспомогательной таблицы table3.</p>
     <h2 id="Import">Импорт диаграммы</h2>
@@ -172,7 +173,7 @@ table3 {
 <!--Меню-->
 <div id="menu_list" class="menu_list" style="top: 85px; right: 15px; background: #74217D">
     <div style="border-bottom: 2px solid #311F46;">
-        <a th:text="${userEmail}"></a>
+        <a th:text="${userName}"></a>
     </div>
     <div>
         <a href="/account/">
@@ -186,6 +187,13 @@ table3 {
             <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Мои диаграммы
+        </a>
+    </div>
+    <div>
+        <a href="/group/list">
+            <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Группы
         </a>
     </div>
     <div>

@@ -11,22 +11,27 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "u_id")
     private Long id;
 
-    @Column(name = "user_email")
+    @Column(name = "u_name")
+    private String name;
+
+    @Column(name = "u_email")
     private String email;
 
-    @Column(name = "user_password")
+    @Column(name = "u_password")
     private String password;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_design_theme")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "design_theme_id")
     private DesignTheme designTheme;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id")
+    private List<Diagram> diagrams;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private List<Diagram> diagrams;
+    @JoinColumn(name = "owner_id")
+    private List<Group> groups;
 }

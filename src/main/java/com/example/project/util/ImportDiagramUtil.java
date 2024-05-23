@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class ImportUtil {
+public class ImportDiagramUtil {
     //Получение кода диаграммы для иморта
     public static String getDiagramCodeForImport(String sqlCode){
         if(sqlCode.contains("[")){
@@ -22,10 +22,11 @@ public class ImportUtil {
     private static String getCodeFromMsSqlServer(String sqlCode){
         String result = sqlCode.replace("PRIMARY KEY", "PK")
                 .replaceAll("CREATE TABLE ", "").replace("NOT NULL", "not null")
-                .replace("] (", " {").replaceAll("\n\\)", "\n}\n")
+                .replaceAll("]\s*\\(\s*\n", "{\n").replaceAll("\n\\)", "\n}\n")
                 .replaceAll("\\[", "").replaceAll("\nGO", "")
-                .replaceAll("]", "").replaceAll(",", "");
-        //Связи
+                .replaceAll("]", "").replaceAll(",", "")
+                .replaceAll(" NULL", "");
+        //Обработка связей
         for (String string : sqlCode.split("\n")) {
             if (string.contains("ALTER TABLE")) {
                 String tableName = "";
@@ -49,6 +50,7 @@ public class ImportUtil {
             }
         }
         result = addSquareBrackets(result);
+        result = result.replaceAll("\n+", "\n");
         return result;
     }
 
@@ -56,10 +58,10 @@ public class ImportUtil {
     private static String getCodeFromPostgresql(String sqlCode){
         String result = sqlCode.replace("PRIMARY KEY", "PK")
                 .replaceAll("CREATE TABLE ", "").replace("NOT NULL", "not null")
-                .replace("\" (", " {").replaceAll("\n\\);", "\n}\n")
+                .replaceAll("\"\s+\\(\s*\n", "{\n").replaceAll("\n\\);", "\n}\n")
                 .replaceAll("\"", "").replaceAll("\nGO", "")
-                .replaceAll(",", "");
-        //Связи
+                .replaceAll(",", "").replaceAll(" \\(", "(");
+        //Обработка связей
         for (String string : sqlCode.split("\n")) {
             if (string.contains("ALTER TABLE")) {
                 String tableName = "";
@@ -75,34 +77,41 @@ public class ImportUtil {
                             .replace("\") REFERENCES", "");
                 }
                 String ref = "ref: " + string.replace("ALTER TABLE \"", "")
-                        .replaceFirst("\" ADD FOREIGN KEY \\(\"(.*?)\"\\) REFERENCES \"", " - ")
+                        .replaceFirst("\" ADD FOREIGN KEY \\(\"(.*?)\"\\) REFERENCES \"", " < ")
                         .replaceFirst("\" \\(\"(.*?)\"\\)", "");
 
                 result = replaceTextByRef(result, tableName, attrName, ref).replace(";", "");
             }
         }
         result = addSquareBrackets(result);
+        result = result.replaceAll("\n+", "\n");
         return result;
     }
 
 
-    //Поиск связи по сущности
+    //Изменение связи сущности
     private static String replaceTextByRef(String text, String tableName, String attrName, String ref){
-        Matcher matcher = Pattern.compile(tableName + "(.*?)}", Pattern.DOTALL).matcher(text);
+        Matcher matcher = Pattern.compile(tableName + "\\{(.*?)}", Pattern.DOTALL).matcher(text);
         if(matcher.find()){
             String table = matcher.group();
             for (String tableStr : table.split("\n")) {
-                if (tableStr.trim().startsWith(attrName)) {
-                    if (tableStr.contains("PK") && tableStr.contains("not null")) {
-                        text = text.replaceFirst(tableStr.trim(), tableStr.trim()
+                String trimStr = tableStr.trim();
+                if (trimStr.startsWith(attrName)) {
+                    if (trimStr.contains("PK") && trimStr.contains("not null")) {
+                        ref = ref.replaceFirst(" < ", " - "); //Изменение типа связи
+                        text = text.replaceFirst(trimStr, trimStr
                                 .replaceFirst("PK(.*?)not null", "PK, " + ref + ", not null"));
-                    } else if (tableStr.contains("PK")) {
-                        text = text.replaceFirst(tableStr.trim(), tableStr.trim()
+                    } else if (trimStr.contains("PK")) {
+                        ref = ref.replaceFirst(" < ", " - "); //Изменение типа связи
+                        text = text.replaceFirst(trimStr, trimStr
                                 .replaceFirst("PK", "PK, " + ref));
-                    } else if (tableStr.contains("not null")) {
-                        text = text.replaceFirst(tableStr.trim(), tableStr.trim()
+                    } else if (trimStr.contains("not null")) {
+                        text = text.replaceFirst(trimStr, trimStr
                                 .replaceFirst("not null", ref + ", not null"));
+                    } else {
+                        text = text.replaceFirst(trimStr, trimStr + " " + ref);
                     }
+                    break;
                 }
             }
         }

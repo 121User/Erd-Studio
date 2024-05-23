@@ -63,7 +63,6 @@
 #sidebar textarea {
     width: 287px;
     min-width: 287px;
-    /*max-width: 1200px;*/
     min-height: calc(100vh - 150px);
     background: #311F46;
     color: white;
@@ -100,12 +99,17 @@
 }
 
 /*Медиа-запрос для скрытия кнопок верхней панели при малом размере экрана*/
-@media screen and (max-width: 800px) {
-    #export_list {
-        display: none;
+@media screen and (max-width: 900px) {
+    .header1{
+        height: 100px;
     }
 
-    .div-horizontal1 {
-        display: none;
+    #header2{
+        display: inline-block;
+    }
+
+    #sidebar, #content {
+        margin-top: 100px;
+        height: calc(100% - 100px);
     }
 }

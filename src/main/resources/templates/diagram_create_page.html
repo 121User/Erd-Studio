@@ -31,7 +31,7 @@
 <div class="div-main" onclick="hideMenu()" th:onclick="hideMenu()">
     <h1 class="page_title">Создание диаграммы</h1>
 
-    <form action="/diagram/list/create/do" method="post" class="form">
+    <form th:action="@{'/diagram/list/create/do?groupId=' + ${groupId}}" method="post" class="form">
         <div>
             <a class="text2">Название</a>
             <input name="name" placeholder="Название" required type="text" aria-label="Name" class="input-text"
@@ -47,7 +47,7 @@
 <!--Меню-->
 <div id="menu_list" class="menu_list" style="top: 60px; background: #74217D">
     <div style="border-bottom: 2px solid #311F46;">
-        <a th:text="${userEmail}"></a>
+        <a th:text="${userName}"></a>
     </div>
     <div>
         <a href="/account/">
@@ -61,6 +61,13 @@
             <img src="/static/images/Table_icon.png" th:src="@{/images/Table_icon.png}" alt="menu"
                  style="width: 25px; margin: 10px; vertical-align: middle"/>
             Мои диаграммы
+        </a>
+    </div>
+    <div>
+        <a href="/group/list">
+            <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="menu"
+                 style="width: 25px; margin: 10px; vertical-align: middle"/>
+            Группы
         </a>
     </div>
     <div>

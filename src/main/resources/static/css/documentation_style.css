@@ -63,6 +63,7 @@
     }
     #content {
         height: max-content;
-        left: 130px; /*Перемещение content при скрытом sidebar*/
+        left: 0; /*Перемещение content при скрытом sidebar*/
+        padding: 20px;
     }
 }
