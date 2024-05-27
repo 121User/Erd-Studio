@@ -8,6 +8,7 @@ public class SessionUtil {
         String userId = getAttrFromSession(request, "userId");
         return userId != null;
     }
+
     //Получение атрибута сессии типа String
     public static String getAttrFromSession(HttpServletRequest request, String name) {
         Object value = request.getSession().getAttribute(name);

@@ -5,7 +5,6 @@ import com.example.project.model.Dto.GroupOutputDto;
 import com.example.project.model.Dto.GroupUserOutputDto;
 import com.example.project.model.Entity.*;
 import com.example.project.repository.GroupUserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import java.util.Optional;
 
 
 @Service
-@Slf4j
 public class GroupUserService {
     private final GroupUserRepository groupUserRepository;
     private final UserService userService;
@@ -55,7 +53,7 @@ public class GroupUserService {
         return groupUserRepository.save(groupUser);
     }
 
-    public void changeRole(GroupUser groupUser, Long roleId){
+    public void changeRole(GroupUser groupUser, Long roleId) {
         GroupUsersRole groupUsersRole = groupUsersRoleService.getById(roleId);
         groupUser.setGroupUsersRole(groupUsersRole);
         groupUserRepository.save(groupUser);

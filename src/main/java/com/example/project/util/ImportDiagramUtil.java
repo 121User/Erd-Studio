@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Slf4j
+
 public class ImportDiagramUtil {
     //Получение кода диаграммы для иморта
-    public static String getDiagramCodeForImport(String sqlCode){
-        if(sqlCode.contains("[")){
+    public static String getDiagramCodeForImport(String sqlCode) {
+        if (sqlCode.contains("[")) {
             return getCodeFromMsSqlServer(sqlCode);
-        } else if (sqlCode.contains("\"")){
+        } else if (sqlCode.contains("\"")) {
             return getCodeFromPostgresql(sqlCode);
         } else {
             return sqlCode;
@@ -19,7 +19,7 @@ public class ImportDiagramUtil {
     }
 
     //Получение кода диаграммы из Ms Sql Server скрипта
-    private static String getCodeFromMsSqlServer(String sqlCode){
+    private static String getCodeFromMsSqlServer(String sqlCode) {
         String result = sqlCode.replace("PRIMARY KEY", "PK")
                 .replaceAll("CREATE TABLE ", "").replace("NOT NULL", "not null")
                 .replaceAll("]\s*\\(\s*\n", "{\n").replaceAll("\n\\)", "\n}\n")
@@ -32,12 +32,12 @@ public class ImportDiagramUtil {
                 String tableName = "";
                 String attrName = "";
                 Matcher matcher = Pattern.compile("ALTER TABLE \\[(.*?)] ADD").matcher(string);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     tableName = matcher.group().replace("ALTER TABLE [", "")
                             .replace("] ADD", "");
                 }
                 matcher = Pattern.compile("KEY \\(\\[(.*?)]\\) REFERENCES").matcher(string);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     attrName = matcher.group().replace("KEY ([", "")
                             .replace("]) REFERENCES", "");
                 }
@@ -55,7 +55,7 @@ public class ImportDiagramUtil {
     }
 
     //Получение кода диаграммы из PostgreSQL скрипта
-    private static String getCodeFromPostgresql(String sqlCode){
+    private static String getCodeFromPostgresql(String sqlCode) {
         String result = sqlCode.replace("PRIMARY KEY", "PK")
                 .replaceAll("CREATE TABLE ", "").replace("NOT NULL", "not null")
                 .replaceAll("\"\s+\\(\s*\n", "{\n").replaceAll("\n\\);", "\n}\n")
@@ -67,12 +67,12 @@ public class ImportDiagramUtil {
                 String tableName = "";
                 String attrName = "";
                 Matcher matcher = Pattern.compile("ALTER TABLE \"(.*?)\" ADD").matcher(string);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     tableName = matcher.group().replace("ALTER TABLE \"", "")
                             .replace("\" ADD", "");
                 }
                 matcher = Pattern.compile("KEY \\(\"(.*?)\"\\) REFERENCES").matcher(string);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     attrName = matcher.group().replace("KEY (\"", "")
                             .replace("\") REFERENCES", "");
                 }
@@ -90,9 +90,9 @@ public class ImportDiagramUtil {
 
 
     //Изменение связи сущности
-    private static String replaceTextByRef(String text, String tableName, String attrName, String ref){
+    private static String replaceTextByRef(String text, String tableName, String attrName, String ref) {
         Matcher matcher = Pattern.compile(tableName + "\\{(.*?)}", Pattern.DOTALL).matcher(text);
-        if(matcher.find()){
+        if (matcher.find()) {
             String table = matcher.group();
             for (String tableStr : table.split("\n")) {
                 String trimStr = tableStr.trim();
@@ -119,7 +119,7 @@ public class ImportDiagramUtil {
     }
 
     //Обход по строкам добавление квадратных скобок, удаление пустых строк
-    private static String addSquareBrackets(String text){
+    private static String addSquareBrackets(String text) {
         StringBuilder result = new StringBuilder();
         for (String string : text.split("\n")) {
             if (string.contains("PK")) {
@@ -128,11 +128,11 @@ public class ImportDiagramUtil {
                 result.append(string.replace("ref: ", "[ref: ")).append("]");
             } else if (string.contains("not null")) {
                 result.append(string.replace("not null", "[not null")).append("]");
-            } else if (!string.equals("") && !string.contains("ALTER TABLE")){
+            } else if (!string.equals("") && !string.contains("ALTER TABLE")) {
                 result.append(string);
             }
             //Перевод строки
-            if (!string.equals("")){
+            if (!string.equals("")) {
                 result.append("\n");
             }
         }

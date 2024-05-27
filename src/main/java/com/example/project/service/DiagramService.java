@@ -3,16 +3,13 @@ package com.example.project.service;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.User;
 import com.example.project.repository.DiagramRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
 @Service
-@Slf4j
 public class DiagramService {
     private final DiagramRepository diagramRepository;
     private final DiagramAccessLevelService diagramAccessLevelService;
@@ -36,7 +33,7 @@ public class DiagramService {
         diagram.setCode(diagramCode);
         diagram.setOwnerId(user.getId());
         diagram.setDiagramAccessLevel(diagramAccessLevelService.getDefault());
-        if(!groupIdOpt.equals("null")){
+        if (!groupIdOpt.equals("null")) {
             diagram.setGroupId(Long.parseLong(groupIdOpt));
         }
         return diagramRepository.save(diagram);
@@ -69,7 +66,7 @@ public class DiagramService {
 
     //Проверка уникальности названия, возврат уникального названия диаграммы
     private String getUniqueDiagramName(User user, String diagramName) {
-        int  cloneNumber = 0;
+        int cloneNumber = 0;
         String result = diagramName;
         //При каждом изменении имени проверка списка на клонов
         if (user.getDiagrams().size() > 0) {
@@ -83,7 +80,7 @@ public class DiagramService {
                         close = true;
                     }
                 }
-                if(!close && cloneNumber > 0){
+                if (!close && cloneNumber > 0) {
                     result = diagramName + cloneNumber;
                 }
             } while (!close);

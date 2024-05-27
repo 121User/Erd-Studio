@@ -5,7 +5,6 @@ import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.User;
 import com.example.project.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,6 @@ import java.util.Optional;
 
 
 @Service
-@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final DesignThemeService designThemeService;

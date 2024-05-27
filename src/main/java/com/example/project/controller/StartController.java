@@ -218,7 +218,7 @@ public class StartController {
     }
 
     @PostMapping("/password-recovery/check")
-    public ModelAndView checkPassword(@ModelAttribute(name = "password") String password,
+    public ModelAndView recoveryPassword(@ModelAttribute(name = "password") String password,
                                       @ModelAttribute(name = "password_repetition") String password_repetition,
                                       HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("password_recovery_page");

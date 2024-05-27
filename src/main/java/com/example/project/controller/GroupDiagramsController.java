@@ -66,7 +66,7 @@ public class GroupDiagramsController {
                 diagramList.addAll(sortDiagramListByModDate(otherDiagramList));
             }
 
-            modelAndView = new ModelAndView("group_diagrams_list_page");
+            modelAndView = new ModelAndView("group_diagram_list_page");
             modelAndView.addObject("userName", user.getName());
             modelAndView.addObject("groupId", group.getId());
             modelAndView.addObject("groupName", group.getName());
@@ -91,7 +91,7 @@ public class GroupDiagramsController {
     }
 
     @RequestMapping("/delete/{diagramId}")
-    public ModelAndView deleteDiagram(@PathVariable(name = "groupId") Long groupId,
+    public ModelAndView deleteGroupDiagram(@PathVariable(name = "groupId") Long groupId,
                                       @PathVariable(name = "diagramId") Long diagramId,
                                       HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");

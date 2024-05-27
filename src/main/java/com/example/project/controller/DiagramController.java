@@ -12,7 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
@@ -62,18 +61,6 @@ public class DiagramController {
             modelAndView = new ModelAndView("redirect:/main");
         }
         return modelAndView;
-    }
-
-    @RequestMapping("/list/delete/{diagramId}")
-    public ModelAndView deleteDiagram(@PathVariable(name = "diagramId") Long diagramId,
-                                      HttpServletRequest request) {
-        Long userId = getLongAttrFromSession(request, "userId");
-        Optional<User> userOpt = userService.getById(userId);
-        //Проверка существования пользователя в системе
-        if (userOpt.isPresent()) {
-            userService.deleteDiagram(userId, diagramId);
-        }
-        return new ModelAndView("redirect:/diagram/list");
     }
 
     @RequestMapping("/list/import")
@@ -184,7 +171,7 @@ public class DiagramController {
     }
 
     @RequestMapping("/{diagramId}/save")
-    public ModelAndView saveChanges(@PathVariable(name = "diagramId") Long diagramId,
+    public ModelAndView saveDiagramChanges(@PathVariable(name = "diagramId") Long diagramId,
                                     @RequestParam(name = "designTheme") String designTheme,
                                     @RequestParam(name = "diagramName") String diagramName,
                                     @RequestParam(name = "diagramCode") String diagramCode,
@@ -202,5 +189,17 @@ public class DiagramController {
         } else {
             return new ModelAndView("redirect:/main");
         }
+    }
+
+    @RequestMapping("/list/delete/{diagramId}")
+    public ModelAndView deleteDiagram(@PathVariable(name = "diagramId") Long diagramId,
+                                      HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
+        Optional<User> userOpt = userService.getById(userId);
+        //Проверка существования пользователя в системе
+        if (userOpt.isPresent()) {
+            diagramService.deleteDiagram(diagramId);
+        }
+        return new ModelAndView("redirect:/diagram/list");
     }
 }

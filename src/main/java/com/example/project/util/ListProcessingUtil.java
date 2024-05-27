@@ -3,7 +3,6 @@ package com.example.project.util;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.GroupUser;
-import com.example.project.model.Entity.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import java.util.List;
 public class ListProcessingUtil {
 
     //Обработка списков диаграмм
-
     //Фильтрация списка диаграмм по тексту поиска
     public static List<Diagram> filterDiagramListBySearch(List<Diagram> diagramList, String searchText) {
         List<Diagram> result = new ArrayList<>();
@@ -50,7 +48,7 @@ public class ListProcessingUtil {
     }
 
     //Получение списка дат изменения диаграмм из списка
-    public static List<String> getDiagramModifiedDates(List<Diagram> diagramList) {
+    private static List<String> getDiagramModifiedDates(List<Diagram> diagramList) {
         List<String> result = new ArrayList<>();
         for (Diagram d : diagramList) {
             result.add(d.getModifiedDate());
@@ -61,7 +59,6 @@ public class ListProcessingUtil {
     }
 
     //Обработка списков групп
-
     //Фильтрация списка групп по тексту поиска
     public static List<Group> filterGroupListBySearch(List<Group> groupList, String searchText) {
         List<Group> result = new ArrayList<>();
@@ -88,7 +85,7 @@ public class ListProcessingUtil {
     }
 
     //Получение списка дат создания групп из списка
-    public static List<String> getGroupCreationDates(List<Group> groupList) {
+    private static List<String> getGroupCreationDates(List<Group> groupList) {
         List<String> result = new ArrayList<>();
         for (Group g : groupList) {
             result.add(g.getCreationDate());
@@ -99,7 +96,6 @@ public class ListProcessingUtil {
     }
 
     //Обработка списков пользователей группы
-
     //Фильтрация списка диаграмм по тексту поиска
     public static List<GroupUser> filterGroupUserListBySearch(List<GroupUser> groupUserList, String searchText) {
         List<GroupUser> result = new ArrayList<>();
@@ -126,7 +122,7 @@ public class ListProcessingUtil {
     }
 
     //Получение списка дат входа пользователей из списка
-    public static List<String> getGroupUserEntryDates(List<GroupUser> groupUserList) {
+    private static List<String> getGroupUserEntryDates(List<GroupUser> groupUserList) {
         List<String> result = new ArrayList<>();
         for (GroupUser gr : groupUserList) {
             result.add(gr.getEntryDate());

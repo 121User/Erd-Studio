@@ -96,20 +96,6 @@ public class GroupController {
         }
     }
 
-    @RequestMapping("/list/delete/{groupId}")
-    public ModelAndView deleteGroup(@PathVariable(name = "groupId") Long groupId,
-                                    HttpServletRequest request) {
-        Long userId = getLongAttrFromSession(request, "userId");
-        Group group = groupService.getByID(groupId);
-        //Проверка является ли отправитель запроса владельцем группы
-        if (userId.equals(group.getOwnerId())) {
-            userService.deleteGroup(userId, groupId);
-        } else {
-            groupUserService.leaveGroup(userId, groupId);
-        }
-        return new ModelAndView("redirect:/group/list");
-    }
-
     @RequestMapping("/{groupId}/rename")
     public ModelAndView renameGroup(@PathVariable(name = "groupId") Long groupId,
                                     @RequestParam(name = "nameText") String groupName,
@@ -143,6 +129,20 @@ public class GroupController {
             }
         }
         return new ModelAndView("redirect:/group/" + groupId + "/participant/list");
+    }
+
+    @RequestMapping("/list/delete/{groupId}")
+    public ModelAndView deleteGroup(@PathVariable(name = "groupId") Long groupId,
+                                    HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
+        Group group = groupService.getByID(groupId);
+        //Проверка является ли отправитель запроса владельцем группы
+        if (userId.equals(group.getOwnerId())) {
+            userService.deleteGroup(userId, groupId);
+        } else {
+            groupUserService.leaveGroup(userId, groupId);
+        }
+        return new ModelAndView("redirect:/group/list");
     }
 
     @RequestMapping("/{groupId}/connect")

@@ -79,26 +79,6 @@ public class GroupParticipantsController {
         return modelAndView;
     }
 
-    @RequestMapping("/delete/{userId}")
-    public ModelAndView deleteGroupUser(@PathVariable(name = "groupId") Long groupId,
-                                        @PathVariable(name = "userId") Long userIdForDelete,
-                                        HttpServletRequest request) {
-        Long userId = getLongAttrFromSession(request, "userId");
-        Optional<User> userOpt = userService.getById(userId);
-        //Проверка существования пользователя в системе
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            Group group = groupService.getByID(groupId);
-            //Проверка на соответствие авторизованного пользователя владельцу группы или администратору
-            if (userId.equals(group.getOwnerId())) {
-                User userForDelete = userService.getById(userIdForDelete).get();
-                GroupUser groupUser = groupUserService.getByUserAndGroup(userForDelete, group).get();
-                groupUserService.deleteGroupUser(groupUser);
-            }
-        }
-        return new ModelAndView("redirect:/group/" + groupId + "/participant/list");
-    }
-
     @RequestMapping("/change-role/{userId}")
     public ModelAndView changeGroupUserRole(@PathVariable(name = "groupId") Long groupId,
                                             @PathVariable(name = "userId") Long userIdForChangeRole,
@@ -114,6 +94,25 @@ public class GroupParticipantsController {
             if (userId.equals(group.getOwnerId())) {
                 GroupUser groupUser = groupUserService.getByUserAndGroup(user, group).get();
                 groupUserService.changeRole(groupUser, role);
+            }
+        }
+        return new ModelAndView("redirect:/group/" + groupId + "/participant/list");
+    }
+
+    @RequestMapping("/delete/{userId}")
+    public ModelAndView deleteGroupUser(@PathVariable(name = "groupId") Long groupId,
+                                        @PathVariable(name = "userId") Long userIdForDelete,
+                                        HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
+        Optional<User> userOpt = userService.getById(userId);
+        //Проверка существования пользователя в системе
+        if (userOpt.isPresent()) {
+            Group group = groupService.getByID(groupId);
+            //Проверка на соответствие авторизованного пользователя владельцу группы или администратору
+            if (userId.equals(group.getOwnerId())) {
+                User userForDelete = userService.getById(userIdForDelete).get();
+                GroupUser groupUser = groupUserService.getByUserAndGroup(userForDelete, group).get();
+                groupUserService.deleteGroupUser(groupUser);
             }
         }
         return new ModelAndView("redirect:/group/" + groupId + "/participant/list");

@@ -3,7 +3,8 @@ package com.example.project.util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Base64;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,18 +14,18 @@ public class Helper {
         Random random = new Random();
         return random.nextInt(max - min) + min;
     }
+
     public static int getEmailCode() {
         return getEmailCode(10000, 100000);
     }
 
     //Проверка сложности пароля
     public static boolean checkPasswordComplexity(String password) {
-        if(password.length() >= 12)
-        {
+        if (password.length() >= 12) {
             Pattern lowerCaseLetter = Pattern.compile("[a-zа-я]");
             Pattern upperCaseLetter = Pattern.compile("[A-ZА-Я]");
             Pattern digit = Pattern.compile("[0-9]");
-            Pattern special = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+            Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
 
             Matcher hasLowerCaseLetter = lowerCaseLetter.matcher(password);
             Matcher hasUpperCaseLetter = upperCaseLetter.matcher(password);
@@ -36,7 +37,7 @@ public class Helper {
         return false;
     }
 
-    //Хэширование пароля (фиксированная длина - 32)
+    //Хеширование пароля (фиксированная длина - 32)
     public static String getPasswordHash(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

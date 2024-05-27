@@ -1,8 +1,9 @@
 package com.example.project.service;
 
-import com.example.project.model.Entity.*;
+import com.example.project.model.Entity.Group;
+import com.example.project.model.Entity.GroupAccessLevel;
+import com.example.project.model.Entity.User;
 import com.example.project.repository.GroupRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,6 @@ import java.util.Optional;
 
 
 @Service
-@Slf4j
 public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupAccessLevelService groupAccessLevelService;
@@ -65,7 +65,7 @@ public class GroupService {
 
     //Проверка уникальности названия, возврат уникального названия группы
     private String getUniqueGroupName(User user, String groupName) {
-        int  cloneNumber = 0;
+        int cloneNumber = 0;
         String result = groupName;
         //При каждом изменении имени проверка списка на клонов
         if (user.getGroups().size() > 0) {
@@ -79,7 +79,7 @@ public class GroupService {
                         close = true;
                     }
                 }
-                if(!close && cloneNumber > 0){
+                if (!close && cloneNumber > 0) {
                     result = groupName + cloneNumber;
                 }
             } while (!close);
@@ -88,7 +88,7 @@ public class GroupService {
     }
 
     //Получение Url для входа в группу
-    public String getGroupUrl(Long groupId){
+    public String getGroupUrl(Long groupId) {
         return "/group/" + groupId + "/connect";
     }
 }

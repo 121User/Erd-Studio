@@ -205,7 +205,6 @@ function getPkRef(code, entity) {
 }
 
 
-
 //Обработка кода диаграммы для сохранения в базе данных
 export function getFormattedCodeForDB(code) {
     let lines = code.split(/\n/g);
