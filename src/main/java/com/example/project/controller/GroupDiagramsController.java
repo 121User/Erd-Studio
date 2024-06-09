@@ -48,53 +48,52 @@ public class GroupDiagramsController {
                                                  HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
-        ModelAndView modelAndView;
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             Group group = groupService.getByID(groupId);
-            String userRole = groupUserService.getUserRoleInGroup(user, group);
+            //Проверка наличия пользователя в группе
+            if(groupUserService.checkUserInGroup(user, group)) {
+                String userRole = groupUserService.getUserRoleInGroup(user, group);
 
-            List<Diagram> diagramList = filterDiagramListByOwner(group.getDiagrams(), userId); //Фильтрация по владельцу
-            diagramList = sortDiagramListByModDate(diagramList); //Отсортированный список диаграмм группы
+                List<Diagram> diagramList = filterDiagramListByOwner(group.getDiagrams(), userId); //Фильтрация по владельцу
+                diagramList = sortDiagramListByModDate(diagramList); //Отсортированный список диаграмм группы
 
-            //Фильтрация списка диаграмм в зависимости от роли (если владелец или администратор, то выводятся все диаграммы, иначе только свои)
-            if (group.getOwnerId().equals(userId) || userRole.equals("admin")) {
-                List<Diagram> otherDiagramList = new ArrayList<>();
-                for (Diagram diagram : group.getDiagrams()) {
-                    if (!diagramList.contains(diagram))
-                        otherDiagramList.add(diagram);
+                //Фильтрация списка диаграмм в зависимости от роли (если владелец или администратор, то выводятся все диаграммы, иначе только свои)
+                if (group.getOwnerId().equals(userId) || userRole.equals("admin")) {
+                    List<Diagram> otherDiagramList = new ArrayList<>();
+                    for (Diagram diagram : group.getDiagrams()) {
+                        if (!diagramList.contains(diagram))
+                            otherDiagramList.add(diagram);
+                    }
+                    diagramList.addAll(sortDiagramListByModDate(otherDiagramList));
                 }
-                diagramList.addAll(sortDiagramListByModDate(otherDiagramList));
-            }
-            //Создание объекта группы для вывода
-            GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
-                    userService.getById(group.getOwnerId()).get().getName(),
-                    null, null, null);
+                //Создание объекта группы для вывода
+                GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
+                        userService.getById(group.getOwnerId()).get().getName(),
+                        null, null, null);
 
-            modelAndView = new ModelAndView("group_diagram_list_page");
-            modelAndView.addObject("userName", user.getName());
-//            modelAndView.addObject("groupId", group.getId());
-//            modelAndView.addObject("groupName", group.getName());
-            modelAndView.addObject("group", groupOutputDto);
-            modelAndView.addObject("searchText", searchText);
+                ModelAndView modelAndView = new ModelAndView("group_diagram_list_page");
+                modelAndView.addObject("userName", user.getName());
+                modelAndView.addObject("group", groupOutputDto);
+                modelAndView.addObject("searchText", searchText);
 
-            //Поиск по названию диаграммы
-            if (searchText != null) {
-                diagramList = filterDiagramListBySearch(diagramList, searchText);
+                //Поиск по названию диаграммы
+                if (searchText != null) {
+                    diagramList = filterDiagramListBySearch(diagramList, searchText);
+                }
+                //Вывод сообщения, если список диаграмм пуст
+                if (diagramList.isEmpty()) {
+                    modelAndView.addObject("listInfo", "Список диаграмм пуст");
+                } else {
+                    //Получение обработанного списка диаграмм для вывода
+                    List<DiagramOutputDto> diagramOutputDtoList = groupUserService.getDiagramOutputDtoList(diagramList);
+                    modelAndView.addObject("diagramList", diagramOutputDtoList);
+                }
+                return modelAndView;
             }
-            //Вывод сообщения, если список диаграмм пуст
-            if (diagramList.isEmpty()) {
-                modelAndView.addObject("listInfo", "Список диаграмм пуст");
-            } else {
-                //Получение обработанного списка диаграмм для вывода
-                List<DiagramOutputDto> diagramOutputDtoList = groupUserService.getDiagramOutputDtoList(diagramList);
-                modelAndView.addObject("diagramList", diagramOutputDtoList);
-            }
-        } else {
-            modelAndView = new ModelAndView("redirect:/main");
         }
-        return modelAndView;
+        return new ModelAndView("redirect:/main");
     }
 
     @RequestMapping("/delete/{diagramId}")

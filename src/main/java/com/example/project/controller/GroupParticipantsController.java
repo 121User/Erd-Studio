@@ -44,38 +44,39 @@ public class GroupParticipantsController {
                                                      HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
-        ModelAndView modelAndView;
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             Group group = groupService.getByID(groupId);
-            //Создание объекта группы для вывода
-            GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
-                    userService.getById(group.getOwnerId()).get().getName(), null,
-                    group.getGroupAccessLevel().getName(), encryptUrl(groupService.getGroupUrl(group.getId())));
+            //Проверка наличия пользователя в группе
+            if(groupUserService.checkUserInGroup(user, group)) {
+                //Создание объекта группы для вывода
+                GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
+                        userService.getById(group.getOwnerId()).get().getName(), null,
+                        group.getGroupAccessLevel().getName(), encryptUrl(groupService.getGroupUrl(group.getId())));
 
-            modelAndView = new ModelAndView("group_participant_list_page");
-            modelAndView.addObject("userName", user.getName());
-            modelAndView.addObject("group", groupOutputDto);
-            modelAndView.addObject("searchText", searchText);
+                ModelAndView modelAndView = new ModelAndView("group_participant_list_page");
+                modelAndView.addObject("userName", user.getName());
+                modelAndView.addObject("group", groupOutputDto);
+                modelAndView.addObject("searchText", searchText);
 
-            List<GroupUser> groupUserList = sortGroupUserListByEntryDate(groupUserService.getAllByGroup(group)); //Отсортированный список пользователей группы
-            //Поиск по названию диаграммы
-            if (searchText != null) {
-                groupUserList = filterGroupUserListBySearch(groupUserList, searchText);
+                List<GroupUser> groupUserList = sortGroupUserListByEntryDate(groupUserService.getAllByGroup(group)); //Отсортированный список пользователей группы
+                //Поиск по имени участника
+                if (searchText != null) {
+                    groupUserList = filterGroupUserListBySearch(groupUserList, searchText);
+                }
+                //Вывод сообщения, если список участников пуст
+                if (groupUserList.isEmpty()) {
+                    modelAndView.addObject("listInfo", "Список участников пуст");
+                } else {
+                    //Получение обработанного списка пользователей группы для вывода
+                    List<GroupUserOutputDto> groupUserOutputDtoList = groupUserService.getGroupUserOutputDtoList(groupUserList);
+                    modelAndView.addObject("groupUserList", groupUserOutputDtoList);
+                }
+                return modelAndView;
             }
-            //Вывод сообщения, если список диаграмм пуст
-            if (groupUserList.isEmpty()) {
-                modelAndView.addObject("listInfo", "Список участников пуст");
-            } else {
-                //Получение обработанного списка пользователей группы для вывода
-                List<GroupUserOutputDto> groupUserOutputDtoList = groupUserService.getGroupUserOutputDtoList(groupUserList);
-                modelAndView.addObject("groupUserList", groupUserOutputDtoList);
-            }
-        } else {
-            modelAndView = new ModelAndView("redirect:/main");
         }
-        return modelAndView;
+        return new ModelAndView("redirect:/main");
     }
 
     @RequestMapping("/change-role/{userId}")

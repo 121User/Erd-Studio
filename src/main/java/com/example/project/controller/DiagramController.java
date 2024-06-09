@@ -3,7 +3,6 @@ package com.example.project.controller;
 import com.example.project.model.Dto.DiagramOutputDto;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.DiagramAccessLevel;
-import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.User;
 import com.example.project.service.DiagramService;
 import com.example.project.service.UserService;
@@ -22,8 +21,7 @@ import java.util.Optional;
 import static com.example.project.util.Helper.encryptUrl;
 import static com.example.project.util.ListProcessingUtil.filterDiagramListBySearch;
 import static com.example.project.util.ListProcessingUtil.sortDiagramListByModDate;
-import static com.example.project.util.SessionUtil.checkUserAuthorization;
-import static com.example.project.util.SessionUtil.getLongAttrFromSession;
+import static com.example.project.util.SessionUtil.*;
 
 @RestController
 @RequestMapping("/diagram")
@@ -152,15 +150,17 @@ public class DiagramController {
                                                HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
+        ModelAndView modelAndView = new ModelAndView("diagram_working_page");
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+
             Optional<Diagram> diagramOpt = diagramService.getOptByID(diagramId);
             //Проверка существования диаграммы
             if (diagramOpt.isPresent()) {
                 Diagram diagram = diagramOpt.get();
                 DiagramAccessLevel diagramAccessLevel = diagram.getDiagramAccessLevel();
-                //Создание объекта группы для вывода
+                //Создание объекта диаграммы для вывода
                 DiagramOutputDto diagramOutputDto = new DiagramOutputDto(diagram.getId(), diagram.getName(),
                         userService.getById(diagram.getOwnerId()).get().getName(), null, null,
                         diagram.getCode(), diagram.getDiagramAccessLevel().getName(),
@@ -168,14 +168,18 @@ public class DiagramController {
 
                 //Проверка, является ли пользователь владельцем диаграммы
                 if (!diagram.getOwnerId().equals(userId)) {
-                    //Проверка уровня доступа к группе
-                    if (diagramAccessLevel.getName().equals("access is closed")) {
-                        return new ModelAndView("redirect:/main?message=Diagram access is closed");
+                    //Проверка правильности подключения
+                    Long diagramIdToConnect = getLongAttrFromSession(request, "diagramIdToConnect");
+                    if (diagramIdToConnect.equals(diagramId)) {
+                        //Проверка уровня доступа к группе
+                        if (diagramAccessLevel.getName().equals("access is closed")) {
+                            return new ModelAndView("redirect:/main?message=Diagram access is closed");
+                        }
+                    } else {
+                        return new ModelAndView("redirect:/main");
                     }
                 }
-
                 boolean theme = user.getDesignTheme().getName().equals("dark");
-                ModelAndView modelAndView = new ModelAndView("diagram_working_page");
                 modelAndView.addObject("userName", user.getName());
                 modelAndView.addObject("designTheme", theme);
                 modelAndView.addObject("diagram", diagramOutputDto);
@@ -183,13 +187,11 @@ public class DiagramController {
             }
             return new ModelAndView("redirect:/main?message=Diagram deleted");
         } else {
-            //Создание объекта группы для вывода
-            DiagramOutputDto diagramOutputDto = new DiagramOutputDto((long)0, "Новая диаграмма",
+            //Создание объекта диаграммы для вывода
+            DiagramOutputDto diagramOutputDto = new DiagramOutputDto((long) 0, "Новая диаграмма",
                     null, null, null, null, null, null);
-
-            ModelAndView modelAndView = new ModelAndView("diagram_working_page");
-            modelAndView.addObject("designTheme", false);
             modelAndView.addObject("diagram", diagramOutputDto);
+            modelAndView.addObject("designTheme", false);
             return modelAndView;
         }
     }
@@ -222,8 +224,8 @@ public class DiagramController {
 
     @RequestMapping("/{diagramId}/change-access")
     public ModelAndView changeDiagramAccessLevel(@PathVariable(name = "diagramId") Long diagramId,
-                                               @RequestParam(name = "level") Long accessLevel,
-                                               HttpServletRequest request) {
+                                                 @RequestParam(name = "level") Long accessLevel,
+                                                 HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         //Проверка существования пользователя в системе
@@ -254,31 +256,11 @@ public class DiagramController {
         }
         return new ModelAndView("redirect:/diagram/list");
     }
-    
+
     @RequestMapping("/{diagramId}/connect")
     public ModelAndView connectToDiagram(@PathVariable(name = "diagramId") Long diagramId,
                                          HttpServletRequest request) {
-        Long userId = getLongAttrFromSession(request, "userId");
-        Optional<User> userOpt = userService.getById(userId);
-        //Проверка существования пользователя в системе
-        if (userOpt.isPresent()) {
-            Optional<Diagram> diagramOpt = diagramService.getOptByID(diagramId);
-            //Проверка существования диаграммы
-            if (diagramOpt.isPresent()) {
-                Diagram diagram = diagramOpt.get();
-                DiagramAccessLevel diagramAccessLevel = diagram.getDiagramAccessLevel();
-
-                //Проверка, является ли пользователь владельцем диаграммы
-                if (!diagram.getOwnerId().equals(userId)) {
-                    //Проверка уровня доступа к группе
-                    if (diagramAccessLevel.getName().equals("access is closed")) {
-                        return new ModelAndView("redirect:/main?message=Diagram access is closed");
-                    }
-                }
-                return new ModelAndView("redirect:/diagram/" + diagramId);
-            }
-            return new ModelAndView("redirect:/main?message=Diagram deleted");
-        }
-        return new ModelAndView("redirect:/main");
+        setAttrToSession(request, "diagramIdToConnect", diagramId);
+        return new ModelAndView("redirect:/diagram/" + diagramId);
     }
 }

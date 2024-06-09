@@ -95,6 +95,12 @@ public class GroupUserService {
         return role;
     }
 
+    //Проверка наличия пользователя в группе
+    public Boolean checkUserInGroup(User user, Group group) {
+        Optional<GroupUser> groupUserOpt = getByUserAndGroup(user, group);
+        return group.getOwnerId().equals(user.getId()) || groupUserOpt.isPresent();
+    }
+
     //Получение списка групп для вывода
     public List<GroupOutputDto> getGroupOutputDtoList(List<Group> groupList) {
         List<GroupOutputDto> groupOutputDtoList = new ArrayList<>();
