@@ -3,10 +3,7 @@ package com.example.project.controller;
 import com.example.project.model.Entity.User;
 import com.example.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,20 +25,44 @@ public class AccountController {
     }
 
     @RequestMapping("/")
-    public ModelAndView viewAccountPage(HttpServletRequest request) {
-        if(checkUserAuthorization(request)){
-            Long userId = getLongAttrFromSession(request, "userId");
-            String userName = userService.getNameById(userId);
+    public ModelAndView viewAccountPage(@RequestParam(name = "changeNameResult", required = false) String changeNameResult,
+                                        HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
+        Optional<User> userOpt = userService.getById(userId);
+        //Проверка существования пользователя в системе
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (changeNameResult != null) {
+                switch (changeNameResult) {
+                    case "ok" -> changeNameResult = "Имя пользователя успешно изменено";
+                    case "occupied" -> changeNameResult = "Введенное имя уже занято";
+                    case "short" -> changeNameResult = "Имя должно содержать 5 символов и больше";
+                }
+            }
             ModelAndView modelAndView = new ModelAndView("account_page");
-            modelAndView.addObject("userName", userName);
+            modelAndView.addObject("userName", user.getName());
+            modelAndView.addObject("userEmail", user.getEmail());
+            modelAndView.addObject("message", changeNameResult);
             return modelAndView;
+        }
+        return new ModelAndView("redirect:/main");
+    }
+
+    @RequestMapping("/name-change")
+    public ModelAndView changeUserName(@RequestParam(name = "nameText") String name,
+                                       HttpServletRequest request) {
+        //Проверка существования пользователя в системе
+        if (checkUserAuthorization(request)) {
+            Long userId = getLongAttrFromSession(request, "userId");
+            String result = userService.changeName(userId, name);
+            return new ModelAndView("redirect:/account/?changeNameResult=" + result);
         }
         return new ModelAndView("redirect:/main");
     }
 
     @RequestMapping("/password-change")
     public ModelAndView viewPasswordChangePage(HttpServletRequest request) {
-        if(checkUserAuthorization(request)){
+        if (checkUserAuthorization(request)) {
             Long userId = getLongAttrFromSession(request, "userId");
             String userName = userService.getNameById(userId);
             ModelAndView modelAndView = new ModelAndView("password_change_page");
@@ -66,7 +87,7 @@ public class AccountController {
             //Проверка старого пароля
             if (Objects.equals(oldPassword, user.getPassword())) {
                 //Проверка сложности нового пароля
-                if(checkPasswordComplexity(newPassword)) {
+                if (checkPasswordComplexity(newPassword)) {
                     //Проверка подтверждения пароля
                     if (newPassword.equals(password_repetition)) {
                         newPassword = getPasswordHash(newPassword);
@@ -96,6 +117,7 @@ public class AccountController {
     @RequestMapping("/delete")
     public ModelAndView deleteUser(HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
+        userService.deleteAllGroups(userId);
         userService.deleteUser(userId);
         removeAllAttrFromSession(request);
         return new ModelAndView("redirect:/main");

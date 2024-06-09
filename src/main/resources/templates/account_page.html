@@ -10,6 +10,38 @@
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
     <title>Учетная запись</title>
+
+    <script>
+        window.onload = function () {
+            //Активация меню, если кнопка есть на странице
+            const menuButton = document.getElementById('menu_button');
+            if(menuButton !== null) {
+                menuButton.click();
+            }
+            //Вывод сообщения
+            const message = document.getElementById("messageBlock").dataset.message;
+            if(message !== undefined && message !== 'null'){
+                if(message.includes("успешно")) {
+                    messageOutput('info', message)
+                } else {
+                    messageOutput('error', message)
+                }
+            }
+        }
+
+        //Изменение имени пользователя при потере фокуса
+        function renameUser() {
+            const nameText = document.getElementById('name_input').value;
+            location.href = '/account/name-change?nameText=' + nameText;
+        }
+        //Активация изменения имени пользователя при нажатии на Enter
+        function renameUserByKeyup(event) {
+            if (event.keyCode === 13) {
+                const nameText = document.getElementById('name_input');
+                nameText.blur();
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -32,13 +64,14 @@
     <h1 class="page_title">Учетная запись</h1>
     <div style="display: inline-block; text-align: right;">
         <div style="margin-bottom: 20px;">
-            <a class="text2">Email</a>
-            <input name="email" th:value="${userName}" placeholder="Email" readonly type="text"
-                   aria-label="Email" class="input-text">
-        </div>
-        <div style="margin-bottom: 40px">
             <a class="text2">Имя</a>
-            <input name="email" th:value="${userName}" placeholder="Email" readonly type="text"
+            <input id="name_input" name="name" th:value="${userName}" placeholder="Имя" type="text" maxlength="25"
+                   aria-label="Имя" class="input-text" onblur="renameUser()" onkeyup="renameUserByKeyup(event)">
+            <img src="/static/images/Edit.png" th:src="@{/images/Edit.png}" alt="edit" style="width: 15px;"/>
+        </div>
+        <div style="margin-bottom: 40px; padding-right: 20px">
+            <a class="text2">Email</a>
+            <input name="email" th:value="${userEmail}" placeholder="Email" readonly type="text"
                    aria-label="Email" class="input-text">
         </div>
     </div>
@@ -52,6 +85,11 @@
              style="width: 15px; margin-right: 10px;"/>
         Удалить учетную запись
     </button>
+</div>
+
+<!--Сообщение-->
+<div id="message_box" style="top: 50px; right: 5px; position: absolute; padding: 5px 0">
+    <a id="messageBlock" class="message" th:data-message="${message}" style="padding: 20px"></a>
 </div>
 
 <!--Меню-->

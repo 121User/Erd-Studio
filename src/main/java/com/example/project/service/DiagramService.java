@@ -1,12 +1,12 @@
 package com.example.project.service;
 
-import com.example.project.model.Entity.Diagram;
-import com.example.project.model.Entity.User;
+import com.example.project.model.Entity.*;
 import com.example.project.repository.DiagramRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 
 @Service
@@ -21,8 +21,8 @@ public class DiagramService {
         this.diagramAccessLevelService = diagramAccessLevelService;
     }
 
-    public Diagram getByID(Long id) {
-        return diagramRepository.findById(id).get();
+    public Optional<Diagram> getOptByID(Long id) {
+        return diagramRepository.findById(id);
     }
 
     public Diagram createByName(User user, String groupIdOpt, String diagramName, String diagramCode) {
@@ -60,8 +60,19 @@ public class DiagramService {
         }
     }
 
+    public void changeAccessLevel(Diagram diagram, Long accessLevelId) {
+        DiagramAccessLevel diagramAccessLevel = diagramAccessLevelService.getById(accessLevelId);
+        diagram.setDiagramAccessLevel(diagramAccessLevel);
+        diagramRepository.save(diagram);
+    }
+
     public void deleteDiagram(Long diagramId) {
-        diagramRepository.delete(getByID(diagramId));
+        Optional<Diagram> diagramOpt = getOptByID(diagramId);
+        //Проверка существования диаграммы
+        if(diagramOpt.isPresent()) {
+            Diagram diagram = diagramOpt.get();
+            diagramRepository.delete(diagram);
+        }
     }
 
     //Проверка уникальности названия, возврат уникального названия диаграммы
@@ -86,5 +97,10 @@ public class DiagramService {
             } while (!close);
         }
         return result;
+    }
+
+    //Получение Url для подключения к диаграмме
+    public String getDiagramUrl(Long diagramId) {
+        return "/diagram/" + diagramId + "/connect";
     }
 }

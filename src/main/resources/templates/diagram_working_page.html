@@ -4,7 +4,7 @@
       lang="ru">
 <head>
     <meta charset="utf-8"/>
-    <title th:text="${'Диаграмма - ' + diagramName}"></title>
+    <title th:text="${'Диаграмма - ' + diagram.name}"></title>
     <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
 
     <link rel="stylesheet" type="text/css" media="all" href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
@@ -39,14 +39,15 @@
 
 <body>
 <header class="header1">
-    <div id="header2" class="div-horizontal" style="text-align: left">
+    <div id="header2" class="div-horizontal">
         <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px;">
             <img src="/static/images/Icon_dark.png" th:src="@{/images/Icon_dark.png}"
                  onclick="location.href='/main'"
-                 alt="logo" style="width: 40px; margin-left: 15px"/>
+                 alt="logo" style="width: 40px; margin-left: 10px"/>
             <!-- Название диаграммы -->
-            <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы"
-                   type="text" aria-label="Search" maxlength="100" th:value="${diagramName}"/>
+            <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы" type="text" aria-label="Search"
+                   maxlength="100" th:value="${diagram.name}"
+                   th:readonly="${userName != diagram.userName && diagram.accessLevel == 'read access'}"/>
         </div>
 
         <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px">
@@ -71,7 +72,7 @@
                 </label>
             </div>
             <!-- Переключатель для выбора темы страницы -->
-            <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px;">
+            <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px; margin-right: 15px">
                 <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme" style="width: 30px"/>
                 <form id="switch_theme" action="" method="get" class="form" style="margin: 0 5px">
                     <label class="switch">
@@ -82,8 +83,74 @@
             </div>
             <!--Ссылка на документацию-->
             <div class="div-horizontal1">
-                <a href="/documentation" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 10px; padding: 5px 20px;
-        vertical-align: middle; font-size: 15px">Документация</a>
+                <a href="/documentation" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0; padding: 5px 20px;
+                font-size: 15px">Документация</a>
+            </div>
+        </div>
+        <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px" th:if="${userName} == ${diagram.userName}">
+            <!--Выпадающий список для выбора уровня доступа к группе-->
+            <div>
+                <label>
+                    <select id="access_level_selector" onchange="changeDiagramAccess()" class="div-horizontal1"
+                            style="margin-right: 15px; padding: 6px; width: 150px; height: auto; vertical-align: center">
+                        <optgroup label="Выбор режима">
+                            <option value="read access" th:selected="${diagram.accessLevel == 'read access'}">
+                                Доступно для чтения</option>
+                            <option value="read and write access" th:selected="${diagram.accessLevel == 'read and write access'}">
+                                Доступно для чтения и редактирования</option>
+                            <option value="access is closed" th:selected="${diagram.accessLevel == 'access is closed'}">
+                                Доступ запрещен</option>
+                        </optgroup>
+                    </select>
+                </label>
+                <!--                <label>-->
+                <!--                    <select id="access_level_selector" onchange="changeAccessLevel()" class="div-horizontal1"-->
+                <!--                            style="margin-right: 15px; padding: 6px; width: 150px; height: auto; vertical-align: center">-->
+                <!--                        <optgroup label="Выбор режима">-->
+                <!--                            <option value="entry access">Доступно для чтения</option>-->
+                <!--                            <option value="entry access" >Доступно для чтения и редактирования</option>-->
+                <!--                            <option value="access is closed">Доступ запрещен</option>-->
+                <!--                        </optgroup>-->
+                <!--                    </select>-->
+                <!--                </label>-->
+            </div>
+            <!--Копирование ссылки-->
+            <div class="div-horizontal1">
+                <a id="copy_link_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0; padding: 5px 10px;
+                font-size: 15px; cursor: pointer;"
+                   th:data-link="${diagram.connectionLink}">
+                    <img src="/static/images/Link.png" th:src="@{/images/Link.png}" alt="link"
+                         style="width: 15px; "/>
+                    Копировать ссылку
+                </a>
+            </div>
+<!--            <div class="div-horizontal1">-->
+<!--                <a id="copy_link_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0;padding: 5px 10px;-->
+<!--                font-size: 15px; cursor: pointer;">-->
+<!--                    <img src="/static/images/Link.png" th:src="@{/images/Link.png}" alt="link"-->
+<!--                         style="width: 15px; "/>-->
+<!--                    Копировать ссылку-->
+<!--                </a>-->
+<!--            </div>-->
+
+
+            <!--Вывод истории-->
+<!--            <div class="div-horizontal1">-->
+<!--                <a id="show_history_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0;padding: 5px 10px;-->
+<!--                font-size: 15px; cursor: pointer;"-->
+<!--                   th:data-link="${group.connectionLink}">-->
+<!--                    <img src="/static/images/History.png" th:src="@{/images/History.png}" alt="link"-->
+<!--                         style="width: 15px; "/>-->
+<!--                    История-->
+<!--                </a>-->
+<!--            </div>     -->
+            <div class="div-horizontal1">
+                <a id="show_history_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0;padding: 5px 10px;
+                font-size: 15px; cursor: pointer;">
+                    <img src="/static/images/History.png" th:src="@{/images/History.png}" alt="link"
+                         style="width: 15px; "/>
+                    История
+                </a>
             </div>
         </div>
     </div>
@@ -120,13 +187,13 @@
         <label for="diagram_code" class="text2" style="color: white;"></label>
     </div>
     <div>
-        <textarea id="diagram_code" class="input-text" th:text="${diagramCode}"></textarea>
+        <textarea id="diagram_code" class="input-text" th:text="${diagram.code}"></textarea>
         <div id="editor"></div>
     </div>
 </div>
 
 <!--Сообщение-->
-<div id="message_box" style="top: 50px; right: 5px; position: absolute; padding: 5px 0">
+<div id="message_box" style="top: 75px; right: 5px; position: absolute; padding: 5px 0">
     <a class="message"></a>
 </div>
 

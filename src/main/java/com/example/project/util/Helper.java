@@ -37,6 +37,14 @@ public class Helper {
         return false;
     }
 
+    //Обработка даты и времени
+    public static String getFormattedDateTime(String dateTime) {
+        dateTime = dateTime.split("\\.")[0];
+//        String[] dateTimeStrings = dateTime.split("T");
+//        return dateTimeStrings[0] + " " + dateTimeStrings[1];
+        return dateTime.replace("T", " ");
+    }
+
     //Хеширование пароля (фиксированная длина - 32)
     public static String getPasswordHash(String password) {
         try {

@@ -3,9 +3,10 @@
     top: 0;
     width: 100%;
     background: #311F46;
-    height: 50px;
+    height: max-content;
     display: flex;
     align-items: center;
+    padding: 0 5px 10px 5px;
 }
 
 #diagram_name {
@@ -49,13 +50,13 @@
     position: fixed;
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
+    margin-top: 80px;
     top: 0;
 }
 
 #sidebar {
     height: calc(100% - 70px);
-    padding: 10px;
+    padding: 0 10px;
     background: #482D65;
     border-right: 1px solid #74217D;
 }
@@ -98,18 +99,32 @@
     }
 }
 
-/*Медиа-запрос для скрытия кнопок верхней панели при малом размере экрана*/
-@media screen and (max-width: 900px) {
-    .header1{
-        height: 100px;
-    }
+/*!*Медиа-запросы для расширения верхней панели при малом размере экрана*!*/
+/*@media screen and (max-width: 1200px) {*/
+/*    .header1 {*/
+/*        height: 130px;*/
+/*    }*/
 
-    #header2{
-        display: inline-block;
-    }
+/*    #header2 {*/
+/*        display: inline-block;*/
+/*    }*/
 
-    #sidebar, #content {
-        margin-top: 100px;
-        height: calc(100% - 100px);
-    }
-}
+/*    #sidebar, #content {*/
+/*        margin-top: 130px;*/
+/*        height: calc(100% - 130px);*/
+/*    }*/
+/*}*/
+/*@media screen and (max-width: 1200px) {*/
+/*    .header1 {*/
+/*        height: 130px;*/
+/*    }*/
+
+/*    #header2 {*/
+/*        display: inline-block;*/
+/*    }*/
+
+/*    #sidebar, #content {*/
+/*        margin-top: 130px;*/
+/*        height: calc(100% - 130px);*/
+/*    }*/
+/*}*/

@@ -7,9 +7,13 @@ import com.example.project.model.Entity.User;
 import com.example.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Service
@@ -49,7 +53,7 @@ public class UserService {
         DesignTheme designTheme = designThemeService.getByName(designThemeName);
         User user = new User();
         user.setEmail(email);
-        user.setName(email.split("@")[0]);
+        user.setName(generateUserName());
         user.setPassword(password);
         user.setDesignTheme(designTheme);
         userRepository.save(user);
@@ -63,6 +67,22 @@ public class UserService {
     public Long addGroup(User user, String groupName) {
         Group group = groupService.createByName(user, groupName);
         return group.getId();
+    }
+
+    public String changeName(Long id, String name) {
+        String curName = getById(id).get().getName();
+        if(curName.equals(name)){
+            return null;
+        } else if (getById(id).isPresent() && checkNameUniqueness(name)) {
+            if(name.length() >= 5) {
+                User user = getById(id).get();
+                user.setName(name);
+                userRepository.save(user);
+                return "ok";
+            }
+            return "short";
+        }
+        return "occupied";
     }
 
     public void changePassword(Long id, String password) {
@@ -85,23 +105,47 @@ public class UserService {
         if (getById(userId).isPresent()) {
             userRepository.deleteAllDiagramByUser(userId);
             userRepository.deleteAllGroupUserByUser(userId);
-            userRepository.deleteAllGroupByUser(userId);
             userRepository.delete(getById(userId).get());
         }
     }
 
-    public void deleteDiagram(Long userId, Long diagramId) {
-        //Проверка является ли отправитель запроса владельцем диаграммы
-        if (diagramService.getByID(diagramId).getOwnerId().equals(userId)) {
-            diagramService.deleteDiagram(diagramId);
+    //Удаление собственной группы
+    public void deleteGroup(Long groupId) {
+        groupService.deleteGroup(groupId);
+    }
+
+    //Удаление всех групп
+    public void deleteAllGroups(Long userId) {
+        User user = getById(userId).get();
+        for(Group group: user.getGroups()){
+            groupService.deleteGroup(group.getId());
         }
     }
 
-    //Удаление собственной группы
-    public void deleteGroup(Long userId, Long groupId) {
-        //Проверка является ли отправитель запроса владельцем группы
-        if (groupService.getByID(groupId).getOwnerId().equals(userId)) {
-            groupService.deleteGroup(groupId);
+    //Генерация уникального имени пользователя
+    private String generateUserName() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        int nameLength = 8;
+        StringBuilder name = new StringBuilder(nameLength);
+
+        do{
+            for (int i = 0; i < nameLength; i++) {
+                Random random = new Random();
+                int randomIndex = random.nextInt(characters.length());
+                name.append(characters.charAt(randomIndex));
+            }
+        } while (!checkNameUniqueness(name.toString()));
+        return name.toString();
+    }
+
+    //Проверка уникальности имени пользователя
+    private Boolean checkNameUniqueness(String name) {
+        List<User> userList = userRepository.findAll();
+        for(User user: userList){
+            if(user.getName().equals(name)){
+                return false;
+            }
         }
+        return true;
     }
 }

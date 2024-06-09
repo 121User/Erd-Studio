@@ -5,6 +5,8 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static com.example.project.util.Helper.getFormattedDateTime;
+
 @Entity
 @Data
 @Table(name = "group_users")
@@ -33,10 +35,12 @@ public class GroupUser {
 
     //Форматирование дат (используется при выводе на страницу в th)
     public String getEntryDate() {
-        String result = entryDate.toString();
-        result = result.split("\\.")[0];
-        String[] dateTimeStrings = result.split("T");
-        result = dateTimeStrings[1] + " " + dateTimeStrings[0];
-        return result;
+//        String result = entryDate.toString();
+//        result = result.split("\\.")[0];
+//        String[] dateTimeStrings = result.split("T");
+//        result = dateTimeStrings[1] + " " + dateTimeStrings[0];
+//        return result;
+
+        return getFormattedDateTime(entryDate.toString());
     }
 }

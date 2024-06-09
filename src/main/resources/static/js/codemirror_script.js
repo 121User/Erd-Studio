@@ -4,14 +4,15 @@ import 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/javascript
 //Скрипт для редактора кода
 
 //Создание редактора кода
-export function createCodeMirror() {
+export function createCodeMirror(isReadOnly) {
     //Загрузка нового режима CodeMirror
     CodeMirror.defineMode("custom-mode", createMode);
     //Создание редактора кода
     let codeTextarea = document.getElementById('diagram_code');
     let editor = CodeMirror.fromTextArea(codeTextarea, {
         lineNumbers: true, //Панель номеров строк
-        mode: 'custom-mode', //Стиль выделения
+        mode: 'custom-mode', //Стиль выделения,
+        readOnly: isReadOnly, //Доступ только на чтение
         theme: 'custom-theme', //Тема оформления
         extraKeys: {
             //Обработка отступов по символам '{' и '}'
@@ -34,7 +35,7 @@ export function createCodeMirror() {
                 const selStart = editor.getCursor("start");
                 const selEnd = editor.getCursor("end");
 
-                const fullSelStart = { line: selStart.line, ch: 0 }; //Выделение первой строки полностью
+                const fullSelStart = {line: selStart.line, ch: 0}; //Выделение первой строки полностью
                 cm.setSelection(fullSelStart, selEnd);
                 const selection = cm.getSelection();
 

@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title th:text="${'Группа ' + groupName + ' - диаграммы'}"></title>
+    <title th:text="${'Группа ' + group.name + ' - диаграммы'}"></title>
     <link rel="icon" type="image/png" href="/static/images/Icon_dark.png" th:href="@{/images/Icon_dark.png}"/>
     <link rel="stylesheet" type="text/css" media="all"
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
@@ -34,9 +34,10 @@
         <label>
             <input id="name_input" class="input-text" maxlength="100"
                    style="width: 400px; font-size: 23px; margin: 20px; text-align: center; border: 2px solid rgba(116,33,125,0.5);"
-                   onblur="renameGroup()" onkeyup="renameGroupByKeyup(event)" th:value="${groupName}"/>
-            <img src="/static/images/Edit.png" th:src="@{/images/Edit.png}" alt="upload"
-                 style="width: 15px;"/>
+                   onblur="renameGroup()" onkeyup="renameGroupByKeyup(event)"
+                   th:value="${group.name}" th:readonly="${userName} != ${group.userName}"/>
+            <img src="/static/images/Edit.png" th:src="@{/images/Edit.png}" alt="edit"
+                 style="width: 15px;" th:if="${userName} == ${group.userName}"/>
         </label>
     </div>
     <div>
@@ -54,19 +55,19 @@
                 />
             </div>
             <div style="margin-bottom: 15px">
-                <a th:href="@{'/group/' + ${groupId} + '/participant/list'}" href="/diagram/list/import" class="input-submit"
+                <a th:href="@{'/group/' + ${group.id} + '/participant/list'}" href="/diagram/list/import" class="input-submit"
                    style="margin: 0; width: auto; vertical-align: center">
                     <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="upload"
                          style="width: 15px; margin: 0 5px"/>
                     Участники
                 </a>
-                <a th:href="@{'/diagram/list/import/?groupId=' + ${groupId}}" class="input-submit"
+                <a th:href="@{'/diagram/list/import/?groupId=' + ${group.id}}" class="input-submit"
                    style="margin: 0 10px; width: auto; vertical-align: center">
                     <img src="/static/images/Upload_Icon.png" th:src="@{/images/Upload_Icon.png}" alt="upload"
                          style="width: 15px; margin: 0 5px"/>
                     Импорт
                 </a>
-                <a th:href="@{'/diagram/list/create/?groupId=' + ${groupId}}" class="input-submit"
+                <a th:href="@{'/diagram/list/create/?groupId=' + ${group.id}}" class="input-submit"
                    style="margin: 0; width: auto; vertical-align: center">
                     <img src="/static/images/Create_Icon.png" th:src="@{/images/Create_Icon.png}" alt="create"
                          style="width: 15px; margin: 0 5px;"/>
@@ -98,7 +99,7 @@
                     <td class="table_value" th:text="${diagram.creationDate}"></td>
                     <td class="ref_menu" style="text-align: right">
                         <a style="color: red; font-size: 15px; margin: 0"
-                           th:href="@{'/group/' + ${groupId} + '/diagram/list/delete/' + ${diagram.id}}">
+                           th:href="@{'/group/' + ${group.id} + '/diagram/list/delete/' + ${diagram.id}}">
                             Удалить
                         </a>
                     </td>

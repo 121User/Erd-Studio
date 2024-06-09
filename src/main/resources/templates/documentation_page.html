@@ -108,42 +108,24 @@
         <mark> [PK, ref:..., not null]</mark>.
     </p>
     <p><b>Пример описания диаграммы в коде:</b></p>
-    <p style="white-space: pre;">
-        CAR {
-        registrationNumber string [PK, not null]
-        make string [not null]
-        model string [not null]
-        parts string
-        }
-        PERSON {
-        driversLicense string [PK, not null]
-        firstName string(99) [not null]
-        lastName string [not null]
-        phone string
-        age int
-        }
-        NAMED-DRIVER {
-        carRegistrationNumber string [PK, ref: NAMED-DRIVER < CAR, not null]
-        driverLicence string [PK, ref: NAMED-DRIVER < PERSON, not null]
-        }
-
-        table1 {
+    <p style="white-space: pre;">   table1 {
         t1_field1 bigserial [PK, not null]
         t1_field2 bigint
         t1_field3 varchar(250) [not null]
         t1_field4 bigint
-        }
-        table2 {
+    }
+    table2 {
         t2_field1 bigserial [PK, not null]
         t2_field2 bigint
         t2_field3 timestamp [not null]
         t2_field4 bigint
         t2_field5 varchar(10)
-        }
+    }
         table3 {
+        t3_field1 bigserial [PK, not null]
         t1_id bigint [PK, ref: table3 < table1]
         t2_id bigint [PK, ref: table3 < table2]
-        }</p>
+    }</p>
     <p>В коде описана реализация связи "многие ко многим" между таблицами table1 и table2
         при помощи вспомогательной таблицы table3.</p>
     <h2 id="Import">Импорт диаграммы</h2>

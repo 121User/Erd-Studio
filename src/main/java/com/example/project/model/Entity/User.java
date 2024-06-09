@@ -27,11 +27,11 @@ public class User {
     @JoinColumn(name = "design_theme_id")
     private DesignTheme designTheme;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany()
     @JoinColumn(name = "owner_id")
     private List<Diagram> diagrams;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany()
     @JoinColumn(name = "owner_id")
     private List<Group> groups;
 }

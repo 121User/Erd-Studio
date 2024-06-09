@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.project.util.Helper.getFormattedDateTime;
+
 @Entity
 @Data
 @Table(name = "groups")
@@ -33,10 +35,11 @@ public class Group {
 
     //Форматирование дат (используется при выводе на страницу в th)
     public String getCreationDate() {
-        String result = creationDate.toString();
-        result = result.split("\\.")[0];
-        String[] dateTimeStrings = result.split("T");
-        result = dateTimeStrings[1] + " " + dateTimeStrings[0];
-        return result;
+//        String result = creationDate.toString();
+//        result = result.split("\\.")[0];
+//        String[] dateTimeStrings = result.split("T");
+//        result = dateTimeStrings[1] + " " + dateTimeStrings[0];
+//        return result;
+        return getFormattedDateTime(creationDate.toString());
     }
 }

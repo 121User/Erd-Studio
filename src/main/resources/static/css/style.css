@@ -73,7 +73,6 @@ body {
 
 .div-horizontal {
     display: flex;
-    flex-flow: row nowrap;
     flex-wrap: wrap;
     justify-content: flex-end;
     align-items: center;

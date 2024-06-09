@@ -21,10 +21,12 @@ function hideMenu() {
     }
 }
 
-//Активация меню
+//Загрузка страницы
 window.onload = function () {
-    if(document.getElementById('menu_button') !== null) {
-        document.getElementById('menu_button').click();
+    //Активация меню, если кнопка есть на странице
+    const menuButton = document.getElementById('menu_button');
+    if(menuButton !== null) {
+        menuButton.click();
     }
 }
 
@@ -89,4 +91,47 @@ function searchByKeyup(event) {
         const searchText = document.getElementById('search_input');
         searchText.blur();
     }
+}
+
+//Изменение роли пользователя в группе
+function changeDiagramAccess() {
+    const select = document.getElementById("access_level_selector");
+    const selectedOption = select.options[select.selectedIndex];
+    const selectedValue = selectedOption.value;
+    const diagramId = location.href.split('/')[4];
+
+    //Отправка запроса на сервер
+    switch (selectedValue) {
+        case "read access":
+            location.href = '/diagram/' + diagramId + '/change-access/?level=1';
+            break;
+        case "read and write access":
+            location.href = '/diagram/' + diagramId + '/change-access/?level=2';
+            break;
+        case "access is closed":
+            location.href = '/diagram/' + diagramId + '/change-access/?level=3';
+            break;
+    }
+}
+
+//Копирование ссылки
+function copyLink() {
+    const copyLinkButton = document.getElementById("copy_link_button");
+    let linkText;
+    if(location.href.includes('group')){
+        linkText = location.href.split('group')[0] + 'connect?link=' + copyLinkButton.dataset.link;
+    } else if (location.href.includes('diagram')){
+        linkText = location.href.split('diagram')[0] + 'connect?link=' + copyLinkButton.dataset.link;
+    }
+    //Временный элемент для копирования текста
+    const textarea = document.createElement('textarea');
+    textarea.value = linkText;
+    document.body.appendChild(textarea);
+
+    //Выбор текста внутри элемента в разных браузерах
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+
+    document.execCommand('copy'); //Копирование ссылки
+    document.body.removeChild(textarea); //Удаление временного элемента
 }

@@ -1,6 +1,7 @@
 package com.example.project.controller;
 
 import com.example.project.model.Dto.DiagramOutputDto;
+import com.example.project.model.Dto.GroupOutputDto;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.User;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.project.util.Helper.encryptUrl;
 import static com.example.project.util.ListProcessingUtil.*;
 import static com.example.project.util.SessionUtil.getLongAttrFromSession;
 
@@ -65,11 +67,16 @@ public class GroupDiagramsController {
                 }
                 diagramList.addAll(sortDiagramListByModDate(otherDiagramList));
             }
+            //Создание объекта группы для вывода
+            GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
+                    userService.getById(group.getOwnerId()).get().getName(),
+                    null, null, null);
 
             modelAndView = new ModelAndView("group_diagram_list_page");
             modelAndView.addObject("userName", user.getName());
-            modelAndView.addObject("groupId", group.getId());
-            modelAndView.addObject("groupName", group.getName());
+//            modelAndView.addObject("groupId", group.getId());
+//            modelAndView.addObject("groupName", group.getName());
+            modelAndView.addObject("group", groupOutputDto);
             modelAndView.addObject("searchText", searchText);
 
             //Поиск по названию диаграммы

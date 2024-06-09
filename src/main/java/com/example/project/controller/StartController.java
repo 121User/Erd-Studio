@@ -35,9 +35,9 @@ public class StartController {
 
         if(message != null){
             switch (message) {
-                case "Group access is closed" -> message = "Пользователь ограничил доступ к группе";
+                case "Group access is closed" -> message = "Владелец ограничил доступ к группе";
                 case "Group deleted" -> message = "Группа удалена";
-                case "Diagram access is closed" -> message = "Пользователь ограничил доступ к диаграмме";
+                case "Diagram access is closed" -> message = "Владелец ограничил доступ к диаграмме";
                 case "Diagram deleted" -> message = "Диаграмма удалена";
             }
         }
@@ -85,9 +85,9 @@ public class StartController {
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            password = getPasswordHash(password);
+            String passwordHash = getPasswordHash(password);
             //Проверка пароля
-            if (user.getPassword().equals(password)) {
+            if (user.getPassword().equals(passwordHash)) {
                 Long userId = user.getId();
                 setAttrToSession(request, "userId", userId);
 

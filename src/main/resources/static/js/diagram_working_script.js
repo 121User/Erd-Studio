@@ -1,7 +1,7 @@
 //Редактор кода
-import { createCodeMirror } from "./codemirror_script.js"
+import {createCodeMirror} from "./codemirror_script.js"
 //Создание диаграммы
-import { drawDiagram } from "./create_diagram_script.js"
+import {drawDiagram} from "./create_diagram_script.js"
 //Экспорт диаграммы
 import {exportDiagram, getFormattedCodeForDB} from "./export_diagram_script.js"
 
@@ -9,19 +9,34 @@ import {exportDiagram, getFormattedCodeForDB} from "./export_diagram_script.js"
 //Обработчики событий
 //Отслеживание загрузки страницы
 window.onload = async function () {
-    if(document.getElementById('menu_button') !== null) {
-        document.getElementById('menu_button').click();
-    } else {
+    //Активация меню, если кнопка есть на странице
+    const menuButton = document.getElementById('menu_button');
+    if (menuButton !== null) {
+        menuButton.click();
+    }
+    //Скрытие кнопки сохранения, если пользователь неакторизован или доступ к диаграмме ограничен
+    if (menuButton == null || isAccessForRead()) {
         const saveButtonBox = document.getElementById('save_button_box');
         saveButtonBox.style.visibility = 'hidden';
     }
-    let editor = createCodeMirror(); //Настройка текстового редактора
+
+    // Отслеживание нажатие кнопкки копирования ссылки, если кнопка есть на странице
+    const copyLinkButton = document.getElementById('copy_link_button');
+    if (copyLinkButton !== null) {
+        copyLinkButton.onclick = function () {
+            copyLink();
+            messageOutput('info', "Ссылка скопирована");
+        }
+    }
+
+    let editor = createCodeMirror(isAccessForRead()); //Настройка текстового редактора
     window.myGlobalObject = {
         editorObj: editor
     };
-    await changeTheme(); //Настройка темы страницы
+    await changeTheme();
+    resizeWorkZone();
     await drawDiagram();
-    updateDiagram(); //Установка обработчиков обновления диаграммы
+    updateDiagram();
 }
 
 //Отслеживание закрытия страницы (закрытие вкладки, переход по ссылке, обновление страницы)
@@ -42,9 +57,14 @@ document.onkeydown = function (e) {
 }
 
 
-//Обновление диаграммы
+//Установка обработчиков обновления диаграммы
 function updateDiagram() {
-    window.addEventListener('resize', drawDiagram); //Отслеживание изменения размеров страницы
+    //Отслеживание изменения размеров страницы
+    window.addEventListener('resize', async function () {
+        resizeWorkZone();
+        await drawDiagram();
+    });
+
     // Отслеживание изменения кода описания диаграммы
     const editor = window.myGlobalObject.editorObj;
     editor.on("change", async function () {
@@ -68,7 +88,7 @@ function updateDiagram() {
             diagramName.blur();
         }
     }
-    // Отслеживание нажатие кнопкки сохранить
+    // Отслеживание нажатие кнопки сохранить
     const saveButton = document.getElementById('save-button');
     saveButton.onclick = function () {
         saveChanges();
@@ -80,9 +100,22 @@ function updateDiagram() {
     }
 }
 
+//Изменение размеров редактора кода и диаграммы
+function resizeWorkZone(){
+    const header = document.querySelector('.header1');
+    const headerHeight = header.offsetHeight;
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    const windowHeight = window.innerHeight;
+
+    sidebar.style.marginTop = headerHeight + 'px';
+    sidebar.style.height = windowHeight - headerHeight + 'px';
+    content.style.marginTop = headerHeight + 'px';
+    content.style.height = windowHeight - headerHeight + 'px';
+}
 
 //Изменение статуса сохранения
-function changeSaveStatus(){
+function changeSaveStatus() {
     const saveStatusIcon = document.getElementById('save-status-icon');
     const saveButton = document.getElementById('save-button');
     saveStatusIcon.src = '/images/Save_required.png';
@@ -109,16 +142,20 @@ async function changeTheme() {
 //Сохранение изменений
 function saveChanges() {
     if (checkUserAuthorization()) {
-        const designTheme = getDesignThemeForSave();
-        const diagramName = getNameForSave();
-        const diagramCode = getCodeForSave();
-        //Проверка несохранения
-        const saveButton = document.getElementById('save-button');
-        if (saveButton.style.background === 'rgb(151, 2, 167)') {
+        if (!isAccessForRead()) {
+            const designTheme = getDesignThemeForSave();
+            const diagramName = getNameForSave();
+            const diagramCode = getCodeForSave();
+            //Проверка несохранения
+            const saveButton = document.getElementById('save-button');
+            if (saveButton.style.background === 'rgb(151, 2, 167)') {
 
-            window.onbeforeunload = null;
-            location.href += '/save?designTheme=' + designTheme + '&diagramName=' + diagramName
-                + '&diagramCode=' + diagramCode;
+                window.onbeforeunload = null;
+                location.href += '/save?designTheme=' + designTheme + '&diagramName=' + diagramName
+                    + '&diagramCode=' + diagramCode;
+            }
+        } else {
+            messageOutput('error', 'Невозможно сохранить изменения, доступ только на просмотр диаграммы')
         }
     } else {
         messageOutput('error', 'Невозможно сохранить изменения без авторизации')
@@ -131,6 +168,11 @@ function saveChangesByKey(event) {
         saveChanges();
         event.preventDefault(); //Предотвращение стандартного действия браузера при нажатии Ctrl + S
     }
+}
+
+function isAccessForRead() {
+    const diagramNameInput = document.getElementById("diagram_name");
+    return diagramNameInput.readOnly;
 }
 
 //Получение темы дизайна

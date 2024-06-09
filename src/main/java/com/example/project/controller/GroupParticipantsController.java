@@ -49,7 +49,6 @@ public class GroupParticipantsController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             Group group = groupService.getByID(groupId);
-
             //Создание объекта группы для вывода
             GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
                     userService.getById(group.getOwnerId()).get().getName(), null,

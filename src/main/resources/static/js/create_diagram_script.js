@@ -28,6 +28,7 @@ export async function drawDiagram() {
         configPanZoomDiagram();
     }
     catch (err) {
+        console.warn(err)
         document.getElementById('diagram').style.display = 'none';
         document.getElementById('error_text').style.display = 'block';
     }
@@ -57,11 +58,11 @@ function configPanZoomDiagram() {
 
 //Обработка кода для построения диаграммы
 function getFormattedCodeForDiagram(code) {
+    code = code.replace(/\/\/.*/g, ''); //Скрытие комментариев при отображении диаграммы
     let refs = getRefs(code)
     let result = 'erDiagram\n' + code
-        .replace(/\/\/.*/g, '').replace(/pk/g, 'PK').replace(/\[/g, '')
-        .replace(/not null/g, '"NN"').replace(/ ref:/g, ', ref:').replace(/ref:(.*?)[,\]]/g, 'FK').replace(/, /g, ' ')
-        .replace(/]/g, '');
+        .replace(/pk/g, 'PK').replace(/\[/g, '').replace(/not null/g, '"NN"').replace(/ ref:/g, ', ref:')
+        .replace(/ref:(.*?)[,\]]/g, 'FK').replace(/, /g, ' ').replace(/]/g, '');
 
     return result + refs;
 }

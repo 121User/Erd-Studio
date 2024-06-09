@@ -138,7 +138,7 @@ public class GroupController {
         Group group = groupService.getByID(groupId);
         //Проверка является ли отправитель запроса владельцем группы
         if (userId.equals(group.getOwnerId())) {
-            userService.deleteGroup(userId, groupId);
+            userService.deleteGroup(groupId);
         } else {
             groupUserService.leaveGroup(userId, groupId);
         }

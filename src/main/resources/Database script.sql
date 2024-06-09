@@ -69,7 +69,7 @@ ALTER TABLE "group_users" ADD FOREIGN KEY ("group_id") REFERENCES "groups" ("g_i
 
 ALTER TABLE "group_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("u_id");
 
-ALTER TABLE "group_users" ADD FOREIGN KEY (role_id) REFERENCES "group_users_roles" ("gur_id");
+ALTER TABLE "group_users" ADD FOREIGN KEY ("role_id") REFERENCES "group_users_roles" ("gur_id");
 
 
 
@@ -77,9 +77,9 @@ INSERT INTO "design_themes" ("dt_name") VALUES
                                             ('light'),
                                             ('dark');
 INSERT INTO "diagram_access_levels" ("dal_name") VALUES
-                                                     ('access is closed'),
                                                      ('read access'),
-                                                     ('read and write access');
+                                                     ('read and write access'),
+                                                     ('access is closed');
 INSERT INTO "group_access_levels" ("gal_name") VALUES
                                                    ('entry access'),
                                                    ('access is closed');

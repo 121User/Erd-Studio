@@ -11,7 +11,13 @@
           href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
     <script>
-        window.onload = async function () {
+        window.onload = function () {
+            //Активация меню, если кнопка есть на странице
+            const menuButton = document.getElementById('menu_button');
+            if(menuButton !== null) {
+                menuButton.click();
+            }
+            //Вывод сообщения
             const message = document.getElementById("messageBlock").dataset.message;
             if(message !== undefined){
                 if(message.includes("ограничил")) {
@@ -49,7 +55,7 @@
     Средство для работы с Entity-Relationship диаграммами
 </h1>
 
-<div class="main-flex-table" style="margin: 40px auto;"  onclick="hideMenu()" th:onclick="hideMenu()">
+<div class="main-flex-table" style="margin: 80px auto;"  onclick="hideMenu()" th:onclick="hideMenu()">
     <div class="table-item">
         <img src="/static/images/Programming.png" th:src="@{/images/Programming.png}" alt="Programming">
         <p>Создавайте и редактируйте ER-диаграммы при помощи простого кода</p>

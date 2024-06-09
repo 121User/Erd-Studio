@@ -13,13 +13,19 @@
     <script type="text/javascript" th:src="@{/js/script.js}" src="/static/js/script.js"></script>
     <script type="text/javascript" th:src="@{/js/group_script.js}" src="/static/js/group_script.js"></script>
     <script>
-        window.onload = async function () {
-            // Отслеживание нажатие кнопкки копирования ссылки
+        //Загрузка страницы
+        window.onload = function () {
+            //Активация меню, если кнопка есть на странице
+            const menuButton = document.getElementById('menu_button');
+            if (menuButton !== null) {
+                menuButton.click();
+            }
+            // Отслеживание нажатие кнопкки копирования ссылки, если кнопка есть на странице
             const copyLinkButton = document.getElementById('copy_link_button');
-            if(copyLinkButton !== null){
+            if (copyLinkButton !== null) {
                 copyLinkButton.onclick = function () {
                     copyLink();
-                    messageOutput('info', "Ссылка скопирована")
+                    messageOutput('info', "Ссылка скопирована");
                 }
             }
         }
@@ -47,9 +53,10 @@
         <label>
             <input id="name_input" class="input-text" maxlength="100"
                    style=" width: 400px; font-size: 23px; margin: 20px; text-align: center; border: 2px solid rgba(116,33,125,0.5);"
-                   onblur="renameGroup()" onkeyup="renameGroupByKeyup(event)" th:value="${group.name}"/>
-            <img src="/static/images/Edit.png" th:src="@{/images/Edit.png}" alt="upload"
-                 style="width: 15px;"/>
+                   onblur="renameGroup()" onkeyup="renameGroupByKeyup(event)"
+                   th:value="${group.name}" th:readonly="${userName} != ${group.userName}"/>
+            <img src="/static/images/Edit.png" th:src="@{/images/Edit.png}" alt="edit"
+                 style="width: 15px;" th:if="${userName} == ${group.userName}"/>
         </label>
     </div>
     <div>
@@ -73,19 +80,20 @@
             <div th:if="${userName} == ${group.userName}" style="margin-bottom: 15px">
                 <!--Выпадающий список для выбора уровня доступа к группе -->
                 <label>
-                    <img src="/static/images/Unlock.png" th:src="@{/images/Unlock.png}" alt="download"
-                         style="width: 15px; margin: 0 5px"/>
-                    <select id="access_level_selector" onchange="changeAccessLevel()" class="input-submit"
+                    <select id="access_level_selector" onchange="changeGroupAccess()" class="input-submit"
                             style="margin: 0; width: 200px; height: auto; vertical-align: center">
                         <optgroup label="Выбор режима">
-                            <option value="entry access" th:selected="${group.accessLevel == 'entry access'}"
-                                    th:data-role="${group.id}">Доступно для входа</option>
-                            <option value="access is closed" th:selected="${group.accessLevel == 'access is closed'}"
-                                    th:data-role="${group.id}">Доступ запрещен</option>
+                            <option value="entry access" th:selected="${group.accessLevel == 'entry access'}">
+                                Доступно для входа
+                            </option>
+                            <option value="access is closed" th:selected="${group.accessLevel == 'access is closed'}">
+                                Доступ запрещен
+                            </option>
                         </optgroup>
                     </select>
                 </label>
-                <a id="copy_link_button" class="input-submit" style="margin-left: 10px; width: auto; vertical-align: center; cursor: pointer;"
+                <a id="copy_link_button" class="input-submit"
+                   style="margin-left: 10px; width: auto; vertical-align: center; cursor: pointer;"
                    th:data-link="${group.connectionLink}">
                     <img src="/static/images/Link.png" th:src="@{/images/Link.png}" alt="link"
                          style="width: 15px; margin: 0 5px;"/>
@@ -111,22 +119,33 @@
                            th:text="${groupUser.name}">
                         </a>
                     </td>
-                    <td class="ref_menu">
-                        <!--Выпадающий список для выбора уровня доступа к группе -->
-                        <div id="role_list">
+                    <td class="table_value">
+                        <!--Выпадающий список для выбора уровня доступа к группе, если пользователь является владельцем группы-->
+                        <div id="role_list" th:if="${userName} == ${group.userName}">
                             <label>
                                 <select id="role_selector" onchange="changeRole()" class="input-submit"
                                         style="color: #311F46; background: white; font-size: 15px; margin: 0;
                                         width: 150px; height: 40px;">
                                     <optgroup label="Выбор роли">
                                         <option value="participant" th:selected="${groupUser.role == 'participant'}"
-                                                th:data-role="${groupUser.id}">Участник</option>
+                                                th:data-role="${groupUser.id}">Участник
+                                        </option>
                                         <option value="admin" th:selected="${groupUser.role == 'admin'}"
-                                                th:data-role="${groupUser.id}">Администратор</option>
+                                                th:data-role="${groupUser.id}">Администратор
+                                        </option>
                                     </optgroup>
                                 </select>
                             </label>
                         </div>
+                        <!--Вывод роли для просмотра участниками группы-->
+                        <a style="margin: 0; text-decoration: none; word-wrap: anywhere"
+                           th:if="${userName != group.userName && groupUser.role == 'participant'}">
+                            Участник
+                        </a>
+                        <a style="margin: 0; text-decoration: none; word-wrap: anywhere"
+                           th:if="${userName != group.userName && groupUser.role == 'admin'}">
+                            Администратор
+                        </a>
                     </td>
                     <td class="table_value" th:text="${groupUser.entryDate}"></td>
                     <td class="ref_menu" style="text-align: right">

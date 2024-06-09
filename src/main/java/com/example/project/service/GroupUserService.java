@@ -128,11 +128,8 @@ public class GroupUserService {
         for (Diagram diagram : diagramList) {
             String userName = userService.getById(diagram.getOwnerId()).get().getName();
             DiagramOutputDto diagramOutputDto = new DiagramOutputDto(
-                    diagram.getId(),
-                    diagram.getName(),
-                    userName,
-                    diagram.getCreationDate(),
-                    diagram.getModifiedDate()
+                    diagram.getId(), diagram.getName(), userName, diagram.getCreationDate(), diagram.getModifiedDate(),
+                    null, null, null
             );
             diagramOutputDtoList.add(diagramOutputDto);
         }

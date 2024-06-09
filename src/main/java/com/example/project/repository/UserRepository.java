@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+
     Optional<User> findByName(String name);
 
     @Modifying
@@ -21,9 +22,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("DELETE FROM GroupUser gu WHERE gu.user.id = :userId")
     void deleteAllGroupUserByUser(Long userId);
-
-    //Удаление групп, созданных указанным пользователем
-    @Modifying
-    @Query("DELETE FROM Group g WHERE g.ownerId = :userId")
-    void deleteAllGroupByUser(Long userId);
 }

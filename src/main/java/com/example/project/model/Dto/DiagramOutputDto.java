@@ -8,10 +8,15 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class DiagramOutputDto {
-    //Используется для вывода списка диаграмм в группе
+    //Для передачи данных диаграммы на страницу списка диаграмм группы
     private Long id;
     private String name;
     private String userName;
     private String creationDate;
     private String modifiedDate;
+
+    private String code;
+
+    private String accessLevel;
+    private String connectionLink;
 }
