@@ -1,6 +1,8 @@
 package com.example.project.util;
 
+import com.example.project.model.Dto.DiagramHistoryOutputDto;
 import com.example.project.model.Entity.Diagram;
+import com.example.project.model.Entity.DiagramHistory;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.GroupUser;
 
@@ -26,7 +28,7 @@ public class ListProcessingUtil {
     public static List<Diagram> filterDiagramListByOwner(List<Diagram> diagramList, Long userId) {
         List<Diagram> result = new ArrayList<>();
         for (Diagram d : diagramList) {
-            if (d.getOwnerId().equals(userId)) {
+            if (d.getOwner().getId().equals(userId)) {
                 result.add(d);
             }
         }
@@ -52,6 +54,31 @@ public class ListProcessingUtil {
         List<String> result = new ArrayList<>();
         for (Diagram d : diagramList) {
             result.add(d.getModifiedDate());
+        }
+        Collections.sort(result);
+        Collections.reverse(result);
+        return result;
+    }
+
+    //Сортировка списка диаграмм по дате изменения
+    public static List<DiagramHistoryOutputDto> sortDiagramHistoryListByModDate(List<DiagramHistoryOutputDto> DiagramHistoryOutputDtoList) {
+        List<DiagramHistoryOutputDto> result = new ArrayList<>();
+        for (String modifiedDate : getDiagramHistoryModifiedDates(DiagramHistoryOutputDtoList)) {
+            for (DiagramHistoryOutputDto dh : DiagramHistoryOutputDtoList) {
+                if (dh.getModifiedDate().equals(modifiedDate)) {
+                    result.add(dh);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    //Получение списка дат изменения диаграмм из списка
+    private static List<String> getDiagramHistoryModifiedDates(List<DiagramHistoryOutputDto> DiagramHistoryOutputDtoList) {
+        List<String> result = new ArrayList<>();
+        for (DiagramHistoryOutputDto dh : DiagramHistoryOutputDtoList) {
+            result.add(dh.getModifiedDate());
         }
         Collections.sort(result);
         Collections.reverse(result);

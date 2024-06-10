@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.example.project.util.Helper.getFormattedDateTime;
 
@@ -26,33 +27,28 @@ public class Diagram {
     @Column(name = "d_code")
     private String code;
 
-    @Column(name = "owner_id")
-    private Long ownerId;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
-    @Column(name = "group_id")
-    private Long groupId;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diagram_access_level_id")
     private DiagramAccessLevel diagramAccessLevel;
 
+    @OneToMany(mappedBy = "diagram", cascade = CascadeType.ALL)
+    private List<DiagramHistory> diagramHistories;
 
-    //Форматирование дат (используется при выводе на страницу в th)
+
+    //Форматирование дат для вывода
     public String getCreationDate() {
-//        String result = creationDate.toString();
-//        result = result.split("\\.")[0];
-//        String[] dateTimeStrings = result.split("T");
-//        result = dateTimeStrings[1] + " " + dateTimeStrings[0];
-//        return result;
         return getFormattedDateTime(creationDate.toString());
     }
     public String getModifiedDate() {
         if(modifiedDate != null){
-//            String result = modifiedDate.toString();
-//            result = result.split("\\.")[0];
-//            String[] dateTimeStrings = result.split("T");
-//            result = dateTimeStrings[1] + " " + dateTimeStrings[0];
-//            return result;
             return getFormattedDateTime(modifiedDate.toString());
         }
         return "";

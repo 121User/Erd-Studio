@@ -12,13 +12,28 @@ function showMenu() {
 //Скрытие меню (при нажатии на основную часть экрана)
 function hideMenu() {
     document.getElementById('menu_list').style.display = 'none';
+}
+
+
+//Отображение истории по кнопке
+function showHistory() {
+    const menuList = document.getElementById('history_list');
+    if (menuList.style.display === 'none') {
+        menuList.style.display = 'block';
+    } else {
+        menuList.style.display = 'none';
+    }
+}
+
+//Скрытие всплывающих окон при нажатии на основную часть экрана
+function hidePopupWindow() {
+    document.getElementById('menu_list').style.display = 'none';
+    document.getElementById('history_list').style.display = 'none';
 
     const diagramName = document.getElementById('diagram_name');
     const diagramCode = document.getElementById('diagram_code');
-    if(diagramName !==  null && diagramCode !== null){
-        diagramName.blur();
-        diagramCode.blur();
-    }
+    diagramName.blur();
+    diagramCode.blur();
 }
 
 //Загрузка страницы
@@ -114,6 +129,12 @@ function changeDiagramAccess() {
     }
 }
 
+//Откат версии диаграммы (используется в th)
+function rollbackHistory() {
+    const historyString = event.target.closest('tr');
+    location.href += '/rollback-history/' + historyString.dataset.version;
+}
+
 //Копирование ссылки
 function copyLink() {
     const copyLinkButton = document.getElementById("copy_link_button");
@@ -134,4 +155,6 @@ function copyLink() {
 
     document.execCommand('copy'); //Копирование ссылки
     document.body.removeChild(textarea); //Удаление временного элемента
+
+    messageOutput('info', "Ссылка скопирована");
 }

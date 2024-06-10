@@ -27,6 +27,7 @@ body {
     padding: 10px;
     background: transparent;
     border: none;
+    cursor: pointer;
 }
 
 .menu_list {
@@ -38,7 +39,8 @@ body {
     width: max-content;
     background: #482D65;
     color: #fff;
-    border-radius: 5px;
+    border-radius: 5px ;
+    border: 2px solid #74217D;
     font-size: 15px;
     padding: 10px 25px 10px 10px;
     text-align: left;

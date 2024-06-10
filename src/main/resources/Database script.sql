@@ -27,6 +27,15 @@ CREATE TABLE "diagram_access_levels" (
                                          "dal_name" varchar(25) NOT NULL
 );
 
+CREATE TABLE "diagram_history" (
+                                   "dh_id" bigserial PRIMARY KEY,
+                                   "dh_modified_date" timestamp NOT NULL,
+                                   "dh_name" varchar(100) NOT NULL,
+                                   "dh_code" text,
+                                   "diagram_id" bigint NOT NULL,
+                                   "user_id" bigint NOT NULL
+);
+
 CREATE TABLE "groups" (
                           "g_id" bigserial PRIMARY KEY,
                           "g_name" varchar(100) NOT NULL,
@@ -60,6 +69,10 @@ ALTER TABLE "diagrams" ADD FOREIGN KEY ("group_id") REFERENCES "groups" ("g_id")
 ALTER TABLE "diagrams" ADD FOREIGN KEY ("owner_id") REFERENCES "users" ("u_id");
 
 ALTER TABLE "diagrams" ADD FOREIGN KEY ("diagram_access_level_id") REFERENCES "diagram_access_levels" ("dal_id");
+
+ALTER TABLE "diagram_history" ADD FOREIGN KEY ("diagram_id") REFERENCES "diagrams" ("d_id");
+
+ALTER TABLE "diagram_history" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("u_id");
 
 ALTER TABLE "groups" ADD FOREIGN KEY ("owner_id") REFERENCES "users" ("u_id");
 

@@ -84,6 +84,36 @@
     margin: 0;
 }
 
+.history_list {
+    top: 60px;
+    right: 5px;
+    position: absolute;
+    display: none;
+    vertical-align: top;
+    width: 325px;
+    max-height: calc(100% - 80px);
+    background: #482D65;
+    color: #fff;
+    border-radius: 5px;
+    border: 2px solid #74217D;
+    font-size: 15px;
+    text-align: left;
+    overflow: auto;
+    padding: 5px;
+}
+
+.history_list th{
+    font-size: 15px;
+    font-weight: bold;
+    color:#ffffff;
+}
+
+.history_list td{
+    font-size: 14px;
+    color:#ffffff;
+    border-bottom: 2px solid #74217D;
+}
+
 /*Медиа-запрос для скрытия sidebar при малом размере экрана*/
 @media screen and (max-width: 950px) {
     /*Скрытие sidebar*/
@@ -98,33 +128,3 @@
         width: 100%;
     }
 }
-
-/*!*Медиа-запросы для расширения верхней панели при малом размере экрана*!*/
-/*@media screen and (max-width: 1200px) {*/
-/*    .header1 {*/
-/*        height: 130px;*/
-/*    }*/
-
-/*    #header2 {*/
-/*        display: inline-block;*/
-/*    }*/
-
-/*    #sidebar, #content {*/
-/*        margin-top: 130px;*/
-/*        height: calc(100% - 130px);*/
-/*    }*/
-/*}*/
-/*@media screen and (max-width: 1200px) {*/
-/*    .header1 {*/
-/*        height: 130px;*/
-/*    }*/
-
-/*    #header2 {*/
-/*        display: inline-block;*/
-/*    }*/
-
-/*    #sidebar, #content {*/
-/*        margin-top: 130px;*/
-/*        height: calc(100% - 130px);*/
-/*    }*/
-/*}*/

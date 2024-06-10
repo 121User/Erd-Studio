@@ -1,5 +1,6 @@
 package com.example.project.controller;
 
+import com.example.project.model.Dto.DiagramHistoryOutputDto;
 import com.example.project.model.Dto.DiagramOutputDto;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.DiagramAccessLevel;
@@ -22,8 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.project.util.Helper.encryptUrl;
-import static com.example.project.util.ListProcessingUtil.filterDiagramListBySearch;
-import static com.example.project.util.ListProcessingUtil.sortDiagramListByModDate;
+import static com.example.project.util.ListProcessingUtil.*;
 import static com.example.project.util.SessionUtil.*;
 
 @RestController
@@ -31,16 +31,12 @@ import static com.example.project.util.SessionUtil.*;
 public class DiagramController {
     private final UserService userService;
     private final DiagramService diagramService;
-
-    private final GroupService groupService;
     private final GroupUserService groupUserService;
 
     @Autowired
-    public DiagramController(UserService userService, DiagramService diagramService,
-                             GroupService groupService, GroupUserService groupUserService) {
+    public DiagramController(UserService userService, DiagramService diagramService, GroupUserService groupUserService) {
         this.userService = userService;
         this.diagramService = diagramService;
-        this.groupService = groupService;
         this.groupUserService = groupUserService;
     }
 
@@ -169,15 +165,15 @@ public class DiagramController {
                 Diagram diagram = diagramOpt.get();
                 //Создание объекта диаграммы для вывода
                 DiagramOutputDto diagramOutputDto = new DiagramOutputDto(diagram.getId(), diagram.getName(),
-                        userService.getById(diagram.getOwnerId()).get().getName(), null, null,
+                        diagram.getOwner().getName(), null, null,
                         diagram.getCode(), diagram.getDiagramAccessLevel().getName(),
                         encryptUrl(diagramService.getDiagramUrl(diagram.getId())));
 
                 //Проверка, является ли пользователь владельцем диаграммы
-                if (!diagram.getOwnerId().equals(userId)) {
+                if (!diagram.getOwner().getId().equals(userId)) {
                     //Проверка правильности подключения
                     Long diagramIdToConnect = getLongAttrFromSession(request, "diagramIdToConnect");
-                    Optional<Group> groupOpt = groupService.getOptByID(diagram.getGroupId());
+                    Group group = diagram.getGroup();
                     if (diagramIdToConnect.equals(diagramId)) {
                         //Подключение по ссыклке на диаграмму
                         DiagramAccessLevel diagramAccessLevel = diagram.getDiagramAccessLevel();
@@ -185,7 +181,7 @@ public class DiagramController {
                             //Проверка уровня доступа к группе
                             return new ModelAndView("redirect:/main?message=Diagram access is closed");
                         }
-                    } else if((groupOpt.isPresent() && groupUserService.checkUserInGroup(user, groupOpt.get()))){
+                    } else if (group != null && groupUserService.checkUserInGroup(user, group)) {
                         //Подключение из списка диаграмм группы
                         diagramOutputDto.setAccessLevel("read and write access");
                     } else {
@@ -193,9 +189,18 @@ public class DiagramController {
                     }
                 }
                 boolean theme = user.getDesignTheme().getName().equals("dark");
+                List<DiagramHistoryOutputDto> diagramHistoryList = sortDiagramHistoryListByModDate(
+                        diagramService.getDiagramHistoryOutputDtoList(diagram.getDiagramHistories()));
+
                 modelAndView.addObject("userName", user.getName());
                 modelAndView.addObject("designTheme", theme);
                 modelAndView.addObject("diagram", diagramOutputDto);
+                //Вывод сообщения, если список диаграмм пуст
+                if (diagramHistoryList.isEmpty()) {
+                    modelAndView.addObject("listInfo", "Список изменений пуст");
+                } else {
+                    modelAndView.addObject("diagramHistoryList", diagramHistoryList);
+                }
                 return modelAndView;
             }
             return new ModelAndView("redirect:/main?message=Diagram deleted");
@@ -224,11 +229,29 @@ public class DiagramController {
             //Проверка существования диаграммы
             if (diagramOpt.isPresent()) {
                 Diagram diagram = diagramOpt.get();
-                User owner = userService.getById(diagram.getOwnerId()).get();
-                List<Diagram> diagramList = userService.getDiagramListForUniqueName(owner, diagram.getGroupId());
-                diagramService.changeName(diagram, diagramName, diagramList);
-                diagramService.changeCode(diagram, diagramCode);
+                User owner = diagram.getOwner();
+                List<Diagram> diagramList = userService.getDiagramListForUniqueName(owner, diagram.getGroup());
+                diagramService.change(diagram, diagramName, diagramCode, diagramList, user);
                 userService.changeDesignTheme(user, designTheme);
+                return new ModelAndView("redirect:/diagram/" + diagramId);
+            }
+            return new ModelAndView("redirect:/main?message=Diagram deleted");
+        }
+        return new ModelAndView("redirect:/main");
+    }
+
+    @RequestMapping("/{diagramId}/rollback-history/{historyId}")
+    public ModelAndView rollbackDiagramHistory(@PathVariable(name = "diagramId") Long diagramId,
+                                               @PathVariable(name = "historyId") Long historyId,
+                                               HttpServletRequest request) {
+        Long userId = getLongAttrFromSession(request, "userId");
+        Optional<User> userOpt = userService.getById(userId);
+        //Проверка существования пользователя в системе
+        if (userOpt.isPresent()) {
+            Optional<Diagram> diagramOpt = diagramService.getOptByID(diagramId);
+            //Проверка существования диаграммы
+            if (diagramOpt.isPresent()) {
+                diagramService.rollback(diagramOpt.get(), historyId);
                 return new ModelAndView("redirect:/diagram/" + diagramId);
             }
             return new ModelAndView("redirect:/main?message=Diagram deleted");
@@ -249,7 +272,7 @@ public class DiagramController {
             if (diagramOpt.isPresent()) {
                 Diagram diagram = diagramOpt.get();
                 //Проверка на соответствие авторизованного пользователя владельцу диаграммы
-                if (userId.equals(diagram.getOwnerId())) {
+                if (userId.equals(diagram.getOwner().getId())) {
                     diagramService.changeAccessLevel(diagram, accessLevel);
                 }
                 return new ModelAndView("redirect:/diagram/" + diagramId);

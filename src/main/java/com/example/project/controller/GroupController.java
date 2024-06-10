@@ -60,7 +60,7 @@ public class GroupController {
                 modelAndView.addObject("listInfo", "Список групп пуст");
             } else {
                 //Получение обработанного списка групп для вывода
-                List<GroupOutputDto> groupOutputDtoList = groupUserService.getGroupOutputDtoList(groupList);
+                List<GroupOutputDto> groupOutputDtoList = groupService.getGroupOutputDtoList(groupList);
                 modelAndView.addObject("groupList", groupOutputDtoList);
             }
         } else {
@@ -107,7 +107,7 @@ public class GroupController {
             User user = userOpt.get();
             Group group = groupService.getByID(groupId);
             //Проверка на соответствие авторизованного пользователя владельцу группы или администратору
-            if (userId.equals(group.getOwnerId())) {
+            if (userId.equals(group.getOwner().getId())) {
                 groupService.changeName(groupId, groupName, user);
             }
         }
@@ -124,7 +124,7 @@ public class GroupController {
         if (userOpt.isPresent()) {
             Group group = groupService.getByID(groupId);
             //Проверка на соответствие авторизованного пользователя владельцу группы
-            if (userId.equals(group.getOwnerId())) {
+            if (userId.equals(group.getOwner().getId())) {
                 groupService.changeAccessLevel(group, accessLevel);
             }
         }
@@ -137,7 +137,7 @@ public class GroupController {
         Long userId = getLongAttrFromSession(request, "userId");
         Group group = groupService.getByID(groupId);
         //Проверка является ли отправитель запроса владельцем группы
-        if (userId.equals(group.getOwnerId())) {
+        if (userId.equals(group.getOwner().getId())) {
             userService.deleteGroup(groupId);
         } else {
             groupUserService.leaveGroup(userId, groupId);
@@ -161,7 +161,7 @@ public class GroupController {
                 Optional<GroupUser> groupUserOpt = groupUserService.getByUserAndGroup(user, group);
 
                 //Проверка на наличие пользователя в группе
-                if (!group.getOwnerId().equals(userId) && groupUserOpt.isEmpty()) {
+                if (!group.getOwner().getId().equals(userId) && groupUserOpt.isEmpty()) {
                     GroupAccessLevel groupAccessLevel = group.getGroupAccessLevel();
 
                     //Проверка уровня доступа к группе

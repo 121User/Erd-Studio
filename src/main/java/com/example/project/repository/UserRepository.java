@@ -12,12 +12,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    Optional<User> findByName(String name);
-
-    @Modifying
-    @Query("DELETE FROM Diagram d WHERE d.ownerId = :userId")
-    void deleteAllDiagramByUser(Long userId);
-
     //Удаление связей со всеми группами
     @Modifying
     @Query("DELETE FROM GroupUser gu WHERE gu.user.id = :userId")

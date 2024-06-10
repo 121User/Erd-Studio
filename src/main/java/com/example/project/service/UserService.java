@@ -1,9 +1,7 @@
 package com.example.project.service;
 
-import com.example.project.model.Entity.DesignTheme;
-import com.example.project.model.Entity.Diagram;
-import com.example.project.model.Entity.Group;
-import com.example.project.model.Entity.User;
+import com.example.project.model.Dto.DiagramHistoryOutputDto;
+import com.example.project.model.Entity.*;
 import com.example.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,7 +52,7 @@ public class UserService {
     public List<Diagram> getPrivateDiagramList(User user) {
         List<Diagram> diagramList = new ArrayList<>();
         for(Diagram d : user.getDiagrams()){
-            if(d.getGroupId() == null){
+            if(d.getGroup() == null){
                 diagramList.add(d);
             }
         }
@@ -72,24 +70,20 @@ public class UserService {
     }
 
     public Long addDiagram(User user, String groupIdOpt, String diagramName, String diagramCode) {
-        Long groupId = null;
+        Group group = null;
         if (!groupIdOpt.equals("null")) {
-            groupId = Long.parseLong(groupIdOpt);
+            group = groupService.getByID(Long.parseLong(groupIdOpt));
         }
-        List<Diagram> diagramList = getDiagramListForUniqueName(user, groupId);
-        Diagram diagram = diagramService.createByName(user, groupId, diagramList, diagramName, diagramCode);
+        List<Diagram> diagramList = getDiagramListForUniqueName(user, group);
+        Diagram diagram = diagramService.createByName(user, group, diagramList, diagramName, diagramCode);
         return diagram.getId();
     }
 
     //Получение списка диаграмм для проверки уникальности названия
-    public List<Diagram> getDiagramListForUniqueName(User user, Long groupId) {
+    public List<Diagram> getDiagramListForUniqueName(User user, Group group) {
         List<Diagram> diagramList = getPrivateDiagramList(user);
-        if(groupId != null){
-            Optional<Group> groupOpt = groupService.getOptByID(groupId);
-            if (groupOpt.isPresent()) {
-                Group group = groupOpt.get();
-                diagramList = filterDiagramListByOwner(group.getDiagrams(), user.getId());
-            }
+        if(group != null){
+            diagramList = filterDiagramListByOwner(group.getDiagrams(), user.getId());
         }
         return diagramList;
     }
@@ -130,11 +124,8 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void deleteUser(Long userId) {
         if (getById(userId).isPresent()) {
-            userRepository.deleteAllDiagramByUser(userId);
-            userRepository.deleteAllGroupUserByUser(userId);
             userRepository.delete(getById(userId).get());
         }
     }
@@ -142,14 +133,6 @@ public class UserService {
     //Удаление собственной группы
     public void deleteGroup(Long groupId) {
         groupService.deleteGroup(groupId);
-    }
-
-    //Удаление всех групп
-    public void deleteAllGroups(Long userId) {
-        User user = getById(userId).get();
-        for(Group group: user.getGroups()){
-            groupService.deleteGroup(group.getId());
-        }
     }
 
     //Генерация уникального имени пользователя

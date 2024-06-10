@@ -107,28 +107,16 @@
             <!--Копирование ссылки-->
             <div class="div-horizontal1">
                 <a id="copy_link_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0; padding: 5px 10px;
-                font-size: 15px; cursor: pointer;"
+                font-size: 15px; cursor: pointer;" onclick="copyLink()" th:onclick="copyLink()"
                    th:data-link="${diagram.connectionLink}">
                     <img src="/static/images/Link.png" th:src="@{/images/Link.png}" alt="link"
                          style="width: 15px; "/>
                     Копировать ссылку
                 </a>
             </div>
-
-
-            <!--Вывод истории-->
-<!--            <div class="div-horizontal1">-->
-<!--                <a id="show_history_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0;padding: 5px 10px;-->
-<!--                font-size: 15px; cursor: pointer;"-->
-<!--                   th:data-link="${group.connectionLink}">-->
-<!--                    <img src="/static/images/History.png" th:src="@{/images/History.png}" alt="link"-->
-<!--                         style="width: 15px; "/>-->
-<!--                    История-->
-<!--                </a>-->
-<!--            </div>     -->
             <div class="div-horizontal1">
-                <a id="show_history_button" class="input-submit" style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0;padding: 5px 10px;
-                font-size: 15px; cursor: pointer;">
+                <a id="history_button" class="input-submit" onclick="showHistory()" th:onclick="showHistory()"
+                   style="text-decoration: none; background: #482D65; width: auto; margin: 0 15px 0 0;padding: 5px 10px; font-size: 15px; cursor: pointer;">
                     <img src="/static/images/History.png" th:src="@{/images/History.png}" alt="link"
                          style="width: 15px; "/>
                     История
@@ -146,13 +134,13 @@
 </header>
 
 <!--Диаграмма-->
-<div id="content" onclick="hideMenu()" th:onclick="hideMenu()">
+<div id="content" onclick="hidePopupWindow()" th:onclick="hidePopupWindow()">
     <pre id="diagram" class="mermaid"></pre>
     <a id="error_text" class="error-text" style="font-size: 30px; display: none;">Ошибка в коде</a>
 </div>
 
 <!--Код диаграммы-->
-<div id="sidebar" onclick="hideMenu()" th:onclick="hideMenu()">
+<div id="sidebar" onclick="hidePopupWindow()" th:onclick="hidePopupWindow()">
     <div class="div-horizontal">
         <div style="flex-grow: 1;">
             <p class="text2" style="color: white; font-weight: bold; margin: 10px; text-align: left">Код диаграммы</p>
@@ -174,13 +162,40 @@
     </div>
 </div>
 
+<!--История-->
+<div id="history_list" class="history_list">
+    <table style="border-spacing: 10px; width: 100%; text-align: left;">
+        <thead>
+        <tr>
+            <th class="table_header">Имя</th>
+            <th class="table_header">Дата изменения</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="diagramHistory: ${diagramHistoryList}" style="cursor: pointer;"
+            onclick="rollbackHistory()" th:onclick="rollbackHistory()" th:data-version="${diagramHistory.id}">
+            <td class="table_value" style="width: 180px;">
+                <a style="margin: 0; text-decoration: none; word-wrap: anywhere"
+                   th:text="${diagramHistory.userName}">
+                </a>sdfdsfdsfsdfsdfsdssdfsdfs
+            </td>
+            <td class="table_value" style="" th:text="${diagramHistory.modifiedDate}">sdfsdfsd</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="width: 100%; text-align: center;">
+        <a class="text2" th:text="${listInfo}" style="color: #ffffff; font-size: 15px;"></a>
+    </div>
+</div>
+
 <!--Сообщение-->
 <div id="message_box" style="top: 55px; right: 5px; position: absolute; padding: 5px 0">
     <a class="message"></a>
 </div>
 
 <!--Меню-->
-<div id="menu_list" class="menu_list">
+<div id="menu_list" class="menu_list" style="top: 60px">
     <div style="border-bottom: 2px solid #74217D;">
         <a id="user-name" th:text="${userName}"></a>
     </div>

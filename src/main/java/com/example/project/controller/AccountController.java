@@ -117,7 +117,6 @@ public class AccountController {
     @RequestMapping("/delete")
     public ModelAndView deleteUser(HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
-        userService.deleteAllGroups(userId);
         userService.deleteUser(userId);
         removeAllAttrFromSession(request);
         return new ModelAndView("redirect:/main");

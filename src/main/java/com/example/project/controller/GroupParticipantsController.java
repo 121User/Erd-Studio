@@ -52,15 +52,15 @@ public class GroupParticipantsController {
             if(groupUserService.checkUserInGroup(user, group)) {
                 //Создание объекта группы для вывода
                 GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
-                        userService.getById(group.getOwnerId()).get().getName(), null,
-                        group.getGroupAccessLevel().getName(), encryptUrl(groupService.getGroupUrl(group.getId())));
+                        group.getOwner().getName(), null, group.getGroupAccessLevel().getName(),
+                        encryptUrl(groupService.getGroupUrl(group.getId())));
 
                 ModelAndView modelAndView = new ModelAndView("group_participant_list_page");
                 modelAndView.addObject("userName", user.getName());
                 modelAndView.addObject("group", groupOutputDto);
                 modelAndView.addObject("searchText", searchText);
 
-                List<GroupUser> groupUserList = sortGroupUserListByEntryDate(groupUserService.getAllByGroup(group)); //Отсортированный список пользователей группы
+                List<GroupUser> groupUserList = sortGroupUserListByEntryDate(group.getGroupUsers()); //Отсортированный список пользователей группы
                 //Поиск по имени участника
                 if (searchText != null) {
                     groupUserList = filterGroupUserListBySearch(groupUserList, searchText);
@@ -91,7 +91,7 @@ public class GroupParticipantsController {
             User user = userService.getById(userIdForChangeRole).get();
             Group group = groupService.getByID(groupId);
             //Проверка на соответствие авторизованного пользователя владельцу группы
-            if (userId.equals(group.getOwnerId())) {
+            if (userId.equals(group.getOwner().getId())) {
                 GroupUser groupUser = groupUserService.getByUserAndGroup(user, group).get();
                 groupUserService.changeRole(groupUser, role);
             }
@@ -109,7 +109,7 @@ public class GroupParticipantsController {
         if (userOpt.isPresent()) {
             Group group = groupService.getByID(groupId);
             //Проверка на соответствие авторизованного пользователя владельцу группы или администратору
-            if (userId.equals(group.getOwnerId())) {
+            if (userId.equals(group.getOwner().getId())) {
                 User userForDelete = userService.getById(userIdForDelete).get();
                 GroupUser groupUser = groupUserService.getByUserAndGroup(userForDelete, group).get();
                 groupUserService.deleteGroupUser(groupUser);

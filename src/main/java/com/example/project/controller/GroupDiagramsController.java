@@ -60,7 +60,7 @@ public class GroupDiagramsController {
                 diagramList = sortDiagramListByModDate(diagramList); //Отсортированный список диаграмм группы
 
                 //Фильтрация списка диаграмм в зависимости от роли (если владелец или администратор, то выводятся все диаграммы, иначе только свои)
-                if (group.getOwnerId().equals(userId) || userRole.equals("admin")) {
+                if (group.getOwner().getId().equals(userId) || userRole.equals("admin")) {
                     List<Diagram> otherDiagramList = new ArrayList<>();
                     for (Diagram diagram : group.getDiagrams()) {
                         if (!diagramList.contains(diagram))
@@ -70,8 +70,7 @@ public class GroupDiagramsController {
                 }
                 //Создание объекта группы для вывода
                 GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
-                        userService.getById(group.getOwnerId()).get().getName(),
-                        null, null, null);
+                        group.getOwner().getName(), null, null, null);
 
                 ModelAndView modelAndView = new ModelAndView("group_diagram_list_page");
                 modelAndView.addObject("userName", user.getName());
@@ -87,7 +86,7 @@ public class GroupDiagramsController {
                     modelAndView.addObject("listInfo", "Список диаграмм пуст");
                 } else {
                     //Получение обработанного списка диаграмм для вывода
-                    List<DiagramOutputDto> diagramOutputDtoList = groupUserService.getDiagramOutputDtoList(diagramList);
+                    List<DiagramOutputDto> diagramOutputDtoList = diagramService.getDiagramOutputDtoList(diagramList);
                     modelAndView.addObject("diagramList", diagramOutputDtoList);
                 }
                 return modelAndView;

@@ -14,19 +14,15 @@ window.onload = async function () {
     if (menuButton !== null) {
         menuButton.click();
     }
+    //Активация истории, если кнопка есть на странице
+    const historyButton = document.getElementById('history_button');
+    if (historyButton !== null) {
+        historyButton.click();
+    }
     //Скрытие кнопки сохранения, если пользователь неакторизован или доступ к диаграмме ограничен
     if (menuButton == null || isAccessForRead()) {
         const saveButtonBox = document.getElementById('save_button_box');
         saveButtonBox.style.visibility = 'hidden';
-    }
-
-    // Отслеживание нажатие кнопкки копирования ссылки, если кнопка есть на странице
-    const copyLinkButton = document.getElementById('copy_link_button');
-    if (copyLinkButton !== null) {
-        copyLinkButton.onclick = function () {
-            copyLink();
-            messageOutput('info', "Ссылка скопирована");
-        }
     }
 
     let editor = createCodeMirror(isAccessForRead()); //Настройка текстового редактора
@@ -103,9 +99,9 @@ function updateDiagram() {
 //Изменение размеров редактора кода и диаграммы
 function resizeWorkZone(){
     const header = document.querySelector('.header1');
-    const headerHeight = header.offsetHeight;
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
+    const headerHeight = header.offsetHeight;
     const windowHeight = window.innerHeight;
 
     sidebar.style.marginTop = headerHeight + 'px';
@@ -170,6 +166,7 @@ function saveChangesByKey(event) {
     }
 }
 
+//Проверка уровня доступа диаграммы
 function isAccessForRead() {
     const diagramNameInput = document.getElementById("diagram_name");
     return diagramNameInput.readOnly;
@@ -206,3 +203,4 @@ function getCodeForSave() {
         .replace(/\\/g, '').replace(/>/g, '').replace(/"/g, '').replace(/\|/g, '').replace(/\^/g, '').replace(/`/g, '')
     return diagramCode;
 }
+

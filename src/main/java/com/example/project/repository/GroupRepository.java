@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
-    @Modifying
-    @Query("DELETE FROM Diagram d WHERE d.groupId = :groupId")
-    void deleteAllDiagramByGroup(Long groupId);
+//    @Modifying
+//    @Query("DELETE FROM Diagram d WHERE d.groupId = :groupId")
+//    void deleteAllDiagramByGroup(Long groupId);
 
     //Удаление связей со всеми участниками
     @Modifying

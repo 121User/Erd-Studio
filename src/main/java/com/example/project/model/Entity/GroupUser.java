@@ -33,14 +33,8 @@ public class GroupUser {
     private GroupUsersRole groupUsersRole;
 
 
-    //Форматирование дат (используется при выводе на страницу в th)
+    //Форматирование дат для вывода
     public String getEntryDate() {
-//        String result = entryDate.toString();
-//        result = result.split("\\.")[0];
-//        String[] dateTimeStrings = result.split("T");
-//        result = dateTimeStrings[1] + " " + dateTimeStrings[0];
-//        return result;
-
         return getFormattedDateTime(entryDate.toString());
     }
 }

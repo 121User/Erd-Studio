@@ -1,5 +1,6 @@
 package com.example.project.service;
 
+import com.example.project.model.Dto.GroupOutputDto;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.GroupAccessLevel;
 import com.example.project.model.Entity.User;
@@ -11,6 +12,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,6 +35,9 @@ public class GroupService {
 
     //Получение для проверки существования
     public Optional<Group> getOptByID(Long id) {
+        if(id == null){
+            return Optional.empty();
+        }
         return groupRepository.findById(id);
     }
 
@@ -39,7 +45,7 @@ public class GroupService {
         Group group = new Group();
         group.setName(getUniqueGroupName(user, groupName));
         group.setCreationDate(LocalDateTime.now());
-        group.setOwnerId(user.getId());
+        group.setOwner(user);
         group.setGroupAccessLevel(groupAccessLevelService.getDefault());
         return groupRepository.save(group);
     }
@@ -60,9 +66,19 @@ public class GroupService {
 
     @Transactional
     public void deleteGroup(Long groupId) {
-        groupRepository.deleteAllDiagramByGroup(groupId);
-        groupRepository.deleteAllGroupUserByGroup(groupId);
         groupRepository.delete(getByID(groupId));
+    }
+
+    //Получение списка групп для вывода
+    public List<GroupOutputDto> getGroupOutputDtoList(List<Group> groupList) {
+        List<GroupOutputDto> groupOutputDtoList = new ArrayList<>();
+        for (Group group : groupList) {
+            String userName = group.getOwner().getName();
+            GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(), userName,
+                    group.getCreationDate(), null, null);
+            groupOutputDtoList.add(groupOutputDto);
+        }
+        return groupOutputDtoList;
     }
 
     //Проверка уникальности названия, возврат уникального названия группы
