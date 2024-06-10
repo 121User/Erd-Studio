@@ -3,8 +3,11 @@ package com.example.project.controller;
 import com.example.project.model.Dto.DiagramOutputDto;
 import com.example.project.model.Entity.Diagram;
 import com.example.project.model.Entity.DiagramAccessLevel;
+import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.User;
 import com.example.project.service.DiagramService;
+import com.example.project.service.GroupService;
+import com.example.project.service.GroupUserService;
 import com.example.project.service.UserService;
 import com.example.project.util.ImportDiagramUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +32,16 @@ public class DiagramController {
     private final UserService userService;
     private final DiagramService diagramService;
 
+    private final GroupService groupService;
+    private final GroupUserService groupUserService;
+
     @Autowired
-    public DiagramController(UserService userService, DiagramService diagramService) {
+    public DiagramController(UserService userService, DiagramService diagramService,
+                             GroupService groupService, GroupUserService groupUserService) {
         this.userService = userService;
         this.diagramService = diagramService;
+        this.groupService = groupService;
+        this.groupUserService = groupUserService;
     }
 
     @RequestMapping("/list")
@@ -49,12 +58,12 @@ public class DiagramController {
             modelAndView.addObject("searchText", searchText);
 
             //Поиск по названию диаграммы
-            List<Diagram> diagramList = sortDiagramListByModDate(user.getDiagrams());
+            List<Diagram> diagramList = sortDiagramListByModDate(userService.getPrivateDiagramList(user));
             if (searchText != null) {
-                diagramList = filterDiagramListBySearch(sortDiagramListByModDate(user.getDiagrams()), searchText);
+                diagramList = filterDiagramListBySearch(sortDiagramListByModDate(diagramList), searchText);
             }
             //Вывод сообщения, если список диаграмм пуст
-            if (user.getDiagrams().isEmpty()) {
+            if (diagramList.isEmpty()) {
                 modelAndView.addObject("listInfo", "Список диаграмм пуст");
             } else {
                 modelAndView.addObject("diagramList", diagramList);
@@ -154,12 +163,10 @@ public class DiagramController {
         //Проверка существования пользователя в системе
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-
             Optional<Diagram> diagramOpt = diagramService.getOptByID(diagramId);
             //Проверка существования диаграммы
             if (diagramOpt.isPresent()) {
                 Diagram diagram = diagramOpt.get();
-                DiagramAccessLevel diagramAccessLevel = diagram.getDiagramAccessLevel();
                 //Создание объекта диаграммы для вывода
                 DiagramOutputDto diagramOutputDto = new DiagramOutputDto(diagram.getId(), diagram.getName(),
                         userService.getById(diagram.getOwnerId()).get().getName(), null, null,
@@ -170,11 +177,17 @@ public class DiagramController {
                 if (!diagram.getOwnerId().equals(userId)) {
                     //Проверка правильности подключения
                     Long diagramIdToConnect = getLongAttrFromSession(request, "diagramIdToConnect");
+                    Optional<Group> groupOpt = groupService.getOptByID(diagram.getGroupId());
                     if (diagramIdToConnect.equals(diagramId)) {
-                        //Проверка уровня доступа к группе
+                        //Подключение по ссыклке на диаграмму
+                        DiagramAccessLevel diagramAccessLevel = diagram.getDiagramAccessLevel();
                         if (diagramAccessLevel.getName().equals("access is closed")) {
+                            //Проверка уровня доступа к группе
                             return new ModelAndView("redirect:/main?message=Diagram access is closed");
                         }
+                    } else if((groupOpt.isPresent() && groupUserService.checkUserInGroup(user, groupOpt.get()))){
+                        //Подключение из списка диаграмм группы
+                        diagramOutputDto.setAccessLevel("read and write access");
                     } else {
                         return new ModelAndView("redirect:/main");
                     }
@@ -212,7 +225,8 @@ public class DiagramController {
             if (diagramOpt.isPresent()) {
                 Diagram diagram = diagramOpt.get();
                 User owner = userService.getById(diagram.getOwnerId()).get();
-                diagramService.changeName(diagram, diagramName, owner);
+                List<Diagram> diagramList = userService.getDiagramListForUniqueName(owner, diagram.getGroupId());
+                diagramService.changeName(diagram, diagramName, diagramList);
                 diagramService.changeCode(diagram, diagramCode);
                 userService.changeDesignTheme(user, designTheme);
                 return new ModelAndView("redirect:/diagram/" + diagramId);

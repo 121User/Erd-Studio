@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.example.project.util.ListProcessingUtil.filterDiagramListByOwner;
+
 
 @Service
 public class UserService {
@@ -49,6 +51,16 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    public List<Diagram> getPrivateDiagramList(User user) {
+        List<Diagram> diagramList = new ArrayList<>();
+        for(Diagram d : user.getDiagrams()){
+            if(d.getGroupId() == null){
+                diagramList.add(d);
+            }
+        }
+        return diagramList;
+    }
+
     public void createUser(String email, String password, String designThemeName) {
         DesignTheme designTheme = designThemeService.getByName(designThemeName);
         User user = new User();
@@ -60,8 +72,26 @@ public class UserService {
     }
 
     public Long addDiagram(User user, String groupIdOpt, String diagramName, String diagramCode) {
-        Diagram diagram = diagramService.createByName(user, groupIdOpt, diagramName, diagramCode);
+        Long groupId = null;
+        if (!groupIdOpt.equals("null")) {
+            groupId = Long.parseLong(groupIdOpt);
+        }
+        List<Diagram> diagramList = getDiagramListForUniqueName(user, groupId);
+        Diagram diagram = diagramService.createByName(user, groupId, diagramList, diagramName, diagramCode);
         return diagram.getId();
+    }
+
+    //Получение списка диаграмм для проверки уникальности названия
+    public List<Diagram> getDiagramListForUniqueName(User user, Long groupId) {
+        List<Diagram> diagramList = getPrivateDiagramList(user);
+        if(groupId != null){
+            Optional<Group> groupOpt = groupService.getOptByID(groupId);
+            if (groupOpt.isPresent()) {
+                Group group = groupOpt.get();
+                diagramList = filterDiagramListByOwner(group.getDiagrams(), user.getId());
+            }
+        }
+        return diagramList;
     }
 
     public Long addGroup(User user, String groupName) {
