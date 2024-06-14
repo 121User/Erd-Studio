@@ -55,7 +55,8 @@
                 />
             </div>
             <div style="margin-bottom: 15px">
-                <a th:href="@{'/group/' + ${group.id} + '/participant/list'}" href="/diagram/list/import" class="input-submit"
+                <a th:href="@{'/group/' + ${group.id} + '/participant/list'}" href="/diagram/list/import"
+                   class="input-submit"
                    style="margin: 0; width: auto; vertical-align: center">
                     <img src="/static/images/Participants.png" th:src="@{/images/Participants.png}" alt="upload"
                          style="width: 15px; margin: 0 5px"/>
@@ -94,7 +95,8 @@
                            th:href="@{'/diagram/' + ${diagram.id}}" th:text="${diagram.name}">
                         </a>
                     </td>
-                    <td class="table_value" th:text="${diagram.userName}" style="width: max-content; max-width: 350px; word-wrap: anywhere"></td>
+                    <td class="table_value" th:text="${diagram.userName}"
+                        style="width: max-content; max-width: 350px; word-wrap: anywhere"></td>
                     <td class="table_value" th:text="${diagram.modifiedDate}"></td>
                     <td class="table_value" th:text="${diagram.creationDate}"></td>
                     <td class="ref_menu" style="text-align: right">

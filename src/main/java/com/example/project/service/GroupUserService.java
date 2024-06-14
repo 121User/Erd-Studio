@@ -1,20 +1,18 @@
 package com.example.project.service;
 
-import com.example.project.model.Dto.DiagramOutputDto;
-import com.example.project.model.Dto.GroupOutputDto;
 import com.example.project.model.Dto.GroupUserOutputDto;
-import com.example.project.model.Entity.*;
+import com.example.project.model.Entity.Group;
+import com.example.project.model.Entity.GroupUser;
+import com.example.project.model.Entity.GroupUsersRole;
+import com.example.project.model.Entity.User;
 import com.example.project.repository.GroupUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.example.project.util.ListProcessingUtil.filterDiagramListByOwner;
 
 
 @Service

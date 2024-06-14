@@ -6,9 +6,6 @@ import com.example.project.model.Entity.*;
 import com.example.project.repository.DiagramRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,7 +41,9 @@ public class DiagramService {
         diagram.setOwner(user);
         diagram.setGroup(group);
         diagram.setDiagramAccessLevel(diagramAccessLevelService.getDefault());
-        return diagramRepository.save(diagram);
+        diagramRepository.save(diagram);
+        diagramHistoryService.create(diagram, user); //Создание записи в истории диаграммы
+        return diagram;
     }
 
     public void change(Diagram diagram, String name, String code, List<Diagram> diagramList, User user) {
@@ -99,7 +98,7 @@ public class DiagramService {
     public void deleteDiagram(Long diagramId) {
         Optional<Diagram> diagramOpt = getOptByID(diagramId);
         //Проверка существования диаграммы
-        if(diagramOpt.isPresent()) {
+        if (diagramOpt.isPresent()) {
             Diagram diagram = diagramOpt.get();
             diagramRepository.delete(diagram);
         }
@@ -132,7 +131,7 @@ public class DiagramService {
     }
 
     //Проверка уникальности названия, возврат уникального названия диаграммы
-    private String getUniqueDiagramName(List<Diagram> diagramList,  String diagramName) {
+    private String getUniqueDiagramName(List<Diagram> diagramList, String diagramName) {
         int cloneNumber = 0;
         String result = diagramName;
         //При каждом изменении имени происходит новая проверка списка на уникальность

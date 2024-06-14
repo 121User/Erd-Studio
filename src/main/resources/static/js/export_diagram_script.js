@@ -92,10 +92,13 @@ function exportPdf() {
 
 
 function exportSql(type) {
-    let diagramName = document.getElementById('diagram_name').value;
     const editor = window.myGlobalObject.editorObj;
-    const diagramCode = getFormattedCodeForDB(editor.doc.getValue());
-    if(diagramName === ''){
+    let diagramCode = getFormattedCodeForDB(editor.doc.getValue());
+    diagramCode = diagramCode.replace(/\/\/.*/g, ''); //Скрытие комментариев в коде
+    diagramCode = diagramCode.replace(/(\n+\s*)+/g, '\n'); //Удаление лишних переносов строк и пробелов в коде
+
+    let diagramName = document.getElementById('diagram_name').value;
+    if (diagramName === '') {
         diagramName = 'Новая диаграмма';
     }
 
@@ -106,7 +109,7 @@ function exportSql(type) {
         text = convertToPostgreSql(diagramCode);
     }
 
-    const sqlBlob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const sqlBlob = new Blob([text], {type: 'text/plain;charset=utf-8'});
     const sqlUrl = URL.createObjectURL(sqlBlob);//Создание URL-адреса
     window.saveAs(sqlUrl, diagramName + '.sql'); //Отправка файла
 }
@@ -125,7 +128,7 @@ function convertToMsSqlServer(code) {
         } else if (!line.endsWith('])') && !line.includes('GO') && line !== '' && line !== ')') {
             let attributes = line.trim().split(/\s/);
             let attr = attributes[0];
-            let str = line.replace(attr, "["+attr+"]").replace(/\s+$/, "");
+            let str = line.replace(attr, "[" + attr + "]").replace(/\s+$/, "");
             result += str + ",\n";
         } else {
             result += line + '\n';
@@ -134,8 +137,9 @@ function convertToMsSqlServer(code) {
     result = result.replaceAll(',\n)', '\n)')
     return result + refs;
 }
+
 //Получение строк создания связей для Ms Sql Server
-function getMsSqlServerRefs(code){
+function getMsSqlServerRefs(code) {
     let refs = '';
     const lines = code.split('\n');
 
@@ -175,6 +179,7 @@ function convertToPostgreSql(code) {
     result = result.replaceAll(',\n);', '\n);')
     return result + refs;
 }
+
 //Получение строк создания связей для PostgreSQL
 function getPostgreSqlRefs(code) {
     let refs = '';

@@ -35,7 +35,7 @@ public class DiagramHistory {
 
     //Форматирование дат для вывода
     public String getModifiedDate() {
-        if(modifiedDate != null){
+        if (modifiedDate != null) {
             return getFormattedDateTime(modifiedDate.toString());
         }
         return "";

@@ -61,6 +61,7 @@
     #sidebar {
         display: none; /*Скрытие sidebar*/
     }
+
     #content {
         height: max-content;
         left: 0; /*Перемещение content при скрытом sidebar*/

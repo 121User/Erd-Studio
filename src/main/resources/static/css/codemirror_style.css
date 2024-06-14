@@ -20,11 +20,13 @@
     color: #ab01be;
     font-weight: bold;
 }
+
 /*Комментарии в коде*/
 .cm-custom-comment {
     color: #8f8f8f;
     font-weight: bold;
 }
+
 /*Числа в коде*/
 .cm-custom-digit {
     color: #ffbb78;
@@ -53,5 +55,5 @@
 
 /* Цвет указателя курсора к поле текста */
 .CodeMirror-cursor {
-     border-left: 2px solid #9702a7;
+    border-left: 2px solid #9702a7;
 }

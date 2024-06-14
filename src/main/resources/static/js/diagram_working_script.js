@@ -97,7 +97,7 @@ function updateDiagram() {
 }
 
 //Изменение размеров редактора кода и диаграммы
-function resizeWorkZone(){
+function resizeWorkZone() {
     const header = document.querySelector('.header1');
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');

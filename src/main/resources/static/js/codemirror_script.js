@@ -24,9 +24,9 @@ export function createCodeMirror(isReadOnly) {
             },
             //Дублирование выделонного фрагмента кода
             "Ctrl-D": function (cm) {
-                const selection = cm.getSelection();
                 const selStart = cm.getCursor("start");
                 const selEnd = cm.getCursor("end");
+                const selection = cm.getSelection();
                 cm.replaceSelection(selection + selection); //Дублирование
                 cm.setSelection(selStart, selEnd); //Восстановление выделения
             },

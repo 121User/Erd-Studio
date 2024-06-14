@@ -33,7 +33,8 @@
 
     <div style="text-align: center;">
         <a class="text2" style="text-align: left; margin-top: 10px">Импорт скрипта базы данных (.sql)</a>
-        <form th:action="@{'/diagram/list/import/do?groupId=' + ${groupId}}" method="post" enctype="multipart/form-data">
+        <form th:action="@{'/diagram/list/import/do?groupId=' + ${groupId}}" method="post"
+              enctype="multipart/form-data">
             <input type="file" name="fileDiagram" accept=".sql" style="width: 300px"/>
             <div>
                 <input type="submit" class="input-submit" style="vertical-align: center; margin: 20px 0 5px;"

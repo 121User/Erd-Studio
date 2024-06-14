@@ -15,13 +15,13 @@
         window.onload = function () {
             //Активация меню, если кнопка есть на странице
             const menuButton = document.getElementById('menu_button');
-            if(menuButton !== null) {
+            if (menuButton !== null) {
                 menuButton.click();
             }
             //Вывод сообщения
             const message = document.getElementById("messageBlock").dataset.message;
-            if(message !== undefined && message !== 'null'){
-                if(message.includes("успешно")) {
+            if (message !== undefined && message !== 'null') {
+                if (message.includes("успешно")) {
                     messageOutput('info', message)
                 } else {
                     messageOutput('error', message)
@@ -34,6 +34,7 @@
             const nameText = document.getElementById('name_input').value;
             location.href = '/account/name-change?nameText=' + nameText;
         }
+
         //Активация изменения имени пользователя при нажатии на Enter
         function renameUserByKeyup(event) {
             if (event.keyCode === 13) {

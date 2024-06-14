@@ -2,7 +2,6 @@ package com.example.project.util;
 
 import com.example.project.model.Dto.DiagramHistoryOutputDto;
 import com.example.project.model.Entity.Diagram;
-import com.example.project.model.Entity.DiagramHistory;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.GroupUser;
 

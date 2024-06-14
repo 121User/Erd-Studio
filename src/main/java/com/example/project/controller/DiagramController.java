@@ -7,7 +7,6 @@ import com.example.project.model.Entity.DiagramAccessLevel;
 import com.example.project.model.Entity.Group;
 import com.example.project.model.Entity.User;
 import com.example.project.service.DiagramService;
-import com.example.project.service.GroupService;
 import com.example.project.service.GroupUserService;
 import com.example.project.service.UserService;
 import com.example.project.util.ImportDiagramUtil;
@@ -114,7 +113,7 @@ public class DiagramController {
                 }
                 return new ModelAndView("redirect:/main");
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
         return new ModelAndView("redirect:/diagram/list/import");

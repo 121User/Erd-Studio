@@ -47,8 +47,9 @@ public class Diagram {
     public String getCreationDate() {
         return getFormattedDateTime(creationDate.toString());
     }
+
     public String getModifiedDate() {
-        if(modifiedDate != null){
+        if (modifiedDate != null) {
             return getFormattedDateTime(modifiedDate.toString());
         }
         return "";

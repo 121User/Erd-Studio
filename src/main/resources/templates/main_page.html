@@ -14,15 +14,15 @@
         window.onload = function () {
             //Активация меню, если кнопка есть на странице
             const menuButton = document.getElementById('menu_button');
-            if(menuButton !== null) {
+            if (menuButton !== null) {
                 menuButton.click();
             }
             //Вывод сообщения
             const message = document.getElementById("messageBlock").dataset.message;
-            if(message !== undefined){
-                if(message.includes("ограничил")) {
+            if (message !== undefined) {
+                if (message.includes("ограничил")) {
                     messageOutput('warning', message)
-                } else if(message.includes("удалена")) {
+                } else if (message.includes("удалена")) {
                     messageOutput('error', message)
                 }
             }
@@ -55,7 +55,7 @@
     Средство для работы с Entity-Relationship диаграммами
 </h1>
 
-<div class="main-flex-table" style="margin: 80px auto;"  onclick="hideMenu()" th:onclick="hideMenu()">
+<div class="main-flex-table" style="margin: 80px auto;" onclick="hideMenu()" th:onclick="hideMenu()">
     <div class="table-item">
         <img src="/static/images/Programming.png" th:src="@{/images/Programming.png}" alt="Programming">
         <p>Создавайте и редактируйте ER-диаграммы при помощи простого кода</p>
@@ -79,7 +79,8 @@
 </div>
 
 <!--Сообщение-->
-<div id="message_box" style="top: calc((100% - 150px)/2); left: calc((100% - 340px)/2); position: absolute; padding: 5px 0">
+<div id="message_box"
+     style="top: calc((100% - 150px)/2); left: calc((100% - 340px)/2); position: absolute; padding: 5px 0">
     <a id="messageBlock" class="message" th:data-message="${message}" style="padding: 20px"></a>
 </div>
 

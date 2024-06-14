@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" media="all" href="/static/css/style.css" data-th-href="@{/css/style.css}"/>
     <link rel="stylesheet" type="text/css" media="all" href="/static/css/diagram_working_style.css"
           data-th-href="@{/css/diagram_working_style.css}"/>
-        <!--Стили для редактора кода-->
+    <!--Стили для редактора кода-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
     <link rel="stylesheet" type="text/css" media="all" href="/static/css/codemirror_style.css"
           data-th-href="@{/css/codemirror_style.css}"/>
@@ -45,7 +45,8 @@
                  onclick="location.href='/main'"
                  alt="logo" style="width: 40px; margin-left: 10px"/>
             <!-- Название диаграммы -->
-            <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы" type="text" aria-label="Search"
+            <input id="diagram_name" name="diagram_name" placeholder="Название диаграммы" type="text"
+                   aria-label="Search"
                    maxlength="100" th:value="${diagram.name}"
                    th:readonly="${userName != diagram.userName && diagram.accessLevel == 'read access'}"/>
         </div>
@@ -72,8 +73,10 @@
                 </label>
             </div>
             <!-- Переключатель для выбора темы страницы -->
-            <div class="div-horizontal1" style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px; margin-right: 15px">
-                <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme" style="width: 30px"/>
+            <div class="div-horizontal1"
+                 style="padding: 0 5px; background: #482D65; border-radius: 5px; height: 30px; margin-right: 15px">
+                <img src="/static/images/Moon_icon.png" th:src="@{/images/Moon_icon.png}" alt="theme"
+                     style="width: 30px"/>
                 <form id="switch_theme" action="" method="get" class="form" style="margin: 0 5px">
                     <label class="switch">
                         <input id="checkbox_theme" type="checkbox" th:checked="${designTheme}">
@@ -87,7 +90,8 @@
                 font-size: 15px">Документация</a>
             </div>
         </div>
-        <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px" th:if="${userName} == ${diagram.userName}">
+        <div class="div-horizontal" style="flex-wrap: nowrap; margin-top: 5px"
+             th:if="${userName != null && userName == diagram.userName}">
             <!--Выпадающий список для выбора уровня доступа к группе-->
             <div>
                 <label>
@@ -95,11 +99,15 @@
                             style="margin-right: 15px; padding: 6px; width: 150px; height: auto; vertical-align: center">
                         <optgroup label="Выбор режима">
                             <option value="read access" th:selected="${diagram.accessLevel == 'read access'}">
-                                Доступно для чтения</option>
-                            <option value="read and write access" th:selected="${diagram.accessLevel == 'read and write access'}">
-                                Доступно для чтения и редактирования</option>
+                                Доступно для чтения
+                            </option>
+                            <option value="read and write access"
+                                    th:selected="${diagram.accessLevel == 'read and write access'}">
+                                Доступно для чтения и редактирования
+                            </option>
                             <option value="access is closed" th:selected="${diagram.accessLevel == 'access is closed'}">
-                                Доступ запрещен</option>
+                                Доступ запрещен
+                            </option>
                         </optgroup>
                     </select>
                 </label>
@@ -146,9 +154,11 @@
             <p class="text2" style="color: white; font-weight: bold; margin: 10px; text-align: left">Код диаграммы</p>
         </div>
         <div id="save_button_box">
-            <img id="save-status-icon" src="/static/images/Save_success.png" th:src="@{/images/Save_success.png}" alt="save-status"
+            <img id="save-status-icon" src="/static/images/Save_success.png" th:src="@{/images/Save_success.png}"
+                 alt="save-status"
                  style="width: 18px; color: white;"/>
-            <a id="save-button" class="input-submit" style="padding: 5px; margin-left: 5px; margin-right: 10px; cursor: pointer; background: #757575;">
+            <a id="save-button" class="input-submit"
+               style="padding: 5px; margin-left: 5px; margin-right: 10px; cursor: pointer; background: #757575;">
                 Сохранить
             </a>
         </div>
@@ -177,9 +187,9 @@
             <td class="table_value" style="width: 180px;">
                 <a style="margin: 0; text-decoration: none; word-wrap: anywhere"
                    th:text="${diagramHistory.userName}">
-                </a>sdfdsfdsfsdfsdfsdssdfsdfs
+                </a>
             </td>
-            <td class="table_value" style="" th:text="${diagramHistory.modifiedDate}">sdfsdfsd</td>
+            <td class="table_value" style="" th:text="${diagramHistory.modifiedDate}"></td>
         </tr>
         </tbody>
     </table>

@@ -1,12 +1,12 @@
 package com.example.project.service;
 
-import com.example.project.model.Dto.DiagramHistoryOutputDto;
-import com.example.project.model.Entity.*;
+import com.example.project.model.Entity.DesignTheme;
+import com.example.project.model.Entity.Diagram;
+import com.example.project.model.Entity.Group;
+import com.example.project.model.Entity.User;
 import com.example.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +51,8 @@ public class UserService {
 
     public List<Diagram> getPrivateDiagramList(User user) {
         List<Diagram> diagramList = new ArrayList<>();
-        for(Diagram d : user.getDiagrams()){
-            if(d.getGroup() == null){
+        for (Diagram d : user.getDiagrams()) {
+            if (d.getGroup() == null) {
                 diagramList.add(d);
             }
         }
@@ -82,7 +82,7 @@ public class UserService {
     //Получение списка диаграмм для проверки уникальности названия
     public List<Diagram> getDiagramListForUniqueName(User user, Group group) {
         List<Diagram> diagramList = getPrivateDiagramList(user);
-        if(group != null){
+        if (group != null) {
             diagramList = filterDiagramListByOwner(group.getDiagrams(), user.getId());
         }
         return diagramList;
@@ -95,10 +95,10 @@ public class UserService {
 
     public String changeName(Long id, String name) {
         String curName = getById(id).get().getName();
-        if(curName.equals(name)){
+        if (curName.equals(name)) {
             return null;
         } else if (getById(id).isPresent() && checkNameUniqueness(name)) {
-            if(name.length() >= 5) {
+            if (name.length() >= 5) {
                 User user = getById(id).get();
                 user.setName(name);
                 userRepository.save(user);
@@ -141,7 +141,7 @@ public class UserService {
         int nameLength = 8;
         StringBuilder name = new StringBuilder(nameLength);
 
-        do{
+        do {
             for (int i = 0; i < nameLength; i++) {
                 Random random = new Random();
                 int randomIndex = random.nextInt(characters.length());
@@ -154,8 +154,8 @@ public class UserService {
     //Проверка уникальности имени пользователя
     private Boolean checkNameUniqueness(String name) {
         List<User> userList = userRepository.findAll();
-        for(User user: userList){
-            if(user.getName().equals(name)){
+        for (User user : userList) {
+            if (user.getName().equals(name)) {
                 return false;
             }
         }

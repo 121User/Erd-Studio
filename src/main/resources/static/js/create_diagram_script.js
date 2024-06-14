@@ -23,11 +23,10 @@ export async function drawDiagram() {
         mermaid.initialize({startOnLoad: true, theme: designTheme});
 
         //Генерация изображения по коду диаграммы
-        const {svg} = await mermaid.render('graphDiv', graphDefinition);
+        const {svg} = await mermaid.render('graphDiv', graphDefinition); //Деструктуризация (возвращает свойство svg возвращенного объекта)
         diagram.innerHTML = svg;
         configPanZoomDiagram();
-    }
-    catch (err) {
+    } catch (err) {
         console.warn(err)
         document.getElementById('diagram').style.display = 'none';
         document.getElementById('error_text').style.display = 'block';
@@ -67,7 +66,7 @@ function getFormattedCodeForDiagram(code) {
     return result + refs;
 }
 
-//Получение ссылок для полтроения диаграммы
+//Получение связи для построения диаграммы
 function getRefs(code) {
     let refs = '';
     let strings = code.split(/\n/g);

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.project.util.Helper.encryptUrl;
 import static com.example.project.util.ListProcessingUtil.*;
 import static com.example.project.util.SessionUtil.getLongAttrFromSession;
 
@@ -53,7 +52,7 @@ public class GroupDiagramsController {
             User user = userOpt.get();
             Group group = groupService.getByID(groupId);
             //Проверка наличия пользователя в группе
-            if(groupUserService.checkUserInGroup(user, group)) {
+            if (groupUserService.checkUserInGroup(user, group)) {
                 String userRole = groupUserService.getUserRoleInGroup(user, group);
 
                 List<Diagram> diagramList = filterDiagramListByOwner(group.getDiagrams(), userId); //Фильтрация по владельцу
@@ -97,8 +96,8 @@ public class GroupDiagramsController {
 
     @RequestMapping("/delete/{diagramId}")
     public ModelAndView deleteGroupDiagram(@PathVariable(name = "groupId") Long groupId,
-                                      @PathVariable(name = "diagramId") Long diagramId,
-                                      HttpServletRequest request) {
+                                           @PathVariable(name = "diagramId") Long diagramId,
+                                           HttpServletRequest request) {
         Long userId = getLongAttrFromSession(request, "userId");
         Optional<User> userOpt = userService.getById(userId);
         //Проверка существования пользователя в системе

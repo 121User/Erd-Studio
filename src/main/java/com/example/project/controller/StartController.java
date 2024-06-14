@@ -33,7 +33,7 @@ public class StartController {
         Long userId = getLongAttrFromSession(request, "userId");
         String userName = userService.getNameById(userId);
 
-        if(message != null){
+        if (message != null) {
             switch (message) {
                 case "Group access is closed" -> message = "Владелец ограничил доступ к группе";
                 case "Group deleted" -> message = "Группа удалена";
@@ -219,8 +219,8 @@ public class StartController {
 
     @PostMapping("/password-recovery/check")
     public ModelAndView recoveryPassword(@ModelAttribute(name = "password") String password,
-                                      @ModelAttribute(name = "password_repetition") String password_repetition,
-                                      HttpServletRequest request) {
+                                         @ModelAttribute(name = "password_repetition") String password_repetition,
+                                         HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("password_recovery_page");
         modelAndView.addObject("password", password);
         //Проверка сложности пароля

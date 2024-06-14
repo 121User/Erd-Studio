@@ -4,6 +4,7 @@ function renameGroup() {
     const groupId = location.href.split('/')[4];
     location.href = '/group/' + groupId + '/rename?nameText=' + nameText;
 }
+
 //Активация изменения названия группы при нажатии на Enter
 function renameGroupByKeyup(event) {
     if (event.keyCode === 13) {

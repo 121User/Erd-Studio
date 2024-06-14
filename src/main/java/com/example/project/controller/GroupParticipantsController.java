@@ -49,7 +49,7 @@ public class GroupParticipantsController {
             User user = userOpt.get();
             Group group = groupService.getByID(groupId);
             //Проверка наличия пользователя в группе
-            if(groupUserService.checkUserInGroup(user, group)) {
+            if (groupUserService.checkUserInGroup(user, group)) {
                 //Создание объекта группы для вывода
                 GroupOutputDto groupOutputDto = new GroupOutputDto(group.getId(), group.getName(),
                         group.getOwner().getName(), null, group.getGroupAccessLevel().getName(),

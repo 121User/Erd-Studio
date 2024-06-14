@@ -24,7 +24,7 @@ public class Helper {
         if (password.length() >= 12) {
             Pattern lowerCaseLetter = Pattern.compile("[a-zа-я]");
             Pattern upperCaseLetter = Pattern.compile("[A-ZА-Я]");
-            Pattern digit = Pattern.compile("[0-9]");
+            Pattern digit = Pattern.compile("\\d");
             Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
 
             Matcher hasLowerCaseLetter = lowerCaseLetter.matcher(password);
@@ -40,8 +40,6 @@ public class Helper {
     //Обработка даты и времени
     public static String getFormattedDateTime(String dateTime) {
         dateTime = dateTime.split("\\.")[0];
-//        String[] dateTimeStrings = dateTime.split("T");
-//        return dateTimeStrings[0] + " " + dateTimeStrings[1];
         return dateTime.replace("T", " ");
     }
 
