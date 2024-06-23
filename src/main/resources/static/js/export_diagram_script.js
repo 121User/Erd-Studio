@@ -94,8 +94,6 @@ function exportPdf() {
 function exportSql(type) {
     const editor = window.myGlobalObject.editorObj;
     let diagramCode = getFormattedCodeForDB(editor.doc.getValue());
-    diagramCode = diagramCode.replace(/\/\/.*/g, ''); //Скрытие комментариев в коде
-    diagramCode = diagramCode.replace(/(\n+\s*)+/g, '\n'); //Удаление лишних переносов строк и пробелов в коде
 
     let diagramName = document.getElementById('diagram_name').value;
     if (diagramName === '') {
@@ -212,12 +210,19 @@ function getPkRef(code, entity) {
 
 //Обработка кода диаграммы для сохранения в базе данных
 export function getFormattedCodeForDB(code) {
+    code = code.replace(/\/\/.*/g, ''); //Скрытие комментариев в коде
     let lines = code.split(/\n/g);
     for (let i = 0; i < lines.length; i++) {
         lines[i] = lines[i].trim();
         if (!lines[i].includes('{') && !lines[i].includes('}')) {
             lines[i] = '  ' + lines[i];
         }
+        lines[i] = lines[i].replace(/\s+$/g, ''); //Удаление лишних пробелов в коде
     }
-    return lines.join('\n');
+    code = lines.join('\n');
+    code = code.replace(/\n+/g, '\n'); //Удаление лишних переносов строк и пробелов в коде
+
+
+
+    return code
 }
